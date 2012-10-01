@@ -1,0 +1,39 @@
+<%@ jet package="cemantika.translated" imports="org.cemantika.modeling.generator.model.CemantikaClass org.cemantika.modeling.generator.model.Attribute org.cemantika.modeling.generator.model.ContextualElementAttribute" class="ContextualElementTranslation" %>
+<% CemantikaClass clazz = (CemantikaClass) argument; %>
+package <%=clazz.getPackageName() %>;
+
+<% for (String importStamement : clazz.getImportStatements()) { %> 
+<%= importStamement %>;
+<% } %>
+/**
+ * This class implements a ContextualEntity with annotations 
+ * A Contextual Entity is a class used to build context sensitive behaviors.
+ */
+<%= clazz.getAnnotation() %>
+public class <%=clazz.getClassName()%><% if (clazz.getSuperClass() != null) { %> extends <%= clazz.getSuperClass() %> <% } %> {
+
+<% for (Attribute attribute : clazz.getAttributes()) { %> 
+	<%= attribute.toString() %>;
+<% } %>
+
+<% for (Attribute attribute : clazz.getAttributes()) { %>
+	/**
+	 * Returns the <%=attribute.getName()%>.
+	 *
+	 * @return the <%=attribute.getName()%>. 
+	 */
+	public <%=attribute.getType()%> <%=attribute.toGetMethod()%>() {
+		return <%=attribute.getName()%>;
+	}
+	
+	/**
+	 * Get the <%=attribute.getName()%>.
+	 *
+	 * @param <%=attribute.getName()%> value. 
+	 */		
+	public void <%=attribute.toSetMethod()%>(<%=attribute.getType()%> <%=attribute.getName()%>) {
+		this.<%=attribute.getName()%> = <%=attribute.getName()%>;
+	}	
+<% } %>
+ 
+}

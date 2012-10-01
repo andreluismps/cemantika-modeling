@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Cemantika Site" url="http://www.nti.ufpb.br/~raphael/cemantika">
+      CEManTIKA (Contextual Elements Modeling and Management through Incremental Knowledge Acquisition) is a framework to support context modeling and Context-Sensitive System design, in a generic, domain-independent way.
+   </description>
+   <feature url="features/org.cemantika.modeling_0.0.1.jar" id="org.cemantika.modeling" version="0.0.1">
+      <category name="Cemantika"/>
+   </feature>
+   <category-def name="Cemantika" label="Cemantika CASE"/>
+</site>
