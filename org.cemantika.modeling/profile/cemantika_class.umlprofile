@@ -16,7 +16,7 @@
     <styles xmi:type="notation:FontStyle" xmi:id="_G7QA4oQXEd-lb5eO5RIlaQ" fontName="Sans"/>
     <styles xmi:type="notation:FillStyle" xmi:id="_G7QA44QXEd-lb5eO5RIlaQ"/>
     <element xmi:type="uml:ElementImport" href="cemantika_class.profile.uml#_G7M9kIQXEd-lb5eO5RIlaQ"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_G7QA5IQXEd-lb5eO5RIlaQ" x="156" y="78"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_G7QA5IQXEd-lb5eO5RIlaQ" x="516" y="52"/>
   </children>
   <children xmi:type="notation:Node" xmi:id="_HipYEIQXEd-lb5eO5RIlaQ" type="2006">
     <children xmi:type="notation:DecorationNode" xmi:id="_Hip_IIQXEd-lb5eO5RIlaQ" type="5008"/>
@@ -24,7 +24,7 @@
     <styles xmi:type="notation:FontStyle" xmi:id="_HipYEoQXEd-lb5eO5RIlaQ" fontName="Sans"/>
     <styles xmi:type="notation:FillStyle" xmi:id="_HipYE4QXEd-lb5eO5RIlaQ"/>
     <element xmi:type="uml:ElementImport" href="cemantika_class.profile.uml#_HioxAIQXEd-lb5eO5RIlaQ"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_HipYFIQXEd-lb5eO5RIlaQ" x="312" y="78"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_HipYFIQXEd-lb5eO5RIlaQ" x="108" y="56"/>
   </children>
   <children xmi:type="notation:Node" xmi:id="_I7EjkIQXEd-lb5eO5RIlaQ" type="2006">
     <children xmi:type="notation:DecorationNode" xmi:id="_I7FKoIQXEd-lb5eO5RIlaQ" type="5008"/>
@@ -32,7 +32,7 @@
     <styles xmi:type="notation:FontStyle" xmi:id="_I7EjkoQXEd-lb5eO5RIlaQ" fontName="Sans"/>
     <styles xmi:type="notation:FillStyle" xmi:id="_I7Ejk4QXEd-lb5eO5RIlaQ"/>
     <element xmi:type="uml:ElementImport" href="cemantika_class.profile.uml#_I7D8gIQXEd-lb5eO5RIlaQ"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_I7EjlIQXEd-lb5eO5RIlaQ" x="455" y="78"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_I7EjlIQXEd-lb5eO5RIlaQ" x="208" y="56"/>
   </children>
   <children xmi:type="notation:Shape" xmi:id="_MMf4EIQXEd-lb5eO5RIlaQ" type="2001" fontName="Sans">
     <children xmi:type="notation:DecorationNode" xmi:id="_MMf4EoQXEd-lb5eO5RIlaQ" type="5001">
@@ -62,7 +62,7 @@
       <styles xmi:type="notation:CanonicalStyle" xmi:id="_MMgfL4QXEd-lb5eO5RIlaQ"/>
     </children>
     <element xmi:type="uml:Stereotype" href="cemantika_class.profile.uml#_MMVgAIQXEd-lb5eO5RIlaQ"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_MMf4EYQXEd-lb5eO5RIlaQ" x="117" y="195" width="144"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_MMf4EYQXEd-lb5eO5RIlaQ" x="480" y="144" width="144"/>
   </children>
   <children xmi:type="notation:Shape" xmi:id="_NZ--4IQXEd-lb5eO5RIlaQ" type="2001" fontName="Sans">
     <children xmi:type="notation:DecorationNode" xmi:id="_NZ_l8IQXEd-lb5eO5RIlaQ" type="5001">
@@ -108,7 +108,7 @@
       <styles xmi:type="notation:CanonicalStyle" xmi:id="_NZ_mAIQXEd-lb5eO5RIlaQ"/>
     </children>
     <element xmi:type="uml:Stereotype" href="cemantika_class.profile.uml#_NZ2cAIQXEd-lb5eO5RIlaQ"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_NZ--4YQXEd-lb5eO5RIlaQ" x="338" y="195" width="209"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_NZ--4YQXEd-lb5eO5RIlaQ" x="60" y="144" width="209"/>
   </children>
   <children xmi:type="notation:Shape" xmi:id="_PkE34IQXEd-lb5eO5RIlaQ" type="2003" fontName="Sans">
     <children xmi:type="notation:DecorationNode" xmi:id="_PkFe8IQXEd-lb5eO5RIlaQ" type="5005">
@@ -146,7 +146,139 @@
       <styles xmi:type="notation:CanonicalStyle" xmi:id="_PkFe9oQXEd-lb5eO5RIlaQ"/>
     </children>
     <element xmi:type="uml:Enumeration" href="cemantika_class.profile.uml#_Pj8VAIQXEd-lb5eO5RIlaQ"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_PkE34YQXEd-lb5eO5RIlaQ" x="624" y="78"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_PkE34YQXEd-lb5eO5RIlaQ" x="60" y="316"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_xxlM8MWkEeStzaikFgxTqQ" type="2001" fontName=".Helvetica Neue DeskInterface">
+    <children xmi:type="notation:DecorationNode" xmi:id="_xxlM8sWkEeStzaikFgxTqQ" type="5001">
+      <styles xmi:type="notation:FontStyle" xmi:id="_xxz2cMWkEeStzaikFgxTqQ" bold="true"/>
+    </children>
+    <children xmi:type="notation:DecorationNode" xmi:id="_xxlM88WkEeStzaikFgxTqQ" type="5012"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_xxl0AMWkEeStzaikFgxTqQ" type="7001">
+      <styles xmi:type="notation:TitleStyle" xmi:id="_xxl0AcWkEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_xxl0AsWkEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_xxl0A8WkEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_xxl0BMWkEeStzaikFgxTqQ"/>
+    </children>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_xxl0BcWkEeStzaikFgxTqQ" type="7002">
+      <styles xmi:type="notation:TitleStyle" xmi:id="_xxl0BsWkEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_xxl0B8WkEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_xxl0CMWkEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_xxl0CcWkEeStzaikFgxTqQ"/>
+    </children>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_xxl0CsWkEeStzaikFgxTqQ" type="7006">
+      <styles xmi:type="notation:TitleStyle" xmi:id="_xxl0C8WkEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_xxl0DMWkEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_xxl0DcWkEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_xxl0DsWkEeStzaikFgxTqQ"/>
+    </children>
+    <element xmi:type="uml:Stereotype" href="cemantika_class.profile.uml#_xw2NIMWkEeStzaikFgxTqQ"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_xxlM8cWkEeStzaikFgxTqQ" x="648" y="144"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_Dg88QMWmEeStzaikFgxTqQ" type="2003" fontName=".Helvetica Neue DeskInterface">
+    <children xmi:type="notation:DecorationNode" xmi:id="_Dg9jUMWmEeStzaikFgxTqQ" type="5005">
+      <styles xmi:type="notation:FontStyle" xmi:id="_DhGtQMWmEeStzaikFgxTqQ" bold="true"/>
+    </children>
+    <children xmi:type="notation:DecorationNode" xmi:id="_Dg9jUcWmEeStzaikFgxTqQ" type="5011"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_Dg9jUsWmEeStzaikFgxTqQ" type="7004">
+      <children xmi:type="notation:Node" xmi:id="_Hx_ToMWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_HxwqIMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Hx_TocWmEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_K6YA4MWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_K6Ee4MWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_K6YA4cWmEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_SxDCMMWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_Swx8cMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_SxDCMcWmEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_UCsQQMWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_UCbKgMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_UCsQQcWmEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_VgGpcMWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_Vf2KwMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_VgGpccWmEeStzaikFgxTqQ"/>
+      </children>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_Dg9jU8WmEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Dg9jVMWmEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Dg9jVcWmEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_Dg9jVsWmEeStzaikFgxTqQ"/>
+    </children>
+    <element xmi:type="uml:Enumeration" href="cemantika_class.profile.uml#_DgY7kMWmEeStzaikFgxTqQ"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Dg88QcWmEeStzaikFgxTqQ" x="480" y="308"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_dL20MMWmEeStzaikFgxTqQ" type="2003" fontName=".Helvetica Neue DeskInterface">
+    <children xmi:type="notation:DecorationNode" xmi:id="_dL3bQMWmEeStzaikFgxTqQ" type="5005">
+      <styles xmi:type="notation:FontStyle" xmi:id="_dL_-IMWmEeStzaikFgxTqQ" bold="true"/>
+    </children>
+    <children xmi:type="notation:DecorationNode" xmi:id="_dL3bQcWmEeStzaikFgxTqQ" type="5011"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_dL3bQsWmEeStzaikFgxTqQ" type="7004">
+      <children xmi:type="notation:Node" xmi:id="_g9TskMWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_g9FDEMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_g9TskcWmEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_kTrygMWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_kTdwEMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_kTrygcWmEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_mhP2QMWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_mg6fEMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_mhP2QcWmEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_p7ZB4MWmEeStzaikFgxTqQ" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_p7JKQMWmEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_p7ZB4cWmEeStzaikFgxTqQ"/>
+      </children>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_dL3bQ8WmEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_dL3bRMWmEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_dL3bRcWmEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_dL3bRsWmEeStzaikFgxTqQ"/>
+    </children>
+    <element xmi:type="uml:Enumeration" href="cemantika_class.profile.uml#_dLLewMWmEeStzaikFgxTqQ"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_dL20McWmEeStzaikFgxTqQ" x="296" y="312"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_Eis3sMWnEeStzaikFgxTqQ" type="2001" fontName=".Helvetica Neue DeskInterface">
+    <children xmi:type="notation:DecorationNode" xmi:id="_Eis3ssWnEeStzaikFgxTqQ" type="5001">
+      <styles xmi:type="notation:FontStyle" xmi:id="_Ei6TEMWnEeStzaikFgxTqQ" bold="true"/>
+    </children>
+    <children xmi:type="notation:DecorationNode" xmi:id="_Eis3s8WnEeStzaikFgxTqQ" type="5012"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_Eis3tMWnEeStzaikFgxTqQ" type="7001">
+      <children xmi:type="notation:Node" xmi:id="_NoNqsMWnEeStzaikFgxTqQ" type="3001">
+        <element xmi:type="uml:Property" href="cemantika_class.profile.uml#_Nn9MAMWnEeStzaikFgxTqQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_NoNqscWnEeStzaikFgxTqQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_KMZ1sMWoEeS2VY3O8iLbrQ" type="3001">
+        <element xmi:type="uml:Property" href="cemantika_class.profile.uml#_KK5Z0MWoEeS2VY3O8iLbrQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_KMZ1scWoEeS2VY3O8iLbrQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_PR3ToMWoEeS2VY3O8iLbrQ" type="3001">
+        <element xmi:type="uml:Property" href="cemantika_class.profile.uml#_PRjKkMWoEeS2VY3O8iLbrQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_PR3TocWoEeS2VY3O8iLbrQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_YFbwIMWqEeS2VY3O8iLbrQ" type="3001">
+        <element xmi:type="uml:Property" href="cemantika_class.profile.uml#_YFFK0MWqEeS2VY3O8iLbrQ"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_YFbwIcWqEeS2VY3O8iLbrQ"/>
+      </children>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_Eis3tcWnEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Eis3tsWnEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Eis3t8WnEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_Eis3uMWnEeStzaikFgxTqQ"/>
+    </children>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_Eis3ucWnEeStzaikFgxTqQ" type="7002">
+      <styles xmi:type="notation:TitleStyle" xmi:id="_Eis3usWnEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Eis3u8WnEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Eis3vMWnEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_Eis3vcWnEeStzaikFgxTqQ"/>
+    </children>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_EitewMWnEeStzaikFgxTqQ" type="7006">
+      <styles xmi:type="notation:TitleStyle" xmi:id="_EitewcWnEeStzaikFgxTqQ" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_EitewsWnEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Eitew8WnEeStzaikFgxTqQ"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_EitexMWnEeStzaikFgxTqQ"/>
+    </children>
+    <element xmi:type="uml:Stereotype" href="cemantika_class.profile.uml#_EiDXcMWnEeStzaikFgxTqQ"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Eis3scWnEeStzaikFgxTqQ" x="300" y="144"/>
   </children>
   <styles xmi:type="notation:DiagramStyle" xmi:id="_DAL5gYQXEd-lb5eO5RIlaQ"/>
   <styles xmi:type="uml2tools.notation:U2TDiagramCanonicalStyle" xmi:id="_DAL5goQXEd-lb5eO5RIlaQ"/>
@@ -178,5 +310,24 @@
     <styles xmi:type="notation:FontStyle" xmi:id="_Zqa1woQXEd-lb5eO5RIlaQ" fontName="Sans"/>
     <element xmi:type="uml:Extension" href="cemantika_class.profile.uml#_ZqZnoIQXEd-lb5eO5RIlaQ"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Zqa1w4QXEd-lb5eO5RIlaQ" points="[16, -30, -37, 97]$[77, -107, 24, 20]"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_-WbQwMWoEeS2VY3O8iLbrQ" type="4002" source="_xxlM8MWkEeStzaikFgxTqQ" target="_G7QA4IQXEd-lb5eO5RIlaQ">
+    <children xmi:type="notation:DecorationNode" xmi:id="_-WbQxMWoEeS2VY3O8iLbrQ" type="6001">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_-WbQxcWoEeS2VY3O8iLbrQ" y="-15"/>
+    </children>
+    <styles xmi:type="notation:RoutingStyle" xmi:id="_-WbQwcWoEeS2VY3O8iLbrQ"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_-WbQwsWoEeS2VY3O8iLbrQ" fontName=".Helvetica Neue DeskInterface"/>
+    <element xmi:type="uml:Extension" href="cemantika_class.profile.uml#_-WC2QMWoEeS2VY3O8iLbrQ"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-WbQw8WoEeS2VY3O8iLbrQ" points="[-75, -33, 733, 322]$[-762, -335, 46, 20]"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FsOZoMWpEeS2VY3O8iLbrQ" type="4002" source="_Eis3sMWnEeStzaikFgxTqQ" target="_I7EjkIQXEd-lb5eO5RIlaQ">
+    <children xmi:type="notation:DecorationNode" xmi:id="_FsOZpMWpEeS2VY3O8iLbrQ" type="6001">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FsOZpcWpEeS2VY3O8iLbrQ" y="-15"/>
+    </children>
+    <styles xmi:type="notation:RoutingStyle" xmi:id="_FsOZocWpEeS2VY3O8iLbrQ"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FsOZosWpEeS2VY3O8iLbrQ" fontName=".Helvetica Neue DeskInterface"/>
+    <element xmi:type="uml:Extension" href="cemantika_class.profile.uml#_FsHr8MWpEeS2VY3O8iLbrQ"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FsOZo8WpEeS2VY3O8iLbrQ" points="[-2, -1, 189, 153]$[-191, -124, 0, 30]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FsRc8MWpEeS2VY3O8iLbrQ" id="(0.15,0.009433962264150943)"/>
   </edges>
 </notation:Diagram>
