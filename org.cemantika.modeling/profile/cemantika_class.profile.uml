@@ -182,4 +182,8 @@
   <packagedElement xmi:type="uml:Extension" xmi:id="_FsHr8MWpEeS2VY3O8iLbrQ" name="Association_Acquisition" memberEnd="_FsHr8cWpEeS2VY3O8iLbrQ _FsITAMWpEeS2VY3O8iLbrQ">
     <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_FsHr8cWpEeS2VY3O8iLbrQ" name="extension_Acquisition" type="_EiDXcMWnEeStzaikFgxTqQ" aggregation="composite" association="_FsHr8MWpEeS2VY3O8iLbrQ"/>
   </packagedElement>
+  <packagedElement xmi:type="uml:Enumeration" xmi:id="_veqcoNPdEeSuc6BO2Y_XFA" name="SensorType">
+    <ownedLiteral xmi:id="_zyLgQNPdEeSuc6BO2Y_XFA" name="Accelerometer"/>
+    <ownedLiteral xmi:id="_whXaUNPeEeSuc6BO2Y_XFA" name="Barometer"/>
+  </packagedElement>
 </uml:Profile>

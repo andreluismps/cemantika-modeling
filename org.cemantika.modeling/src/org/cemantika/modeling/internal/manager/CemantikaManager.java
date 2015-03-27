@@ -1,21 +1,6 @@
 package org.cemantika.modeling.internal.manager;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Observable;
-import java.util.Properties;
-
-import org.cemantika.modeling.Activator;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 
 public class CemantikaManager extends Observable  {
 

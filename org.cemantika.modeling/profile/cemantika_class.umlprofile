@@ -280,6 +280,28 @@
     <element xmi:type="uml:Stereotype" href="cemantika_class.profile.uml#_EiDXcMWnEeStzaikFgxTqQ"/>
     <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Eis3scWnEeStzaikFgxTqQ" x="300" y="144"/>
   </children>
+  <children xmi:type="notation:Shape" xmi:id="_vgGnENPdEeSuc6BO2Y_XFA" type="2003" fontName=".Helvetica Neue DeskInterface">
+    <children xmi:type="notation:DecorationNode" xmi:id="_vgH1MNPdEeSuc6BO2Y_XFA" type="5005">
+      <styles xmi:type="notation:FontStyle" xmi:id="_vgMGoNPdEeSuc6BO2Y_XFA" bold="true"/>
+    </children>
+    <children xmi:type="notation:DecorationNode" xmi:id="_vgH1MdPdEeSuc6BO2Y_XFA" type="5011"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_vgH1MtPdEeSuc6BO2Y_XFA" type="7004">
+      <children xmi:type="notation:Node" xmi:id="_zy4q4NPdEeSuc6BO2Y_XFA" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_zyLgQNPdEeSuc6BO2Y_XFA"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_zy4q4dPdEeSuc6BO2Y_XFA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_whsxgNPeEeSuc6BO2Y_XFA" type="3005">
+        <element xmi:type="uml:EnumerationLiteral" href="cemantika_class.profile.uml#_whXaUNPeEeSuc6BO2Y_XFA"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_whsxgdPeEeSuc6BO2Y_XFA"/>
+      </children>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_vgH1M9PdEeSuc6BO2Y_XFA" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_vgH1NNPdEeSuc6BO2Y_XFA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_vgH1NdPdEeSuc6BO2Y_XFA"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_vgH1NtPdEeSuc6BO2Y_XFA"/>
+    </children>
+    <element xmi:type="uml:Enumeration" href="cemantika_class.profile.uml#_veqcoNPdEeSuc6BO2Y_XFA"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_vgGnEdPdEeSuc6BO2Y_XFA" x="656" y="326"/>
+  </children>
   <styles xmi:type="notation:DiagramStyle" xmi:id="_DAL5gYQXEd-lb5eO5RIlaQ"/>
   <styles xmi:type="uml2tools.notation:U2TDiagramCanonicalStyle" xmi:id="_DAL5goQXEd-lb5eO5RIlaQ"/>
   <element xmi:type="uml:Profile" href="cemantika_class.profile.uml#_C_k1gIQXEd-lb5eO5RIlaQ"/>
