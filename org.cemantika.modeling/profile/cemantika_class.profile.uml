@@ -66,6 +66,58 @@
         <eLiterals xmi:id="_PcDANMXxEeS0pY9DYNhKYA" name="Often" value="2" literal="Often"/>
         <eLiterals xmi:id="_PcDANcXxEeS0pY9DYNhKYA" name="Always" value="3" literal="Always"/>
       </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_4YaXkNS5EeSpN9Om1jH8Lg" name="PhysicalSensorContextSource" eSuperTypes="_t0nssMXnEeS0pY9DYNhKYA">
+        <eAnnotations xmi:id="_4Ya-oNS5EeSpN9Om1jH8Lg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_StVHwNS4EeSpN9Om1jH8Lg"/>
+        <eAnnotations xmi:id="_4Ya-odS5EeSpN9Om1jH8Lg" source="http://www.eclipse.org/emf/2002/GenModel">
+          <details xmi:id="_4Ya-otS5EeSpN9Om1jH8Lg" key="documentation" value=""/>
+        </eAnnotations>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_4Ya-o9S5EeSpN9Om1jH8Lg" name="base_Class" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/3.0.0/UML#//Class"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_WHLtkNS6EeSpN9Om1jH8Lg" name="type" upperBound="-1" eType="_gglKUNS6EeSpN9Om1jH8Lg"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_gglKUNS6EeSpN9Om1jH8Lg" name="SensorType">
+        <eAnnotations xmi:id="_gglKUdS6EeSpN9Om1jH8Lg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_veqcoNPdEeSuc6BO2Y_XFA"/>
+        <eLiterals xmi:id="_gglKUtS6EeSpN9Om1jH8Lg" name="Accelerometer" literal="Accelerometer"/>
+        <eLiterals xmi:id="_gglKU9S6EeSpN9Om1jH8Lg" name="Barometer" value="1" literal="Barometer"/>
+        <eLiterals xmi:id="_C0TYkNTDEeSE1d1lvKIcBg" name="Battery" value="2" literal="Battery"/>
+        <eLiterals xmi:id="_NA8LsNTDEeSE1d1lvKIcBg" name="Bluetooth" value="3" literal="Bluetooth"/>
+        <eLiterals xmi:id="_Qmwb0NTDEeSE1d1lvKIcBg" name="Calendar" value="4" literal="Calendar"/>
+        <eLiterals xmi:id="_TqkLENTDEeSE1d1lvKIcBg" name="Camera" value="5" literal="Camera"/>
+        <eLiterals xmi:id="_XtuegNTDEeSE1d1lvKIcBg" name="CellID" value="6" literal="CellID"/>
+        <eLiterals xmi:id="_g-L9QNTDEeSE1d1lvKIcBg" name="CPU" value="7" literal="CPU"/>
+        <eLiterals xmi:id="_teTO4NTDEeSE1d1lvKIcBg" name="GPS" value="8" literal="GPS"/>
+        <eLiterals xmi:id="_t_VfYNTDEeSE1d1lvKIcBg" name="Gyroscope" value="9" literal="Gyroscope"/>
+        <eLiterals xmi:id="_ujEekNTDEeSE1d1lvKIcBg" name="HardDisk" value="10" literal="HardDisk"/>
+        <eLiterals xmi:id="_49z_INTDEeSE1d1lvKIcBg" name="HTTPResponse" value="11" literal="HTTPResponse"/>
+        <eLiterals xmi:id="_5YFgUNTDEeSE1d1lvKIcBg" name="Infrared" value="12" literal="Infrared"/>
+        <eLiterals xmi:id="_4GLMgNTDEeSE1d1lvKIcBg" name="LightSensor" value="13" literal="LightSensor"/>
+        <eLiterals xmi:id="_6Px9UNTDEeSE1d1lvKIcBg" name="Magnetometer" value="14" literal="Magnetometer"/>
+        <eLiterals xmi:id="_3rQyINTDEeSE1d1lvKIcBg" name="Microphone" value="15" literal="Microphone"/>
+        <eLiterals xmi:id="_2uckkNTDEeSE1d1lvKIcBg" name="NetworkConnection" value="16" literal="NetworkConnection"/>
+        <eLiterals xmi:id="_5xVGwNTDEeSE1d1lvKIcBg" name="QRCode" value="17" literal="QRCode"/>
+        <eLiterals xmi:id="_4jDVwNTDEeSE1d1lvKIcBg" name="RAM" value="18" literal="RAM"/>
+        <eLiterals xmi:id="_cFCnkNTEEeSE1d1lvKIcBg" name="RFID" value="19" literal="RFID"/>
+        <eLiterals xmi:id="_cjjvkNTEEeSE1d1lvKIcBg" name="SDCard" value="20" literal="SDCard"/>
+        <eLiterals xmi:id="_vIRdYNTDEeSE1d1lvKIcBg" name="Thermometer" value="21" literal="Thermometer"/>
+        <eLiterals xmi:id="_bodZQNTEEeSE1d1lvKIcBg" name="TimeDate" value="22" literal="TimeDate"/>
+        <eLiterals xmi:id="_3LFdQNTDEeSE1d1lvKIcBg" name="USBCable" value="23" literal="USBCable"/>
+        <eLiterals xmi:id="_a5xuUNTEEeSE1d1lvKIcBg" name="WiFi" value="24" literal="WiFi"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_7z2uQNS6EeSpN9Om1jH8Lg" name="LogicalSensorContextSource" eSuperTypes="_t0nssMXnEeS0pY9DYNhKYA">
+        <eAnnotations xmi:id="_7z2uQdS6EeSpN9Om1jH8Lg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_XJslYNS4EeSpN9Om1jH8Lg"/>
+        <eAnnotations xmi:id="_7z2uQtS6EeSpN9Om1jH8Lg" source="http://www.eclipse.org/emf/2002/GenModel">
+          <details xmi:id="_7z2uQ9S6EeSpN9Om1jH8Lg" key="documentation" value=""/>
+        </eAnnotations>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_7z2uRNS6EeSpN9Om1jH8Lg" name="base_Class" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/3.0.0/UML#//Class"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_7z2uRtS6EeSpN9Om1jH8Lg" name="type" upperBound="-1" eType="_gglKUNS6EeSpN9Om1jH8Lg">
+          <eAnnotations xmi:id="_h9lS0NTFEeSE1d1lvKIcBg" source="Sourec">
+            <references xmi:type="uml:Comment" href="pathmap://UML_METAMODELS/UML.metamodel.uml#AcceptEventAction-_ownedComment.0"/>
+          </eAnnotations>
+        </eStructuralFeatures>
+      </eClassifiers>
     </contents>
   </eAnnotations>
   <elementImport xmi:id="_DALScIQXEd-lb5eO5RIlaQ">
@@ -185,5 +237,40 @@
   <packagedElement xmi:type="uml:Enumeration" xmi:id="_veqcoNPdEeSuc6BO2Y_XFA" name="SensorType">
     <ownedLiteral xmi:id="_zyLgQNPdEeSuc6BO2Y_XFA" name="Accelerometer"/>
     <ownedLiteral xmi:id="_whXaUNPeEeSuc6BO2Y_XFA" name="Barometer"/>
+    <ownedLiteral xmi:id="_S4s8MNS2EeSpN9Om1jH8Lg" name="Battery"/>
+    <ownedLiteral xmi:id="_UuHlsNS2EeSpN9Om1jH8Lg" name="Bluetooth"/>
+    <ownedLiteral xmi:id="_WRVr8NS2EeSpN9Om1jH8Lg" name="Calendar"/>
+    <ownedLiteral xmi:id="_YUXToNS2EeSpN9Om1jH8Lg" name="Camera"/>
+    <ownedLiteral xmi:id="_Zxq_INS2EeSpN9Om1jH8Lg" name="CellID"/>
+    <ownedLiteral xmi:id="_bDyuUNS2EeSpN9Om1jH8Lg" name="CPU"/>
+    <ownedLiteral xmi:id="_eOK_oNS2EeSpN9Om1jH8Lg" name="GPS"/>
+    <ownedLiteral xmi:id="_gXk8INS2EeSpN9Om1jH8Lg" name="Gyroscope"/>
+    <ownedLiteral xmi:id="_hz03sNS2EeSpN9Om1jH8Lg" name="HardDisk"/>
+    <ownedLiteral xmi:id="_jhJ8MNS2EeSpN9Om1jH8Lg" name="HTTPResponse"/>
+    <ownedLiteral xmi:id="_k1-aENS2EeSpN9Om1jH8Lg" name="Infrared"/>
+    <ownedLiteral xmi:id="_pbWpwNS2EeSpN9Om1jH8Lg" name="LightSensor"/>
+    <ownedLiteral xmi:id="_x3d6cNS2EeSpN9Om1jH8Lg" name="Magnetometer"/>
+    <ownedLiteral xmi:id="_zgsiENS2EeSpN9Om1jH8Lg" name="Microphone"/>
+    <ownedLiteral xmi:id="_1UyV4NS2EeSpN9Om1jH8Lg" name="NetworkConnection"/>
+    <ownedLiteral xmi:id="_3MllANS2EeSpN9Om1jH8Lg" name="QRCode"/>
+    <ownedLiteral xmi:id="_4knu8NS2EeSpN9Om1jH8Lg" name="RAM"/>
+    <ownedLiteral xmi:id="_569PwNS2EeSpN9Om1jH8Lg" name="RFID"/>
+    <ownedLiteral xmi:id="_7bAtQNS2EeSpN9Om1jH8Lg" name="SDCard"/>
+    <ownedLiteral xmi:id="_84pI4NS2EeSpN9Om1jH8Lg" name="Thermometer"/>
+    <ownedLiteral xmi:id="_-WDiENS2EeSpN9Om1jH8Lg" name="TimeDate"/>
+    <ownedLiteral xmi:id="__1RSENS2EeSpN9Om1jH8Lg" name="USBCable"/>
+    <ownedLiteral xmi:id="_BarJoNS3EeSpN9Om1jH8Lg" name="WiFi"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_StVHwNS4EeSpN9Om1jH8Lg" name="PhysicalSensorContextSource">
+    <generalization xmi:id="_kMV8UNS4EeSpN9Om1jH8Lg" general="_xw2NIMWkEeStzaikFgxTqQ"/>
+    <ownedAttribute xmi:id="_p-2GcNS4EeSpN9Om1jH8Lg" name="type" type="_veqcoNPdEeSuc6BO2Y_XFA">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WlNbcNS8EeSpN9Om1jH8Lg" value="*"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_XJslYNS4EeSpN9Om1jH8Lg" name="LogicalSensorContextSource">
+    <generalization xmi:id="_lBPkANS4EeSpN9Om1jH8Lg" general="_xw2NIMWkEeStzaikFgxTqQ"/>
+    <ownedAttribute xmi:id="_yDq4gNS4EeSpN9Om1jH8Lg" name="type" type="_veqcoNPdEeSuc6BO2Y_XFA">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Y6l-cNS8EeSpN9Om1jH8Lg" value="*"/>
+    </ownedAttribute>
   </packagedElement>
 </uml:Profile>
