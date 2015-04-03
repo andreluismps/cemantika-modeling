@@ -33,12 +33,14 @@ public class CemantikaForm extends FormEditor implements PluginManager {
 	private static final int CEMANTIKA_OVERVIEW = 0;
 	private static final int CONTEXT_SPECIFICATION = 1;
 	private static final int CONTEXT_MANAGEMENT = 2;
-	private static final int TEXT_EDITOR = 3;
+	private static final int EXTRAS = 3;
+	private static final int TEXT_EDITOR = 4;
 	private IContentOutlinePage contentOutline;
 	private TextEditor textEditor;
 	private CemantikaOverView cemantikaOverView;
 	private ContextSpecification contextSpecification;
 	private ContextManagement contextManagement;
+	private Extras extras;
 	Properties map = new Properties();
 	private boolean hasChanged;
 	private static PluginManager CURRENT_INSTANCE;
@@ -70,12 +72,14 @@ public class CemantikaForm extends FormEditor implements PluginManager {
 			cemantikaOverView = new CemantikaOverView(this);
 			contextSpecification = new ContextSpecification(this);
 			contextManagement = new ContextManagement(this);
+			extras = new Extras(this);
 			textEditor = new TextEditor();
 
 			this.addPage(cemantikaOverView);
 
 			this.addPage(contextSpecification);
 			this.addPage(contextManagement);
+			this.addPage(extras);
 			int index = this.addPage(textEditor, getEditorInput());
 			setPageText(index, "Source");
 			textEditor.getDocumentProvider().getDocument(
@@ -176,6 +180,9 @@ public class CemantikaForm extends FormEditor implements PluginManager {
 			break;
 		case CONTEXT_MANAGEMENT:
 			contextManagement.setFocus();
+			break;
+		case EXTRAS:
+			extras.setFocus();
 			break;
 		case TEXT_EDITOR:
 			textEditor.setFocus();
