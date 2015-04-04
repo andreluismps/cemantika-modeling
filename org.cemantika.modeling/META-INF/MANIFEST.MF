@@ -11,8 +11,24 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.ui.editors;bundle-version="3.5.0",
  org.eclipse.ocl.uml;bundle-version="2.0.0",
  org.eclipse.uml2.diagram.clazz;bundle-version="0.9.0",
- org.eclipse.emf.codegen;bundle-version="2.5.0"
+ org.eclipse.emf.codegen;bundle-version="2.5.0",
+ org.eclipse.jdt.launching;bundle-version="3.5.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- cemantika.jar
+ cemantika.jar,
+ drools-api.jar,
+ drools-compiler.jar,
+ drools-core.jar,
+ antlr-runtime.jar,
+ drools-decisiontables.jar,
+ drools-jsr94.jar,
+ drools-templates.jar,
+ joda-time.jar,
+ jsr94.jar,
+ jxl.jar,
+ mvel2.jar,
+ xpp3_min.jar,
+ xpp3.jar,
+ xstream.jar
+ 

@@ -4,5 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="cemantika.jar"/>
+	<classpathentry exported="true" kind="lib" path="drools-api.jar" sourcepath="/Users/andreluismps/Downloads/drools-5.0-src"/>
+	<classpathentry exported="true" kind="lib" path="drools-compiler.jar" sourcepath="/Users/andreluismps/Downloads/drools-5.0-src"/>
+	<classpathentry exported="true" kind="lib" path="drools-core.jar" sourcepath="/Users/andreluismps/Downloads/drools-5.0-src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

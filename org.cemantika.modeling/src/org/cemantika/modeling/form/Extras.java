@@ -1,23 +1,45 @@
 package org.cemantika.modeling.form;
 
+import java.beans.Introspector;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.cemantika.metamodel.structure.AcquisitionAssociation;
+import org.cemantika.metamodel.structure.ContextSource;
+import org.cemantika.metamodel.structure.ContextualElement;
+import org.cemantika.metamodel.structure.UpdateType;
 import org.cemantika.modeling.Activator;
-import org.cemantika.modeling.contextual.graph.ContextualGraph;
-import org.cemantika.modeling.generator.GenerationException;
-import org.cemantika.modeling.generator.ICemantikaGenerator;
 import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
+import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseFactory;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
+import org.drools.definition.process.Node;
+import org.drools.io.ResourceFactory;
+import org.drools.process.core.Context;
+import org.drools.process.core.context.variable.VariableScope;
+import org.drools.ruleflow.core.RuleFlowProcess;
+import org.drools.runtime.StatefulKnowledgeSession;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -130,6 +152,9 @@ public class Extras extends FormPage {
 		return html.toString();
 	}
 	
+	
+	
+	
 	private class BehaviorModelListener extends HyperlinkAdapter {
 
 		private Activator activator;
@@ -174,16 +199,17 @@ public class Extras extends FormPage {
 
 				boolean exists = contextualGraph.exists();
 				if (!exists) {
-					generateContextualGraphs(id);
+					//generateContextualGraphs(id);
 					activator
 							.showMessage(
-									"Contextual Entities were generated at cemantika.contextual.graph package",
+									"The behavioral model does not exist for the selected focus. Please generate them at Context Specification form",
 									SWT.ICON_INFORMATION | SWT.OK);
 				}
 
 				try {
-					Activator.getDefault().openEditor(contextualGraph);
-				} catch (PartInitException e1) {
+					//Activator.getDefault()Extras.openEditor(contextualGraph);
+					generateTestCases(contextualGraph);
+				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -191,24 +217,155 @@ public class Extras extends FormPage {
 			}
 		}
 
-		private void generateContextualGraphs(String id) {
-			ContextualGraph contextualGraph = new ContextualGraph();
-			contextualGraph.setName(id);
-			contextualGraph.setId(id);
-			ICemantikaGenerator generator = new JetCemantikaGenerator(
-					contextualGraph, "ContextualGraph.rfjet",
-					JetCemantikaGenerator.CONTEXTUAL_GRAPH_PACKAGE,
-					new NullProgressMonitor());
-			// FIXME save in metamodel
+
+		private void generateTestCases(IFile contextualGraph) {
+	    	ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
+			
 			try {
-				generator.generate();
-			} catch (GenerationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	        	
+		    	addCurrentProjectClassPathEntriesToCurrentClassLoader(parentClassLoader);
+	        	
+	            KnowledgeBase knowledgeBase = readRule(contextualGraph);
+	            StatefulKnowledgeSession ksession = knowledgeBase.newStatefulKnowledgeSession();
+	                        
+	            RuleFlowProcess ruleFlowProcess = (RuleFlowProcess)  ksession.getKnowledgeBase().getProcess(contextualGraph.getName().replace(".rf", ""));
+	            
+	            // C—digo para teste!
+	            // DRF Parse OK. 
+	            // Reflection on project classes OK. 
+	            // Diagram elements load: TODO
+	            testParse(ruleFlowProcess);
+	            
+	            
+	        } catch ( Throwable t ) {
+	            t.printStackTrace();
+	        }finally{
+	        	restoreOriginalClassLoader(parentClassLoader);
+	        }
+	    }
+		
+		private void addCurrentProjectClassPathEntriesToCurrentClassLoader(ClassLoader parentClassLoader)
+				throws CoreException, MalformedURLException {
+
+			IProject project = Activator.getDefault().getActiveProject();
+			IJavaProject javaProject = JavaCore.create(project);
+			String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+
+			List<URL> urlList = new ArrayList<URL>();
+			for (int i = 0; i < classPathEntries.length; i++) {
+				String entry = classPathEntries[i];
+				IPath path = new Path(entry);
+				URL url = path.toFile().toURI().toURL();
+				urlList.add(url);
 			}
+
+			Thread current = Thread.currentThread();
+
+			URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
+			URLClassLoader classLoader = new URLClassLoader(urls, parentClassLoader);
+
+			current.setContextClassLoader(classLoader);
+
+		}
+		
+		private void restoreOriginalClassLoader(ClassLoader classLoader){
+			Thread.currentThread().setContextClassLoader(classLoader);
 		}
 
-		
+	    private KnowledgeBase readRule(IFile contextualGraph) throws Exception {
+	   	    
+  	    	KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+  	        
+  	        kbuilder.add( ResourceFactory.newFileResource(contextualGraph.getRawLocation().makeAbsolute().toFile()), ResourceType.DRF );
+
+  	        if (kbuilder.hasErrors()){
+  	        	throw new RuntimeException(kbuilder.getErrors().toString());
+  	        }
+  	        
+  	        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+  	        
+  	        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
+
+  	        return kbase;
+	    	
+	    }
+	    
+	    private void testParse(RuleFlowProcess ruleFlowProcess) throws ClassNotFoundException{
+	    	for (Node node : ruleFlowProcess.getNodes()) {
+				if (node instanceof org.drools.workflow.core.node.Split){
+					org.drools.workflow.core.node.Split split = (org.drools.workflow.core.node.Split) node;
+					List<org.drools.definition.process.Connection> conns = split.getOutgoingConnections("DROOLS_DEFAULT");
+					for (org.drools.definition.process.Connection conn : conns) {
+						org.drools.workflow.core.Constraint constraint = split.getConstraint(conn);
+						System.out.println(constraint.getName());
+			            System.out.println(constraint.getConstraint());
+			            String condition = constraint.getConstraint();
+			            condition.toLowerCase();
+			            condition = condition.replace("return ", "").replace(".equals", "  ")
+			            					 .replace("!", "    ").replace("&&", "  ")
+			            					 .replace("||", " ").replace('(', '\0')
+			            					 .replace(')', '\0').replace(';', '\0')
+			            					 .replace(".get", ".").replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","")
+			            					 .trim().replaceAll(" +", " ");
+			            List<Context>contexts = ruleFlowProcess.getContexts("VariableScope");
+			            VariableScope varscope = (VariableScope) contexts.get(0);
+			            List<org.drools.process.core.context.variable.Variable> vars = varscope.getVariables();
+			            
+			            String [] statements = condition.split(" ");
+			            for (String statement : statements) {
+			            	statement = statement.trim();
+			            	String [] statmentElements = statement.split("\\.");
+			            	String statementVariable = statmentElements[0];
+			            	Class clazz = null;
+			            	org.drools.process.core.context.variable.Variable variable = null;
+			            	for (org.drools.process.core.context.variable.Variable var : vars) {
+								if (var.getName().equals(statementVariable)) {
+									variable = var;
+									clazz = Thread.currentThread().getContextClassLoader().loadClass(var.getType().getStringType());
+								}
+							}
+			            	
+			            	int i = 0;
+			            	Field field = null;
+			            	List<UpdateType> updateTypes = new ArrayList<UpdateType>();
+			            	for (String statmentElement : statmentElements) {
+			            		statmentElement = Introspector.decapitalize(statmentElement);
+			            		if (i != 0) {
+			            			Field[] fields = clazz.getDeclaredFields();
+			            			for (Field field2 : fields) {
+										if (field2.getName().equals(statmentElement)){
+											field = field2;
+										}
+									}
+			            			//field = clazz.getClass().getDeclaredField(statmentElement);
+			            			if (field.getAnnotation(ContextualElement.class) != null){
+			            				Class contextSourceClazz = field.getType();
+		            					if (contextSourceClazz.getAnnotation(ContextSource.class) != null){
+		            						Field[] contextSourceFields = contextSourceClazz.getFields();
+		            						for (Field contextSourceField : contextSourceFields) {
+		            							Annotation[] annotations = contextSourceField.getAnnotations();
+		            							for (Annotation annotation : annotations) {
+		            								AcquisitionAssociation acquisitionAssociation = null;
+													if (annotation instanceof AcquisitionAssociation){
+														acquisitionAssociation = (AcquisitionAssociation) annotation;
+														//if (acquisitionAssociation.element().equalsIgnoreCase(statmentElements[i-1] + "." + statmentElements[i])){
+														//	updateTypes.add(acquisitionAssociation.updateFrequency());
+														//}
+													}
+												}
+											}
+		            					}
+			            			}
+								}
+								i++;
+							}
+						}
+			            
+			            System.out.println(condition);
+					}
+				}
+			}
+	    }
 		
 	}
 
