@@ -1,7 +1,6 @@
 package org.cemantika.modeling.form;
 
 import java.beans.Introspector;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,8 +8,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cemantika.metamodel.structure.AcquisitionAssociation;
-import org.cemantika.metamodel.structure.ContextSource;
 import org.cemantika.metamodel.structure.ContextualElement;
 import org.cemantika.metamodel.structure.UpdateType;
 import org.cemantika.modeling.Activator;
@@ -34,6 +31,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -51,6 +50,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.eclipse.uml2.uml.Association;
+import org.eclipse.uml2.uml.Stereotype;
+import org.eclipse.uml2.uml.Type;
 
 
 public class Extras extends FormPage {
@@ -236,7 +238,6 @@ public class Extras extends FormPage {
 	            // Diagram elements load: TODO
 	            testParse(ruleFlowProcess);
 	            
-	            
 	        } catch ( Throwable t ) {
 	            t.printStackTrace();
 	        }finally{
@@ -244,6 +245,7 @@ public class Extras extends FormPage {
 	        }
 	    }
 		
+
 		private void addCurrentProjectClassPathEntriesToCurrentClassLoader(ClassLoader parentClassLoader)
 				throws CoreException, MalformedURLException {
 
@@ -297,6 +299,8 @@ public class Extras extends FormPage {
 					List<org.drools.definition.process.Connection> conns = split.getOutgoingConnections("DROOLS_DEFAULT");
 					for (org.drools.definition.process.Connection conn : conns) {
 						org.drools.workflow.core.Constraint constraint = split.getConstraint(conn);
+						//TODO - Colocar o nome no contexto l—gico
+						// Este contexto —gico vai receber os dados de todos os sensores.
 						System.out.println(constraint.getName());
 			            System.out.println(constraint.getConstraint());
 			            String condition = constraint.getConstraint();
@@ -337,24 +341,8 @@ public class Extras extends FormPage {
 											field = field2;
 										}
 									}
-			            			//field = clazz.getClass().getDeclaredField(statmentElement);
 			            			if (field.getAnnotation(ContextualElement.class) != null){
-			            				Class contextSourceClazz = field.getType();
-		            					if (contextSourceClazz.getAnnotation(ContextSource.class) != null){
-		            						Field[] contextSourceFields = contextSourceClazz.getFields();
-		            						for (Field contextSourceField : contextSourceFields) {
-		            							Annotation[] annotations = contextSourceField.getAnnotations();
-		            							for (Annotation annotation : annotations) {
-		            								AcquisitionAssociation acquisitionAssociation = null;
-													if (annotation instanceof AcquisitionAssociation){
-														acquisitionAssociation = (AcquisitionAssociation) annotation;
-														//if (acquisitionAssociation.element().equalsIgnoreCase(statmentElements[i-1] + "." + statmentElements[i])){
-														//	updateTypes.add(acquisitionAssociation.updateFrequency());
-														//}
-													}
-												}
-											}
-		            					}
+			            				testParseDiagram(clazz.getSimpleName(), field.getName());
 			            			}
 								}
 								i++;
@@ -366,6 +354,38 @@ public class Extras extends FormPage {
 				}
 			}
 	    }
+	    
+	    private void testParseDiagram(String clazz, String attribute) {
+	    	UmlUtils uml = new UmlUtils();
+			this.package_ = uml.load(file);
+	    	List<org.eclipse.uml2.uml.Class> classes = UmlUtils.getClasses(package_);
+	    	for (org.eclipse.uml2.uml.Class class1 : classes) {
+	    		//obtem a classe do elemento contextual
+	    		if (clazz.equals(class1.getName())){
+	    			//o elemento contextual esta associado a qual fonte de contexto?
+	    			List<Association> associations = UmlUtils.getAssociations(class1);
+	    			for (Association association : associations) {
+	    				association.getAppliedStereotypes();
+	    				if (UmlUtils.hasStereotype(association, "cemantika_class::AcquisitionAssociation")){
+	    					
+	    					EList<Type> types = association.getEndTypes();
+	    					for (Type type : types) {
+	    						Stereotype ster = type.getAppliedStereotype("cemantika_class::PhysicalSensorContextSource"); 
+								if (ster != null){
+									//a fonte de contexto esta associada a quais sensores?
+									type.getValue(ster, "type");
+								}
+							}
+	    					
+	    					Stereotype stereotype = UmlUtils.findStereotype(association, "cemantika_class::AcquisitionAssociation");
+	    					DynamicEObjectImpl var = (DynamicEObjectImpl) association.getValue(stereotype, "element");
+	    				}
+	    			
+					}
+	    		}
+				
+			}
+		}
 		
 	}
 
