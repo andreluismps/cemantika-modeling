@@ -32,7 +32,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
+import org.eclipse.emf.ecore.util.EcoreEList;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -233,9 +235,9 @@ public class Extras extends FormPage {
 	            RuleFlowProcess ruleFlowProcess = (RuleFlowProcess)  ksession.getKnowledgeBase().getProcess(contextualGraph.getName().replace(".rf", ""));
 	            
 	            // C—digo para teste!
-	            // DRF Parse OK. 
+	            // DRF Parse OK. Para este passo, precisa do fonte gerado pelo plugin.
 	            // Reflection on project classes OK. 
-	            // Diagram elements load: TODO
+	            // Diagram elements load: OK
 	            testParse(ruleFlowProcess);
 	            
 	        } catch ( Throwable t ) {
@@ -301,9 +303,8 @@ public class Extras extends FormPage {
 						org.drools.workflow.core.Constraint constraint = split.getConstraint(conn);
 						//TODO - Colocar o nome no contexto l—gico
 						// Este contexto —gico vai receber os dados de todos os sensores.
-						System.out.println(constraint.getName());
-			            System.out.println(constraint.getConstraint());
 			            String condition = constraint.getConstraint();
+			            System.out.println("Contextual Node Constraint...........: " + condition);
 			            condition.toLowerCase();
 			            condition = condition.replace("return ", "").replace(".equals", "  ")
 			            					 .replace("!", "    ").replace("&&", "  ")
@@ -349,12 +350,12 @@ public class Extras extends FormPage {
 							}
 						}
 			            
-			            System.out.println(condition);
+			            System.out.println("Logical Context......................: " + constraint.getName() + "\n\n");
 					}
 				}
 			}
 	    }
-	    
+	    // TODO - Retirar parse do diagrama. O codigo anotado como context source deve estar sendo geraodo 
 	    private void testParseDiagram(String clazz, String attribute) {
 	    	UmlUtils uml = new UmlUtils();
 			this.package_ = uml.load(file);
@@ -367,18 +368,24 @@ public class Extras extends FormPage {
 	    			for (Association association : associations) {
 	    				association.getAppliedStereotypes();
 	    				if (UmlUtils.hasStereotype(association, "cemantika_class::AcquisitionAssociation")){
-	    					
+	    					System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
 	    					EList<Type> types = association.getEndTypes();
+	    					List<EObject> sensores = new ArrayList<EObject>();
 	    					for (Type type : types) {
 	    						Stereotype ster = type.getAppliedStereotype("cemantika_class::PhysicalSensorContextSource"); 
 								if (ster != null){
+									System.out.println("Context Source of Contextual Element.: " + type.getName());
 									//a fonte de contexto esta associada a quais sensores?
-									type.getValue(ster, "type");
+									sensores = (List<EObject>) type.getValue(ster, "type");
+									if (!sensores.isEmpty()){
+										System.out.print("Sensors from Context Source..........: ");
+									}
+									for (EObject eObject : sensores) {
+										System.out.print(eObject.toString() + " ");
+									}
+									System.out.println("");
 								}
 							}
-	    					
-	    					Stereotype stereotype = UmlUtils.findStereotype(association, "cemantika_class::AcquisitionAssociation");
-	    					DynamicEObjectImpl var = (DynamicEObjectImpl) association.getValue(stereotype, "element");
 	    				}
 	    			
 					}
