@@ -13,6 +13,9 @@ import org.cemantika.metamodel.structure.UpdateType;
 import org.cemantika.modeling.Activator;
 import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
+import org.cemantika.testing.model.TestCase;
+import org.cemantika.testing.model.TestCaseStep;
+import org.cemantika.testing.model.TestSuit;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
 import org.drools.KnowledgeBase;
@@ -209,20 +212,16 @@ public class Extras extends FormPage {
 									"The behavioral model does not exist for the selected focus. Please generate them at Context Specification form",
 									SWT.ICON_INFORMATION | SWT.OK);
 				}
-
-				try {
-					//Activator.getDefault()Extras.openEditor(contextualGraph);
-					generateTestCases(contextualGraph);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				// TODO open
+				generateTestSuit(contextualGraph);
+				
 			}
 		}
 
 
-		private void generateTestCases(IFile contextualGraph) {
+		private TestSuit generateTestSuit(IFile contextualGraph) {
+			TestSuit testSuit = new TestSuit();
+			testSuit.setTestCases(new ArrayList<TestCase>());
+			
 	    	ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
 			
 			try {
@@ -238,13 +237,14 @@ public class Extras extends FormPage {
 	            // DRF Parse OK. Para este passo, precisa do fonte gerado pelo plugin.
 	            // Reflection on project classes OK. 
 	            // Diagram elements load: OK
-	            testParse(ruleFlowProcess);
+	            parseProcess(ruleFlowProcess, testSuit);
 	            
 	        } catch ( Throwable t ) {
 	            t.printStackTrace();
 	        }finally{
 	        	restoreOriginalClassLoader(parentClassLoader);
 	        }
+	        return testSuit;
 	    }
 		
 
@@ -294,7 +294,13 @@ public class Extras extends FormPage {
 	    	
 	    }
 	    
-	    private void testParse(RuleFlowProcess ruleFlowProcess) throws ClassNotFoundException{
+	    private void parseProcess(RuleFlowProcess ruleFlowProcess, TestSuit testSuit) throws ClassNotFoundException{
+	    	TestCase testCase = new TestCase();
+	    	testCase.setSteps(new ArrayList<TestCaseStep>());
+	    	testCase.setName("Scenario 1");
+	    	TestCaseStep testCaseStep = new TestCaseStep();
+	    	testCaseStep.setSensors(new ArrayList<String>());
+	    	int time = 0;
 	    	for (Node node : ruleFlowProcess.getNodes()) {
 				if (node instanceof org.drools.workflow.core.node.Split){
 					org.drools.workflow.core.node.Split split = (org.drools.workflow.core.node.Split) node;
@@ -302,7 +308,7 @@ public class Extras extends FormPage {
 					for (org.drools.definition.process.Connection conn : conns) {
 						org.drools.workflow.core.Constraint constraint = split.getConstraint(conn);
 						//TODO - Colocar o nome no contexto l—gico
-						// Este contexto —gico vai receber os dados de todos os sensores.
+						// Este contexto l—gico vai receber os dados de todos os sensores.
 			            String condition = constraint.getConstraint();
 			            System.out.println("Contextual Node Constraint...........: " + condition);
 			            condition.toLowerCase();
@@ -321,8 +327,8 @@ public class Extras extends FormPage {
 			            	statement = statement.trim();
 			            	String [] statmentElements = statement.split("\\.");
 			            	String statementVariable = statmentElements[0];
-			            	Class clazz = null;
-			            	org.drools.process.core.context.variable.Variable variable = null;
+			            	Class<?> clazz = null;
+			            	org.drools.process.core.context.variable.Variable variable;
 			            	for (org.drools.process.core.context.variable.Variable var : vars) {
 								if (var.getName().equals(statementVariable)) {
 									variable = var;
@@ -331,19 +337,18 @@ public class Extras extends FormPage {
 							}
 			            	
 			            	int i = 0;
-			            	Field field = null;
-			            	List<UpdateType> updateTypes = new ArrayList<UpdateType>();
+			            	Field contextualElement = null;
 			            	for (String statmentElement : statmentElements) {
 			            		statmentElement = Introspector.decapitalize(statmentElement);
 			            		if (i != 0) {
 			            			Field[] fields = clazz.getDeclaredFields();
-			            			for (Field field2 : fields) {
-										if (field2.getName().equals(statmentElement)){
-											field = field2;
+			            			for (Field clazzField : fields) {
+										if (clazzField.getName().equals(statmentElement)){
+											contextualElement = clazzField;
 										}
 									}
-			            			if (field.getAnnotation(ContextualElement.class) != null){
-			            				testParseDiagram(clazz.getSimpleName(), field.getName());
+			            			if (contextualElement.getAnnotation(ContextualElement.class) != null){
+			            				testCaseStep.getSensors().addAll(getSensorsFromContextualElement(clazz.getSimpleName(), contextualElement.getName()));
 			            			}
 								}
 								i++;
@@ -351,12 +356,17 @@ public class Extras extends FormPage {
 						}
 			            
 			            System.out.println("Logical Context......................: " + constraint.getName() + "\n\n");
+			            testCaseStep.setTime(time++);
+			            testCaseStep.setName(constraint.getName());
 					}
 				}
+				testCase.getSteps().add(testCaseStep);
 			}
+	    	testSuit.getTestCases().add(testCase);
 	    }
 	    // TODO - Retirar parse do diagrama. O codigo anotado como context source deve estar sendo geraodo 
-	    private void testParseDiagram(String clazz, String attribute) {
+	    private List<String> getSensorsFromContextualElement(String clazz, String attribute) {
+	    	List<String>  sensors = new ArrayList<String>();	
 	    	UmlUtils uml = new UmlUtils();
 			this.package_ = uml.load(file);
 	    	List<org.eclipse.uml2.uml.Class> classes = UmlUtils.getClasses(package_);
@@ -370,17 +380,18 @@ public class Extras extends FormPage {
 	    				if (UmlUtils.hasStereotype(association, "cemantika_class::AcquisitionAssociation")){
 	    					System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
 	    					EList<Type> types = association.getEndTypes();
-	    					List<EObject> sensores = new ArrayList<EObject>();
+	    					List<EObject> sensorList = new ArrayList<EObject>();
 	    					for (Type type : types) {
 	    						Stereotype ster = type.getAppliedStereotype("cemantika_class::PhysicalSensorContextSource"); 
 								if (ster != null){
 									System.out.println("Context Source of Contextual Element.: " + type.getName());
 									//a fonte de contexto esta associada a quais sensores?
-									sensores = (List<EObject>) type.getValue(ster, "type");
-									if (!sensores.isEmpty()){
+									sensorList = (List<EObject>) type.getValue(ster, "type");
+									if (!sensorList.isEmpty()){
 										System.out.print("Sensors from Context Source..........: ");
 									}
-									for (EObject eObject : sensores) {
+									for (EObject eObject : sensorList) {
+										sensors.add(eObject.toString());
 										System.out.print(eObject.toString() + " ");
 									}
 									System.out.println("");
@@ -390,8 +401,8 @@ public class Extras extends FormPage {
 	    			
 					}
 	    		}
-				
 			}
+	    	return sensors;
 		}
 		
 	}
