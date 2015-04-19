@@ -8,11 +8,13 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cemantika.metamodel.structure.ContextualElement;
 import org.cemantika.modeling.Activator;
 import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.model.Grafo;
+import org.cemantika.testing.model.LogicalContext;
+import org.cemantika.testing.model.Scenario;
+import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TestCase;
 import org.cemantika.testing.model.TestSuit;
 import org.cemantika.uml.model.Focus;
@@ -26,13 +28,13 @@ import org.drools.definition.process.Connection;
 import org.drools.definition.process.Node;
 import org.drools.io.ResourceFactory;
 import org.drools.process.core.Context;
+import org.drools.process.core.context.variable.Variable;
 import org.drools.process.core.context.variable.VariableScope;
 import org.drools.ruleflow.core.RuleFlowProcess;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.workflow.core.Constraint;
 import org.drools.workflow.core.node.EndNode;
 import org.drools.workflow.core.node.Split;
-import org.drools.workflow.core.node.StartNode;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -239,7 +241,7 @@ public class Extras extends FormPage {
 	            // DRF Parse OK. Para este passo, precisa do fonte gerado pelo plugin.
 	            // Reflection on project classes OK. 
 	            // Diagram elements load: OK
-	            parseProcess(ruleFlowProcess, testSuit);
+	            parseProcess(ruleFlowProcess);
 	            
 	        } catch ( Throwable t ) {
 	            t.printStackTrace();
@@ -247,6 +249,24 @@ public class Extras extends FormPage {
 	        	restoreOriginalClassLoader(parentClassLoader);
 	        }
 	        return testSuit;
+	    }
+		
+		//Scenario = all graph's paths (scenarios list).
+	    //Situation = all logical contexts in a path
+	    //Logical context = set of sensors in a contextual node
+		private void parseProcess(RuleFlowProcess ruleFlowProcess) throws ClassNotFoundException{
+	    	
+			List<ArrayList<String>> caminhos = listPaths(ruleFlowProcess);
+			List<Split> splits = getSplitNodes(ruleFlowProcess);
+	        //encontra caminhos
+	        
+	        
+	        //Get a Scenario
+	        Scenario scenario = new Scenario();
+	        scenario.setName("Scenario #1");
+	        scenario.setSituations(getSituations(splits, caminhos, ruleFlowProcess));
+	        scenario.getSituations();
+	    	
 	    }
 		
 
@@ -296,130 +316,156 @@ public class Extras extends FormPage {
 	    	
 	    }
 	    
-	    private void parseProcess(RuleFlowProcess ruleFlowProcess, TestSuit testSuit) throws ClassNotFoundException{
+	    private Grafo fillGrafo(RuleFlowProcess ruleFlowProcess){
 	    	Grafo grafo = new Grafo();
-	    	Node[] nodes = ruleFlowProcess.getNodes();
-	    	Node start = null, end = null;
-	    	List<Split> splits = new ArrayList<Split>();
 	    	
-	    	for (Node node : nodes) {
-	    		if (node instanceof StartNode){
-	    			start = node;
-	    		}else if (node instanceof EndNode) {
-					end = node;
-				}else if (node instanceof Split) {
-					splits.add((Split) node);
-				}
+	    	for (Node node : ruleFlowProcess.getNodes()) {	    		
 	    		List<org.drools.definition.process.Connection> conns = node.getOutgoingConnections("DROOLS_DEFAULT");
 	    		for (Connection connection : conns) {
 	    			grafo.adicionaAresta(""+connection.getFrom().getId(), ""+ connection.getTo().getId());
 				}
 			}
-	        
-	        //encontra camnhos
-	        List<ArrayList<String>> caminhos = grafo.listarCaminhos(grafo, ""+start.getId(), ""+end.getId());
-	        int i = 0;
-	        int pos = 0;
-	        int ctCount = 0;
-	        
+	    	return grafo;
+	    }
+	    
+	    private List<ArrayList<String>> listPaths(RuleFlowProcess ruleFlowProcess){
+	    	Grafo grafo = fillGrafo(ruleFlowProcess);
+	    	Node start = ruleFlowProcess.getStart();
+	    	Node end = getEndNode(ruleFlowProcess);	
+	    	
+	    	return grafo.listarCaminhos(grafo, ""+start.getId(), ""+end.getId());
+	    }
+	    
+	    
+	    
+	    private Node getEndNode(RuleFlowProcess ruleFlowProcess) {
+	    	for (Node node : ruleFlowProcess.getNodes()) {
+	    		if (node instanceof EndNode) {
+	    			return node;
+	    		}
+	    	}
+			return null;
+		}
+	    
+	    private List<Split> getSplitNodes(RuleFlowProcess ruleFlowProcess) {
+	    	List<Split> splits = new ArrayList<Split>();
+	    	for (Node node : ruleFlowProcess.getNodes()) {
+	    		if (node instanceof Split) {
+					splits.add((Split) node);
+				}
+	    	}
+	    	return splits;
+		}
+
+		private List<Situation> getSituations(List<Split> splits, List<ArrayList<String>> caminhos, RuleFlowProcess ruleFlowProcess) {
+			List<Situation> situations = new ArrayList<Situation>();
+			int i = 0;
 	        for(ArrayList<String> path : caminhos){
-	        	i = 0;
-	        	ctCount++;
-	        	
-		        for (String node : path) {
-		            System.out.print(node);
-		            System.out.print(" - ");
-		            if (pos != 0){
-		            	System.out.print("no contextual: " + path.get(pos));
-		            	System.out.print(";   no proximo: " + node);
-		            	for (Split split : splits) {
-		            		if (split.getId() == Integer.parseInt(path.get(pos))){
-		            			List<org.drools.definition.process.Connection> conns = split.getOutgoingConnections("DROOLS_DEFAULT");
-		    					for (org.drools.definition.process.Connection conn : conns) {
-		    						if (conn.getTo().getId() == Integer.parseInt(node)){
-		    							Constraint constraint = split.getConstraint(conn);
-		    							System.out.print(" (" + constraint.getName() + ") ");
-		    						}
-		    						
+	        	Situation situation = getSituation(splits, path, ruleFlowProcess);
+	        	situation.setName("Situation #" + ++i);
+	        	situations.add(situation);
+		    }
+			return situations;
+		}
+
+		private Situation getSituation(List<Split> splits, ArrayList<String> path, RuleFlowProcess ruleFlowProcess) {
+			int i = 0, pos = 0;
+			Situation situation = new Situation();
+			for (String node : path) {
+			    if (pos != 0){
+			    	for (Split split : splits) {
+			    		if (split.getId() == Integer.parseInt(path.get(pos))){
+			    			List<org.drools.definition.process.Connection> conns = split.getOutgoingConnections("DROOLS_DEFAULT");
+							for (org.drools.definition.process.Connection conn : conns) {
+								if (conn.getTo().getId() == Integer.parseInt(node)){
+									situation.getLogicalContexts().add(getLogicalContext(split.getConstraint(conn), ruleFlowProcess));
 								}
-		    				}
-						}
-		            	pos = 0;
-		            }
-		            for (Split noContextual : splits) {
-						if (noContextual.getId() == Integer.parseInt(node)){
-							pos = i;
-							break;
+								
+							}
 						}
 					}
-		            i++;
-		        }
+			    	pos = 0;
+			    }
+			    for (Split noContextual : splits) {
+					if (noContextual.getId() == Integer.parseInt(node)){
+						pos = i;
+						break;
+					}
+				}
+			    i++;
+			}
+			return situation;
+		}
 
-		        System.out.println();
-		    }
-	        
-//	    	for (Node node : ruleFlowProcess.getNodes()) {
-//				if (node instanceof org.drools.workflow.core.node.Split){
-//					org.drools.workflow.core.node.Split split = (org.drools.workflow.core.node.Split) node;
-//					List<org.drools.definition.process.Connection> conns = split.getOutgoingConnections("DROOLS_DEFAULT");
-//					for (org.drools.definition.process.Connection conn : conns) {
-//						org.drools.workflow.core.Constraint constraint = split.getConstraint(conn);
-//						//TODO - Colocar o nome no contexto l—gico
-//						// Este contexto l—gico vai receber os dados de todos os sensores.
-//			            String condition = constraint.getConstraint();
-//			            System.out.println("Contextual Node Constraint...........: " + condition);
-//			            condition.toLowerCase();
-//			            condition = condition.replace("return ", "").replace(".equals", "  ")
-//			            					 .replace("!", "    ").replace("&&", "  ")
-//			            					 .replace("||", " ").replace('(', '\0')
-//			            					 .replace(')', '\0').replace(';', '\0')
-//			            					 .replace(".get", ".").replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","")
-//			            					 .trim().replaceAll(" +", " ");
-//			            List<Context>contexts = ruleFlowProcess.getContexts("VariableScope");
-//			            VariableScope varscope = (VariableScope) contexts.get(0);
-//			            List<org.drools.process.core.context.variable.Variable> vars = varscope.getVariables();
-//			            
-//			            String [] statements = condition.split(" ");
-//			            for (String statement : statements) {
-//			            	statement = statement.trim();
-//			            	String [] statmentElements = statement.split("\\.");
-//			            	String statementVariable = statmentElements[0];
-//			            	Class<?> clazz = null;
-//			            	org.drools.process.core.context.variable.Variable variable;
-//			            	for (org.drools.process.core.context.variable.Variable var : vars) {
-//								if (var.getName().equals(statementVariable)) {
-//									variable = var;
-//									clazz = Thread.currentThread().getContextClassLoader().loadClass(var.getType().getStringType());
-//								}
-//							}
-//			            	
-//			            	i = 0;
-//			            	Field contextualElement = null;
-//			            	for (String statmentElement : statmentElements) {
-//			            		statmentElement = Introspector.decapitalize(statmentElement);
-//			            		if (i != 0) {
-//			            			Field[] fields = clazz.getDeclaredFields();
-//			            			for (Field clazzField : fields) {
-//										if (clazzField.getName().equals(statmentElement)){
-//											contextualElement = clazzField;
-//										}
-//									}
-//			            			if (contextualElement.getAnnotation(ContextualElement.class) != null){
-//			            				
-//			            			}
-//								}
-//								i++;
-//							}
-//						}
-//			            
-//			            System.out.println("Logical Context......................: " + constraint.getName() + "\n\n");
-//			            
-//					}
-//				}
-//			}
-	    	
-	    }
-	    // TODO - Retirar parse do diagrama. O codigo anotado como context source deve estar sendo geraodo 
+		private LogicalContext getLogicalContext(Constraint constraint, RuleFlowProcess ruleFlowProcess) {
+			return new LogicalContext(constraint.getName(), getSensors(constraint, ruleFlowProcess));
+		}
+
+		private List<String> getSensors(Constraint constraint, RuleFlowProcess ruleFlowProcess) {
+            
+			List<String> sensors = new ArrayList<String>();
+			
+            List<Context> contexts = ruleFlowProcess.getContexts("VariableScope");
+            VariableScope varscope = (VariableScope) contexts.get(0);
+            List<Variable> vars = varscope.getVariables();
+            
+            String condition = parseConstraint(constraint);
+            String [] statements = condition.split(" ");
+            for (String statement : statements) {
+            	statement = statement.trim();
+            	String [] statmentElements = statement.split("\\.");
+            	Class<?> clazz = getClazz(vars, statmentElements);
+            	sensors.addAll(getSensorsFromContextualElement(clazz.getSimpleName(), getContextualElement(statmentElements, clazz).getName()));
+			}
+			return sensors;
+		}
+
+		private Field getContextualElement(String[] statmentElements, Class<?> clazz) {
+			int i = 0;
+			Field contextualElement = null;
+			for (String statmentElement : statmentElements) {
+				statmentElement = Introspector.decapitalize(statmentElement);
+				if (i != 0) {
+					Field[] fields = clazz.getDeclaredFields();
+					for (Field clazzField : fields) {
+						if (clazzField.getName().equals(statmentElement)){
+							contextualElement = clazzField;
+						}
+					}
+				}
+				i++;
+			}
+			return contextualElement;
+		}
+
+		private Class<?> getClazz(List<Variable> vars, String[] statmentElements) {
+			String statementVariable = statmentElements[0];
+			Class<?> clazz = null;
+			for (Variable var : vars) {
+				if (var.getName().equals(statementVariable)) {
+					try {
+						clazz = Thread.currentThread().getContextClassLoader().loadClass(var.getType().getStringType());
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			return clazz;
+		}
+
+		private String parseConstraint(Constraint constraint) {
+			String condition = constraint.getConstraint();
+            condition.toLowerCase();
+            condition = condition.replace("return ", "").replace(".equals", "  ")
+            					 .replace("!", "    ").replace("&&", "  ")
+            					 .replace("||", " ").replace('(', '\0')
+            					 .replace(')', '\0').replace(';', '\0')
+            					 .replace(".get", ".").replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","")
+            					 .trim().replaceAll(" +", " ");
+			return condition;
+		}
+
+		// TODO - Retirar parse do diagrama. O codigo anotado como context source deve estar sendo geraodo 
 	    private List<String> getSensorsFromContextualElement(String clazz, String attribute) {
 	    	List<String>  sensors = new ArrayList<String>();	
 	    	UmlUtils uml = new UmlUtils();
