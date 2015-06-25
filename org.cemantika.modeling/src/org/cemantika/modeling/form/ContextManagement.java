@@ -35,6 +35,12 @@ public class ContextManagement extends FormPage {
 		  "The objective of this task is to specify, given the contextual elements, their context sources and the associations between them."
 		+ "The outcome is an updated version of the Context Conceptual Model.";
 	
+	private static final String DESIGN_ACQUISITION_MODULE = 
+		  "The objective of this task is to design the APIs responsible for context acquisition for each Context Source. Given the context sources, sensors' specification is encapsulated by Context Source API."
+		+ "The outcome is an updated version of the Context Conceptual Model.";
+	
+	
+	
 	public ContextManagement(FormEditor editor) {
 		super(editor, ID, TITLE);
 		this.manager = (PluginManager) editor;
@@ -73,6 +79,35 @@ public class ContextManagement extends FormPage {
 		td = new TableWrapData(TableWrapData.FILL_GRAB);
 		contextSources.setLayoutData(td);
 		String html = "<form><p><img href=\"artifact\"/><a href=\"CE\">Identify Context Sources and their Associations with Contextual Elements</a>.</p></form>";
+
+		contextSources.setImage("artifact", Activator.getDefault()
+				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
+
+		contextSources.setText(html, true, true);
+		contextSources.addHyperlinkListener(new ContextualEntityListener());
+		specifyContextAcquisition.setClient(sectionClient);
+
+	}
+	
+	private void addDesignAcquisitionModule() {
+		Section specifyContextAcquisition = CemantikaForm.createSection(
+				toolkit, scrolledForm, Section.DESCRIPTION | Section.TITLE_BAR
+						| Section.TWISTIE | Section.EXPANDED,
+				"Design Acquisition Module",
+				DESIGN_ACQUISITION_MODULE);
+
+		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
+		specifyContextAcquisition.setLayoutData(td);
+
+		Composite sectionClient = toolkit
+				.createComposite(specifyContextAcquisition);
+		sectionClient.setLayout(new TableWrapLayout());
+
+		this.contextSources = toolkit.createFormText(sectionClient, true);
+
+		td = new TableWrapData(TableWrapData.FILL_GRAB);
+		contextSources.setLayoutData(td);
+		String html = "<form><p><img href=\"artifact\"/><a href=\"CE\">Design Context Sources APIs and their Associations with Context Sources</a>.</p></form>";
 
 		contextSources.setImage("artifact", Activator.getDefault()
 				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));

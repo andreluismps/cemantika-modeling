@@ -66,16 +66,6 @@
         <eLiterals xmi:id="_PcDANMXxEeS0pY9DYNhKYA" name="Often" value="2" literal="Often"/>
         <eLiterals xmi:id="_PcDANcXxEeS0pY9DYNhKYA" name="Always" value="3" literal="Always"/>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_4YaXkNS5EeSpN9Om1jH8Lg" name="PhysicalSensorContextSource" eSuperTypes="_t0nssMXnEeS0pY9DYNhKYA">
-        <eAnnotations xmi:id="_4Ya-oNS5EeSpN9Om1jH8Lg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_StVHwNS4EeSpN9Om1jH8Lg"/>
-        <eAnnotations xmi:id="_4Ya-odS5EeSpN9Om1jH8Lg" source="http://www.eclipse.org/emf/2002/GenModel">
-          <details xmi:id="_4Ya-otS5EeSpN9Om1jH8Lg" key="documentation" value=""/>
-        </eAnnotations>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_4Ya-o9S5EeSpN9Om1jH8Lg" name="base_Class" ordered="false" lowerBound="1">
-          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/3.0.0/UML#//Class"/>
-        </eStructuralFeatures>
-        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_WHLtkNS6EeSpN9Om1jH8Lg" name="type" upperBound="-1" eType="_gglKUNS6EeSpN9Om1jH8Lg"/>
-      </eClassifiers>
       <eClassifiers xmi:type="ecore:EEnum" xmi:id="_gglKUNS6EeSpN9Om1jH8Lg" name="SensorType">
         <eAnnotations xmi:id="_gglKUdS6EeSpN9Om1jH8Lg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_veqcoNPdEeSuc6BO2Y_XFA"/>
         <eLiterals xmi:id="_gglKUtS6EeSpN9Om1jH8Lg" name="Accelerometer" literal="Accelerometer"/>
@@ -104,15 +94,15 @@
         <eLiterals xmi:id="_3LFdQNTDEeSE1d1lvKIcBg" name="USBCable" value="23" literal="USBCable"/>
         <eLiterals xmi:id="_a5xuUNTEEeSE1d1lvKIcBg" name="WiFi" value="24" literal="WiFi"/>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_7z2uQNS6EeSpN9Om1jH8Lg" name="LogicalSensorContextSource" eSuperTypes="_t0nssMXnEeS0pY9DYNhKYA">
-        <eAnnotations xmi:id="_7z2uQdS6EeSpN9Om1jH8Lg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_XJslYNS4EeSpN9Om1jH8Lg"/>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_7z2uQNS6EeSpN9Om1jH8Lg" name="ContextSourceAPI">
+        <eAnnotations xmi:id="_7z2uQdS6EeSpN9Om1jH8Lg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_LKPgQBRzEeW22cB6L8jolg"/>
         <eAnnotations xmi:id="_7z2uQtS6EeSpN9Om1jH8Lg" source="http://www.eclipse.org/emf/2002/GenModel">
           <details xmi:id="_7z2uQ9S6EeSpN9Om1jH8Lg" key="documentation" value=""/>
         </eAnnotations>
         <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_7z2uRNS6EeSpN9Om1jH8Lg" name="base_Class" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/3.0.0/UML#//Class"/>
         </eStructuralFeatures>
-        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_7z2uRtS6EeSpN9Om1jH8Lg" name="type" upperBound="-1" eType="_gglKUNS6EeSpN9Om1jH8Lg">
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_7z2uRtS6EeSpN9Om1jH8Lg" name="sensors" upperBound="-1" eType="_gglKUNS6EeSpN9Om1jH8Lg">
           <eAnnotations xmi:id="_h9lS0NTFEeSE1d1lvKIcBg" source="Sourec">
             <references xmi:type="uml:Comment" href="pathmap://UML_METAMODELS/UML.metamodel.uml#AcceptEventAction-_ownedComment.0"/>
           </eAnnotations>
@@ -261,16 +251,16 @@
     <ownedLiteral xmi:id="__1RSENS2EeSpN9Om1jH8Lg" name="USBCable"/>
     <ownedLiteral xmi:id="_BarJoNS3EeSpN9Om1jH8Lg" name="WiFi"/>
   </packagedElement>
-  <packagedElement xmi:type="uml:Stereotype" xmi:id="_StVHwNS4EeSpN9Om1jH8Lg" name="PhysicalSensorContextSource">
-    <generalization xmi:id="_kMV8UNS4EeSpN9Om1jH8Lg" general="_xw2NIMWkEeStzaikFgxTqQ"/>
-    <ownedAttribute xmi:id="_p-2GcNS4EeSpN9Om1jH8Lg" name="type" type="_veqcoNPdEeSuc6BO2Y_XFA">
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WlNbcNS8EeSpN9Om1jH8Lg" value="*"/>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_LKPgQBRzEeW22cB6L8jolg" name="ContextSourceAPI">
+    <ownedAttribute xmi:id="_OqgiARRzEeW22cB6L8jolg" name="base_Class" association="_Oqf68BRzEeW22cB6L8jolg">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Class"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_Sm6tMBRzEeW22cB6L8jolg" name="sensors" type="_veqcoNPdEeSuc6BO2Y_XFA">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_W5umMBRzEeW22cB6L8jolg" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WNtNsBRzEeW22cB6L8jolg"/>
     </ownedAttribute>
   </packagedElement>
-  <packagedElement xmi:type="uml:Stereotype" xmi:id="_XJslYNS4EeSpN9Om1jH8Lg" name="LogicalSensorContextSource">
-    <generalization xmi:id="_lBPkANS4EeSpN9Om1jH8Lg" general="_xw2NIMWkEeStzaikFgxTqQ"/>
-    <ownedAttribute xmi:id="_yDq4gNS4EeSpN9Om1jH8Lg" name="type" type="_veqcoNPdEeSuc6BO2Y_XFA">
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Y6l-cNS8EeSpN9Om1jH8Lg" value="*"/>
-    </ownedAttribute>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_Oqf68BRzEeW22cB6L8jolg" name="Class_ContextSourceAPI" memberEnd="_OqgiABRzEeW22cB6L8jolg _OqgiARRzEeW22cB6L8jolg">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_OqgiABRzEeW22cB6L8jolg" name="extension_ContextSourceAPI" type="_LKPgQBRzEeW22cB6L8jolg" aggregation="composite" association="_Oqf68BRzEeW22cB6L8jolg"/>
   </packagedElement>
 </uml:Profile>

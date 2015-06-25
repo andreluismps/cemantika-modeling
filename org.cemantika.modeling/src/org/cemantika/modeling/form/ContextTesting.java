@@ -1,6 +1,7 @@
 package org.cemantika.modeling.form;
 
 import java.beans.Introspector;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,8 +16,7 @@ import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
-import org.cemantika.testing.model.TestCase;
-import org.cemantika.testing.model.TestSuit;
+import org.cemantika.testing.util.XMLOperator;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
 import org.drools.KnowledgeBase;
@@ -47,7 +47,10 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -64,26 +67,31 @@ import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.Type;
 
 
-public class Extras extends FormPage {
+public class ContextTesting extends FormPage {
 	
 	private FormToolkit toolkit;
 	private ScrolledForm scrolledForm;
 	private FormText behaviorModel;
 	private PluginManager manager;
 	
-	public static final String ID = Extras.class.getName();
-	private static final String TITLE = "Extras";
+	private ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+	private ClassLoader projectClassLoader = getProjectClassLoader();
+	
+	public static final String ID = ContextTesting.class.getName();
+	private static final String TITLE = "Testing";
 	
 	private static final String TEST_CASE_GENERATION = 
 		  "The objective of this task is to generate test cases for context simulators test execution. " +
 		  "The inputs to this task are: Context Conceptual Model and its generated code and a Context Behavior Model.\n" +
 		  "Generate a test suit for each Context Behavior Model constructed based on identified focus below:";
 	
-	public Extras(FormEditor editor) {
+	public ContextTesting(FormEditor editor) {
 		super(editor, ID, TITLE);
 		this.manager = (PluginManager) editor;
 	}	
 	
+	
+
 	protected void createFormContent(IManagedForm managedForm) {
 		toolkit = managedForm.getToolkit();
 		scrolledForm = managedForm.getForm();
@@ -163,9 +171,32 @@ public class Extras extends FormPage {
 		return html.toString();
 	}
 	
-	
-	
-	
+	public ClassLoader getProjectClassLoader() {
+		IProject project = Activator.getDefault().getActiveProject();
+		IJavaProject javaProject = JavaCore.create(project);
+		String[] classPathEntries;
+		List<URL> urlList = new ArrayList<URL>();
+		URLClassLoader classLoader = null;
+		try {
+			classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+			for (int i = 0; i < classPathEntries.length; i++) {
+				String entry = classPathEntries[i];
+				IPath path = new Path(entry);
+				URL url = path.toFile().toURI().toURL();
+				urlList.add(url);
+			}
+			URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
+			classLoader = new URLClassLoader(urls, originalClassLoader);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		return classLoader;
+	}
+
+
 	private class BehaviorModelListener extends HyperlinkAdapter {
 
 		private Activator activator;
@@ -222,15 +253,13 @@ public class Extras extends FormPage {
 		}
 
 
-		private TestSuit generateTestSuit(IFile contextualGraph) {
-			TestSuit testSuit = new TestSuit();
-			testSuit.setTestCases(new ArrayList<TestCase>());
+		private void generateTestSuit(IFile contextualGraph) {
 			
-	    	ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
+	    	
 			
 			try {
 	        	
-		    	addCurrentProjectClassPathEntriesToCurrentClassLoader(parentClassLoader);
+				Thread.currentThread().setContextClassLoader(projectClassLoader);
 	        	
 	            KnowledgeBase knowledgeBase = readRule(contextualGraph);
 	            StatefulKnowledgeSession ksession = knowledgeBase.newStatefulKnowledgeSession();
@@ -246,14 +275,14 @@ public class Extras extends FormPage {
 	        } catch ( Throwable t ) {
 	            t.printStackTrace();
 	        }finally{
-	        	restoreOriginalClassLoader(parentClassLoader);
+	        	Thread.currentThread().setContextClassLoader(originalClassLoader);
 	        }
-	        return testSuit;
 	    }
 		
 		//Scenario = all graph's paths (scenarios list).
-	    //Situation = all logical contexts in a path
-	    //Logical context = set of sensors in a contextual node
+	    //Situation = all logical contexts in a path (name: )
+	    //Logical context = set of sensors in a contextual node (name: tem perigo)
+		//Incluir deffect patterns para context sources
 		private void parseProcess(RuleFlowProcess ruleFlowProcess) throws ClassNotFoundException{
 	    	
 			List<ArrayList<String>> caminhos = listPaths(ruleFlowProcess);
@@ -262,41 +291,23 @@ public class Extras extends FormPage {
 	        
 	        
 	        //Get a Scenario
+			
+			Activator plugin = Activator.getDefault();
+			IWorkbench workbench = plugin.getWorkbench();
+			Shell shell = workbench.getActiveWorkbenchWindow().getShell();
+			
 	        Scenario scenario = new Scenario();
 	        scenario.setName("Scenario #1");
 	        scenario.setSituations(getSituations(splits, caminhos, ruleFlowProcess));
 	        scenario.getSituations();
+	        FileDialog dialog = new FileDialog( shell, SWT.SAVE);
+	        dialog.setText("Save Test Case as");
+	        dialog.setFileName(".xml");
+	        String[] filterExt = { "*.xml"};
+	        dialog.setFilterExtensions(filterExt);
+	        XMLOperator.generateXMLFile(scenario, new File(dialog.open()));
 	    	
-	    }
-		
-
-		private void addCurrentProjectClassPathEntriesToCurrentClassLoader(ClassLoader parentClassLoader)
-				throws CoreException, MalformedURLException {
-
-			IProject project = Activator.getDefault().getActiveProject();
-			IJavaProject javaProject = JavaCore.create(project);
-			String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
-
-			List<URL> urlList = new ArrayList<URL>();
-			for (int i = 0; i < classPathEntries.length; i++) {
-				String entry = classPathEntries[i];
-				IPath path = new Path(entry);
-				URL url = path.toFile().toURI().toURL();
-				urlList.add(url);
-			}
-
-			Thread current = Thread.currentThread();
-
-			URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
-			URLClassLoader classLoader = new URLClassLoader(urls, parentClassLoader);
-
-			current.setContextClassLoader(classLoader);
-
-		}
-		
-		private void restoreOriginalClassLoader(ClassLoader classLoader){
-			Thread.currentThread().setContextClassLoader(classLoader);
-		}
+	    }		
 
 	    private KnowledgeBase readRule(IFile contextualGraph) throws Exception {
 	   	    
@@ -483,19 +494,37 @@ public class Extras extends FormPage {
 	    					EList<Type> types = association.getEndTypes();
 	    					List<EObject> sensorList = new ArrayList<EObject>();
 	    					for (Type type : types) {
-	    						Stereotype ster = type.getAppliedStereotype("cemantika_class::PhysicalSensorContextSource"); 
+	    						Stereotype ster = type.getAppliedStereotype("cemantika_class::ContextSource"); 
 								if (ster != null){
 									System.out.println("Context Source of Contextual Element.: " + type.getName());
-									//a fonte de contexto esta associada a quais sensores?
-									sensorList = (List<EObject>) type.getValue(ster, "type");
-									if (!sensorList.isEmpty()){
-										System.out.print("Sensors from Context Source..........: ");
+									//a fonte de contexto esta associada a quais APIs?
+									List<Association> CSAssociations = type.getAssociations();
+									for (Association CSAssociation : CSAssociations) {
+										//encontra as classes do endpoint da associacao
+										EList<Type> CSEndTypes = CSAssociation.getEndTypes();
+										for (Type CSEndType : CSEndTypes) {
+											//encontra associacoes da fonte de contexto
+											Stereotype CSEndTypeSter = CSEndType.getAppliedStereotype("cemantika_class::ContextSourceAPI");
+											//a classe eh uma CSAPI?
+											if (CSEndTypeSter != null){
+												System.out.println("Context Source API ................:" + CSEndType.getName());
+												sensorList = (List<EObject>) CSEndType.getValue(CSEndTypeSter, "sensors");
+												if (!sensorList.isEmpty()){
+													System.out.print("Sensors from Context Source..........: ");
+												}
+												for (EObject eObject : sensorList) {
+													sensors.add(eObject.toString());
+													System.out.print(eObject.toString() + " ");
+												}
+												System.out.println("");
+											}
+										}
 									}
-									for (EObject eObject : sensorList) {
-										sensors.add(eObject.toString());
-										System.out.print(eObject.toString() + " ");
-									}
-									System.out.println("");
+									
+									
+									
+									//Quais os sensores da CSAPI?
+								
 								}
 							}
 	    				}
