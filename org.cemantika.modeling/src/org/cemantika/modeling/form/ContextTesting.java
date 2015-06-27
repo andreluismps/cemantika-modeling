@@ -426,7 +426,8 @@ public class ContextTesting extends FormPage {
             	statement = statement.trim();
             	String [] statmentElements = statement.split("\\.");
             	Class<?> clazz = getClazz(vars, statmentElements);
-            	sensors.addAll(getSensorsFromContextualElement(clazz.getSimpleName(), getContextualElement(statmentElements, clazz).getName()));
+            	if (clazz != null)
+            		sensors.addAll(getSensorsFromContextualElement(clazz.getSimpleName(), getContextualElement(statmentElements, clazz).getName()));
 			}
 			return sensors;
 		}
@@ -471,6 +472,7 @@ public class ContextTesting extends FormPage {
             					 .replace("!", "    ").replace("&&", "  ")
             					 .replace("||", " ").replace('(', '\0')
             					 .replace(')', '\0').replace(';', '\0')
+            					 .replace("'", "").replace("\"", "")
             					 .replace(".get", ".").replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","")
             					 .trim().replaceAll(" +", " ");
 			return condition;
@@ -489,7 +491,8 @@ public class ContextTesting extends FormPage {
 	    			List<Association> associations = UmlUtils.getAssociations(class1);
 	    			for (Association association : associations) {
 	    				association.getAppliedStereotypes();
-	    				if (UmlUtils.hasStereotype(association, "cemantika_class::AcquisitionAssociation")){
+	    				if (UmlUtils.hasStereotype(association, "cemantika_class::AcquisitionAssociation") &&
+	    					attribute.equals(UmlUtils.getElementTaggedValue(association, "cemantika_class::AcquisitionAssociation", "element"))){
 	    					System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
 	    					EList<Type> types = association.getEndTypes();
 	    					List<EObject> sensorList = new ArrayList<EObject>();

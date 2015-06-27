@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature.Internal.DynamicValueHolder;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -294,6 +295,22 @@ public class UmlUtils {
 		EnumerationLiteral literal = (EnumerationLiteral) namedElement.getValue(
 				ster, name);
 		return literal.getName().toUpperCase();
+	}
+	
+	public static String getElementTaggedValue(NamedElement namedElement, String stereotype,
+			String name) {
+		String element = null;
+		Stereotype ster = findStereotype(namedElement, stereotype);
+
+		DynamicValueHolder literal = (DynamicValueHolder) namedElement.getValue(ster, name);
+		Property property = (Property) literal.dynamicGet(0);
+		Association association = (Association) literal.dynamicGet(1);
+		if (property != null){
+			element = property.getName();
+		}else if (association != null){
+			element = association.getMemberEnds().get(1).getName();
+		}
+		return element;
 	}
 
 	public static List<Association> getAssociations(
