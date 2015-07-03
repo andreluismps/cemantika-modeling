@@ -37,6 +37,10 @@ public class UmlUtils {
 	public static final String FOCUS_STEREOTYPE = "contextprofile::executes";
 	public static final String CONTEXT_ENTITY_STEREOTYPE = "cemantika_class::ContextualEntity";
 	public static final String CONTEXT_ELEMENT_STEREOTYPE = "cemantika_class::ContextualElement";
+	public static final String CONTEXT_SOURCE_API_STEREOTYPE = "cemantika_class::ContextSourceAPI";
+	public static final String CONTEXT_SOURCE_STEREOTYPE = "cemantika_class::ContextSource";
+	public static final String ACQUISITION_ASSOCIATION_STEREOTYPE = "cemantika_class::AcquisitionAssociation";
+	
 	private ResourceSet resourceSet;
 	private URI cemantikaUseCaseProfile;
 	private URI cemantikaClassProfile;

@@ -486,54 +486,55 @@ public class ContextTesting extends FormPage {
 	    	List<org.eclipse.uml2.uml.Class> classes = UmlUtils.getClasses(package_);
 	    	for (org.eclipse.uml2.uml.Class class1 : classes) {
 	    		//obtem a classe do elemento contextual
-	    		if (clazz.equals(class1.getName())){
-	    			//o elemento contextual esta associado a qual fonte de contexto?
-	    			List<Association> associations = UmlUtils.getAssociations(class1);
-	    			for (Association association : associations) {
-	    				association.getAppliedStereotypes();
-	    				if (UmlUtils.hasStereotype(association, "cemantika_class::AcquisitionAssociation") &&
-	    					attribute.equals(UmlUtils.getElementTaggedValue(association, "cemantika_class::AcquisitionAssociation", "element"))){
-	    					System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
-	    					EList<Type> types = association.getEndTypes();
-	    					List<EObject> sensorList = new ArrayList<EObject>();
-	    					for (Type type : types) {
-	    						Stereotype ster = type.getAppliedStereotype("cemantika_class::ContextSource"); 
-								if (ster != null){
-									System.out.println("Context Source of Contextual Element.: " + type.getName());
-									//a fonte de contexto esta associada a quais APIs?
-									List<Association> CSAssociations = type.getAssociations();
-									for (Association CSAssociation : CSAssociations) {
-										//encontra as classes do endpoint da associacao
-										EList<Type> CSEndTypes = CSAssociation.getEndTypes();
-										for (Type CSEndType : CSEndTypes) {
-											//encontra associacoes da fonte de contexto
-											Stereotype CSEndTypeSter = CSEndType.getAppliedStereotype("cemantika_class::ContextSourceAPI");
-											//a classe eh uma CSAPI?
-											if (CSEndTypeSter != null){
-												System.out.println("Context Source API ................:" + CSEndType.getName());
-												sensorList = (List<EObject>) CSEndType.getValue(CSEndTypeSter, "sensors");
-												if (!sensorList.isEmpty()){
-													System.out.print("Sensors from Context Source..........: ");
-												}
-												for (EObject eObject : sensorList) {
-													sensors.add(eObject.toString());
-													System.out.print(eObject.toString() + " ");
-												}
-												System.out.println("");
-											}
-										}
-									}
-									
-									
-									
-									//Quais os sensores da CSAPI?
-								
-								}
-							}
-	    				}
-	    			
-					}
+	    		if (!clazz.equals(class1.getName())){
+	    			continue;
 	    		}
+	    	
+    			//o elemento contextual esta associado a qual fonte de contexto?
+    			List<Association> associations = UmlUtils.getAssociations(class1);
+    			for (Association association : associations) {
+    				association.getAppliedStereotypes();
+    				if (!(UmlUtils.hasStereotype(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE) &&
+    					attribute.equals(UmlUtils.getElementTaggedValue(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE, "element")))){
+    					continue;
+    				}
+					System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
+					EList<Type> types = association.getEndTypes();
+					List<EObject> sensorList = new ArrayList<EObject>();
+					for (Type type : types) {
+						Stereotype ster = type.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_STEREOTYPE); 
+						if (ster == null){
+							continue;
+						}
+						System.out.println("Context Source of Contextual Element.: " + type.getName());
+						//a fonte de contexto esta associada a quais APIs?
+						List<Association> CSAssociations = type.getAssociations();
+						for (Association CSAssociation : CSAssociations) {
+							//encontra as classes do endpoint da associacao
+							EList<Type> CSEndTypes = CSAssociation.getEndTypes();
+							for (Type CSEndType : CSEndTypes) {
+								//encontra associacoes da fonte de contexto
+								Stereotype CSEndTypeSter = CSEndType.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_API_STEREOTYPE);
+								//a classe eh uma CSAPI?
+								if (CSEndTypeSter == null){
+									continue;
+								}
+								System.out.println("Context Source API ................:" + CSEndType.getName());
+								sensorList = (List<EObject>) CSEndType.getValue(CSEndTypeSter, "sensors");
+								if (!sensorList.isEmpty()){
+									System.out.print("Sensors from Context Source..........: ");
+								}
+								for (EObject eObject : sensorList) {
+									sensors.add(eObject.toString());
+									System.out.print(eObject.toString() + " ");
+								}
+								System.out.println("");
+								
+							}
+						}
+					}
+				}
+	    		
 			}
 	    	return sensors;
 		}
