@@ -282,6 +282,17 @@ public class UmlUtils {
 
 		return classes;
 	}
+	
+	public static org.eclipse.uml2.uml.Class getClassByName(List<Class> classes, String className) {
+		org.eclipse.uml2.uml.Class retorno = null;
+		for (org.eclipse.uml2.uml.Class clazz : classes) {
+			if (clazz.getName().equals(className)) {
+				retorno = clazz;
+			}
+		}
+
+		return retorno;
+	}
 
 	public static List<Property> getProperties(org.eclipse.uml2.uml.Class clazz) {
 		return clazz.getAttributes();

@@ -16,6 +16,7 @@ import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
+import org.cemantika.testing.util.CxGUtils;
 import org.cemantika.testing.util.XMLOperator;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
@@ -255,28 +256,8 @@ public class ContextTesting extends FormPage {
 
 		private void generateTestSuit(IFile contextualGraph) {
 			
-	    	
+			new CxGUtils().readCxG(contextualGraph, file);
 			
-			try {
-	        	
-				Thread.currentThread().setContextClassLoader(projectClassLoader);
-	        	
-	            KnowledgeBase knowledgeBase = readRule(contextualGraph);
-	            StatefulKnowledgeSession ksession = knowledgeBase.newStatefulKnowledgeSession();
-	                        
-	            RuleFlowProcess ruleFlowProcess = (RuleFlowProcess)  ksession.getKnowledgeBase().getProcess(contextualGraph.getName().replace(".rf", ""));
-	            
-	            // C—digo para teste!
-	            // DRF Parse OK. Para este passo, precisa do fonte gerado pelo plugin.
-	            // Reflection on project classes OK. 
-	            // Diagram elements load: OK
-	            parseProcess(ruleFlowProcess);
-	            
-	        } catch ( Throwable t ) {
-	            t.printStackTrace();
-	        }finally{
-	        	Thread.currentThread().setContextClassLoader(originalClassLoader);
-	        }
 	    }
 		
 		//Scenario = all graph's paths (scenarios list).
