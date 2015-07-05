@@ -1,7 +1,6 @@
 package org.cemantika.testing.util;
 
 import java.beans.Introspector;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,22 +21,17 @@ import org.cemantika.testing.cxg.xsd.Constraints;
 import org.cemantika.testing.cxg.xsd.End;
 import org.cemantika.testing.cxg.xsd.Header;
 import org.cemantika.testing.cxg.xsd.Nodes;
+import org.cemantika.testing.cxg.xsd.Process;
 import org.cemantika.testing.cxg.xsd.Split;
 import org.cemantika.testing.cxg.xsd.Start;
 import org.cemantika.testing.cxg.xsd.Type;
 import org.cemantika.testing.cxg.xsd.Variable;
 import org.cemantika.testing.cxg.xsd.Variables;
 import org.cemantika.testing.model.Grafo;
-
-import org.cemantika.testing.cxg.xsd.Process;
 import org.cemantika.uml.util.UmlUtils;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-
-import org.drools.process.core.Context;
-import org.drools.process.core.context.variable.VariableScope;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Property;
@@ -76,6 +70,7 @@ public class CxGUtils {
         //obtem os sensores
         fillInternalModel(internalCxG, caminhos, conceitualModel);		
 		//return dominiosGrafo;
+        System.out.println("");
 	}
 
 	private void fillInternalModel(InternalCxG internalCxG, List<ArrayList<String>> caminhos, IFile conceitualModel) {
@@ -92,26 +87,25 @@ public class CxGUtils {
         	//System.out.println("Dominio " + ctCount + ":");
 	        for (String node : path) {
 	            //System.out.print(node);
-	           // System.out.print(" - ");
+	            //System.out.print(" - ");
 	            if (pos != 0){
 	            	System.out.print("no contextual: " + path.get(pos));
 	            	System.out.println(";   no proximo: " + node);
 	            	for (Split noContextual :internalCxG.getContextualNodes()) {
-	            		if (noContextual.getId().equals(path.get(pos))){
-	            			for (Object o : noContextual.getMetaDataOrConstraints()) {
-	            				if(o instanceof Constraints){
-	            					constraints = (Constraints) o;
-	            					for (Constraint constraint : constraints.getConstraint()) {
-	            						if(constraint.getToNodeId().equals(node)){
-	            							constraint.setSensors(extractSensors(constraint.getValue(), conceitualModel, internalCxG));
-											//System.out.println(constraint.getValue());
-											//dominio = new Dominio(constraint.getValue());
-											//dominios.add(dominio);
-										}
-									}
+	            		if (!noContextual.getId().equals(path.get(pos))){
+	            			continue;
+	            		}
+            			for (Object o : noContextual.getMetaDataOrConstraints()) {
+            				if(!(o instanceof Constraints)){
+            					continue;
+            				}
+        					constraints = (Constraints) o;
+        					for (Constraint constraint : constraints.getConstraint()) {
+        						if(constraint.getToNodeId().equals(node)){
+        							constraint.setSensors(extractSensors(constraint.getValue(), conceitualModel, internalCxG));
 								}
 							}
-	            		}
+						}	            		
 	            	}
 	            	pos = 0;
 	            }
@@ -123,8 +117,6 @@ public class CxGUtils {
 				}
 	            i++;
 	        }
-	        //dominiosGrafo.add(dominios);
-	        //System.out.println();
 	    }
 	}
 
@@ -148,9 +140,6 @@ public class CxGUtils {
         		continue;
         	}
         	String contextualElement = getContextualElement(statmentElements, clazz);
-        	//after get class, get attribute (CE)
-        	//after get attribute, get acquisition association for CE
-        	//after association, get API, then, get Sensors
         	
         	if (contextualElement != null)
         		sensors.addAll(getSensorsFromContextualElement(clazz.getName(), contextualElement, classes));
@@ -158,6 +147,7 @@ public class CxGUtils {
 		return sensors;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private List<String> getSensorsFromContextualElement(String clazz, String attribute, List<Class> classes) {
     	List<String>  sensors = new ArrayList<String>();	
     	
@@ -237,6 +227,16 @@ public class CxGUtils {
 				for (Property clazzField : clazz.getAllAttributes()) {
 					if (clazzField.getName().equals(statmentElement)){
 						contextualElement = clazzField.getName();
+						return contextualElement;
+					}
+				}
+				List<Association> associations = UmlUtils.getAssociations(clazz);
+				for (Association association : associations) {
+					association.getAppliedStereotypes();
+					if ((UmlUtils.hasStereotype(association, UmlUtils.CONTEXT_ELEMENT_STEREOTYPE) &&
+						statmentElement.equals(association.getMemberEnds().get(1).getName()))){
+						contextualElement = association.getMemberEnds().get(1).getName();
+						return contextualElement;
 					}
 				}
 			}
