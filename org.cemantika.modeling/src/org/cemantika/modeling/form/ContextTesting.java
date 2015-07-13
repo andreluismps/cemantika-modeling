@@ -12,6 +12,7 @@ import java.util.List;
 import org.cemantika.modeling.Activator;
 import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
+import org.cemantika.testing.generator.TestCaseGenerator;
 import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
@@ -32,7 +33,6 @@ import org.drools.process.core.Context;
 import org.drools.process.core.context.variable.Variable;
 import org.drools.process.core.context.variable.VariableScope;
 import org.drools.ruleflow.core.RuleFlowProcess;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.workflow.core.Constraint;
 import org.drools.workflow.core.node.EndNode;
 import org.drools.workflow.core.node.Split;
@@ -256,7 +256,18 @@ public class ContextTesting extends FormPage {
 
 		private void generateTestSuit(IFile contextualGraph) {
 			
-			new CxGUtils().readCxG(contextualGraph, file);
+			IFile testCaseInput = new CxGUtils().readCxG(contextualGraph, file);			
+			
+			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+			
+			Scenario scenario = new TestCaseGenerator().testCaseGeneration(new File(testCaseInput.getLocationURI()));
+			
+			FileDialog dialog = new FileDialog( shell, SWT.SAVE);
+	        dialog.setText("Save Test Case as");
+	        dialog.setFileName(".xml");
+	        String[] filterExt = { "*.xml"};
+	        dialog.setFilterExtensions(filterExt);
+	        XMLOperator.generateXMLFile(scenario, new File(dialog.open()));
 			
 	    }
 		
