@@ -250,4 +250,10 @@ public class CemantikaForm extends FormEditor implements PluginManager {
 				&& this.map.get(PluginManager.CONCEPTUAL_DIAGRAM) != null;
 	}
 	
+	@Override
+	public boolean alreadyImportContextKnowledgeTestBase(){
+		return this.map.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE) != null;
+	}
+
+	
 }

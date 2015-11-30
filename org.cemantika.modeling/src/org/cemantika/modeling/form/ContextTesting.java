@@ -12,6 +12,8 @@ import java.util.List;
 import org.cemantika.modeling.Activator;
 import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
+import org.cemantika.modeling.listener.overview.CreateContextKnowledgeTestBase;
+import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
 import org.cemantika.testing.generator.TestCaseGenerator;
 import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
@@ -41,6 +43,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jdt.core.IJavaProject;
@@ -74,37 +77,115 @@ public class ContextTesting extends FormPage {
 	private ScrolledForm scrolledForm;
 	private FormText behaviorModel;
 	private PluginManager manager;
+	private FormText doneImportCKTB;
+	private FormEditor editor;
 	
 	private ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-	private ClassLoader projectClassLoader = getProjectClassLoader();
 	
 	public static final String ID = ContextTesting.class.getName();
 	private static final String TITLE = "Testing";
 	
-	private static final String TEST_CASE_GENERATION = 
-		  "The objective of this task is to generate test cases for context simulators test execution. " +
+	private static final String IMPORT_CKTB = 
+		"Import Context Knowledge Test Base (CKTB) for context data reuse for this project.";
+	
+	private static final String IDENTIFY_LOGICAL_CONTEXTS = 
+		  "The objective of this task is to identify logical contexts in Context Behavior model and add them to CKTB.\n" +
 		  "The inputs to this task are: Context Conceptual Model and its generated code and a Context Behavior Model.\n" +
+		  "Identify Logical Contexts in Behavior Model constructed based on identified focus below:";
+	
+	private static final String TEST_CASE_GENERATION = 
+		  "The objective of this task is to generate test cases for context simulators test execution.\n" +
+		  "The inputs to this task are: Context Knowledge Test Base, Context Conceptual Model, and a Context Behavior Model.\n" +
 		  "Generate a test suit for each Context Behavior Model constructed based on identified focus below:";
 	
 	public ContextTesting(FormEditor editor) {
 		super(editor, ID, TITLE);
+		this.editor = editor;
 		this.manager = (PluginManager) editor;
 	}	
 	
-	
-
 	protected void createFormContent(IManagedForm managedForm) {
 		toolkit = managedForm.getToolkit();
 		scrolledForm = managedForm.getForm();
 		
         TableWrapLayout layout = new TableWrapLayout();
-        layout.numColumns = 2;
+        layout.numColumns = 1;
 
         scrolledForm.getBody().setLayout(layout);
         
         scrolledForm.setText(TITLE);
         
+        addImportCKTB();
+        
+        addIdentifyLogicalContextsInBehaviorModel();
+        
         addTestCaseGeneration();		
+	}
+	
+	private void addImportCKTB() {
+		Section importCKTB = CemantikaForm.createSection(toolkit,
+				scrolledForm, Section.DESCRIPTION | Section.TITLE_BAR
+						| Section.TWISTIE | Section.EXPANDED,
+				"Import Context Knowledge Test Base", IMPORT_CKTB);
+
+		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
+		importCKTB.setLayoutData(td);
+
+		Composite sectionClient = toolkit.createComposite(importCKTB);
+
+		TableWrapLayout layout = new TableWrapLayout();
+		sectionClient.setLayout(layout);
+		layout.numColumns = 1;
+
+		Activator plugin = Activator.getDefault();
+		IWorkbench workbench = plugin.getWorkbench();
+		Shell shell = workbench.getActiveWorkbenchWindow().getShell();
+
+		td = new TableWrapData();
+		FormText formText = toolkit.createFormText(sectionClient, true);
+		formText.setLayoutData(td);
+		formText.addHyperlinkListener(new ImportSectionListener(shell, manager));
+
+		StringBuffer html = new StringBuffer();
+		html
+			.append("<form>")
+			.append("<li><a href=\"Create Context Knowledge Test Base\">Create</a> or <a href=\"Open Context Knowledge Test Base\">Open</a> a Context Knowledge Test Base to this project.</li>")
+			.append("</form>");
+		formText.setText(html.toString(), true, true);
+		
+		createDoneImportCKTB(sectionClient);
+
+		importCKTB.setClient(sectionClient);
+
+	}
+	
+	private void addIdentifyLogicalContextsInBehaviorModel() {
+		Section importCKTB = CemantikaForm.createSection(
+				toolkit, scrolledForm, Section.DESCRIPTION | Section.TITLE_BAR
+						| Section.TWISTIE | Section.EXPANDED,
+				"Identify Logical Contexts in Behavior Model",
+				IDENTIFY_LOGICAL_CONTEXTS);
+
+		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
+		importCKTB.setLayoutData(td);
+
+		Composite sectionClient = toolkit
+				.createComposite(importCKTB);
+		sectionClient.setLayout(new TableWrapLayout());
+		
+		this.behaviorModel = toolkit.createFormText(sectionClient, true);
+
+		td = new TableWrapData(TableWrapData.FILL_GRAB);
+		behaviorModel.setLayoutData(td);
+		StringBuffer html = behaviorModels();
+		behaviorModel.setImage("artifact", Activator.getDefault()
+				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
+
+		behaviorModel.setText(html.toString(), true, true);
+		behaviorModel.addHyperlinkListener(new BehaviorModelListener());
+
+		importCKTB.setClient(sectionClient);
+
 	}
 	
 	private void addTestCaseGeneration() {
@@ -134,6 +215,7 @@ public class ContextTesting extends FormPage {
 		testCaseGeneration.setClient(sectionClient);
 
 	}
+	
 	
 	private StringBuffer behaviorModels() {
 		StringBuffer html = new StringBuffer("<form>");
@@ -197,7 +279,6 @@ public class ContextTesting extends FormPage {
 		return classLoader;
 	}
 
-
 	private class BehaviorModelListener extends HyperlinkAdapter {
 
 		private Activator activator;
@@ -252,7 +333,6 @@ public class ContextTesting extends FormPage {
 				
 			}
 		}
-
 
 		private void generateTestSuit(IFile contextualGraph) {
 			
@@ -338,8 +418,6 @@ public class ContextTesting extends FormPage {
 	    	
 	    	return grafo.listarCaminhos(grafo, ""+start.getId(), ""+end.getId());
 	    }
-	    
-	    
 	    
 	    private Node getEndNode(RuleFlowProcess ruleFlowProcess) {
 	    	for (Node node : ruleFlowProcess.getNodes()) {
@@ -532,5 +610,56 @@ public class ContextTesting extends FormPage {
 		}
 		
 	}
+	
+	private class GotoPage extends HyperlinkAdapter {
 
+		@Override
+		public void linkActivated(HyperlinkEvent e) {
+			editor.setActivePage(ContextSpecification.ID);
+		}
+
+	}
+	
+	private class ImportSectionListener extends HyperlinkAdapter {
+
+		private Shell shell;
+		private PluginManager manager;
+
+		public ImportSectionListener(Shell shell, PluginManager manager) {
+			this.shell = shell;
+			this.manager = manager;
+		}
+
+		@Override
+		public void linkActivated(HyperlinkEvent e) {
+			String label = (String) e.getHref();
+			if (label.equals("Create Context Knowledge Test Base")) {
+				new CreateContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Create Context Knowledge Test Base", "cktb").handleEvent(null);
+			} else if (label.equals("Open Context Knowledge Test Base")) {
+				new ImportContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Import Context Knowledge Test Base", "cktb").handleEvent(null);
+			}
+			
+		}
+	}
+	
+	public void updateImportSection() {
+		doneImportCKTB.setVisible(manager.alreadyImportContextKnowledgeTestBase());
+	}
+	
+	public void createDoneImportCKTB(Composite sectionClient){
+		doneImportCKTB = toolkit.createFormText(sectionClient, true);
+		TableWrapData td = new TableWrapData();
+		doneImportCKTB.setLayoutData(td);
+		doneImportCKTB.addHyperlinkListener(new GotoPage());
+		StringBuffer html = new StringBuffer();
+		html = new StringBuffer();
+		html
+			.append("<form>")
+			.append("<p><span color=\"done\">Congratulations!</span> You have already connected to a Context Knoledge Test Base.</p>")
+			.append("</form>");
+		doneImportCKTB.setColor("done", ColorConstants.red);
+		doneImportCKTB.setText(html.toString(), true, true);
+		updateImportSection();
+	}
+	
 }
