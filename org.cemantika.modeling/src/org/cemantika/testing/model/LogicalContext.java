@@ -38,4 +38,6 @@ public class LogicalContext {
 	public String getName() {
 		return name;
 	}
+	
+	
 }

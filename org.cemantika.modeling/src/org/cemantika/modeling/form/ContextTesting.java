@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.cemantika.modeling.Activator;
 import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
@@ -72,6 +73,10 @@ import org.eclipse.uml2.uml.Type;
 
 
 public class ContextTesting extends FormPage {
+	
+	private enum Tab {
+		IDENTIFY_LOGICAL_CONTEXTS_TAB, TEST_CASE_GENERATION_TAB;
+    }
 	
 	private FormToolkit toolkit;
 	private ScrolledForm scrolledForm;
@@ -182,7 +187,7 @@ public class ContextTesting extends FormPage {
 				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
 
 		behaviorModel.setText(html.toString(), true, true);
-		behaviorModel.addHyperlinkListener(new BehaviorModelListener());
+		behaviorModel.addHyperlinkListener(new BehaviorModelListener(Tab.IDENTIFY_LOGICAL_CONTEXTS_TAB));
 
 		importCKTB.setClient(sectionClient);
 
@@ -211,7 +216,7 @@ public class ContextTesting extends FormPage {
 				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
 
 		behaviorModel.setText(html.toString(), true, true);
-		behaviorModel.addHyperlinkListener(new BehaviorModelListener());
+		behaviorModel.addHyperlinkListener(new BehaviorModelListener(Tab.TEST_CASE_GENERATION_TAB));
 		testCaseGeneration.setClient(sectionClient);
 
 	}
@@ -284,8 +289,10 @@ public class ContextTesting extends FormPage {
 		private Activator activator;
 		private org.eclipse.uml2.uml.Package package_;
 		private IFile file;
+		private Tab tab;
 
-		public BehaviorModelListener() {
+		public BehaviorModelListener(Tab tab) {
+			this.tab = tab;
 			this.activator = Activator.getDefault();
 			file = Activator.getDefault().open(
 					manager.get(PluginManager.CONCEPTUAL_MODEL));
@@ -306,35 +313,71 @@ public class ContextTesting extends FormPage {
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 			}
-			if (ref.equals("generate")) {
-				UmlUtils uml = new UmlUtils();
-				this.package_ = uml.load(file);
+			
+			IFile contextualGraph = getContextualGraph(ref);
+			switch (tab) {
+			case IDENTIFY_LOGICAL_CONTEXTS_TAB:
+				identifyLogicalContexts(contextualGraph);
+				break;
+			case TEST_CASE_GENERATION_TAB:
+				generateTestSuit(contextualGraph);
+				break;
+			default:
+				break;
+			}
+		}		
+
+		private IFile getContextualGraph(String ref) {
+			String id = "contextual_graph_" + ref;
+			IProject project = Activator.getDefault().getActiveProject();
+			String contextPath = "src/"
+					+ JetCemantikaGenerator.CONTEXTUAL_GRAPH_PACKAGE
+							.replace('.', '/') + "/" + id + ".rf";
+			IFile contextualGraph = project.getFile(contextPath);
+
+			boolean exists = contextualGraph.exists();
+			if (!exists) {
+				//generateContextualGraphs(id);
 				activator
 						.showMessage(
-								"Contextual Entities were generated at cemantika.model package",
+								"The behavioral model does not exist for the selected focus. Please generate them at Context Specification form",
 								SWT.ICON_INFORMATION | SWT.OK);
-			} else {
-				String id = "contextual_graph_" + ref;
-				IProject project = Activator.getDefault().getActiveProject();
-				String contextPath = "src/"
-						+ JetCemantikaGenerator.CONTEXTUAL_GRAPH_PACKAGE
-								.replace('.', '/') + "/" + id + ".rf";
-				IFile contextualGraph = project.getFile(contextPath);
-
-				boolean exists = contextualGraph.exists();
-				if (!exists) {
-					//generateContextualGraphs(id);
-					activator
-							.showMessage(
-									"The behavioral model does not exist for the selected focus. Please generate them at Context Specification form",
-									SWT.ICON_INFORMATION | SWT.OK);
-				}
-				generateTestSuit(contextualGraph);
-				
 			}
+			return contextualGraph;
+		}
+		
+		private void identifyLogicalContexts(IFile contextualGraph) {
+			
+			Set<LogicalContext> logicalContexts = CxGUtils.getLogicalContexts(contextualGraph, file);
+			
+			Set<LogicalContext> cktbData = loadCKTB();
+			
+			cktbData.addAll(logicalContexts);
+			
+			showCKTBEditor();
+			
+		}
+		
+		
+		private Set<LogicalContext> loadCKTB() {
+			// TODO load CKTB file data
+			return null;
 		}
 
+		private void showCKTBEditor() {
+			// TODO Show CKTB Editor to fill new values
+			
+		}
+
+		//TODO refazer scenarios e hierarquia.
+		//Compilar o grafo contextual requer classes criadas na aplicacoo modelada
 		private void generateTestSuit(IFile contextualGraph) {
+			
+			//Show predef options (can be CKTB items in absence within CxG)
+			
+			//Create base scenario
+			
+			//Derive cases
 			
 			IFile testCaseInput = new CxGUtils().readCxG(contextualGraph, file);			
 			

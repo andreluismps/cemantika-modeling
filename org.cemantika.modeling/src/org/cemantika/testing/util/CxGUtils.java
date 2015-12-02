@@ -3,6 +3,7 @@ package org.cemantika.testing.util;
 import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -28,21 +29,15 @@ import org.cemantika.testing.cxg.xsd.Type;
 import org.cemantika.testing.cxg.xsd.Variable;
 import org.cemantika.testing.cxg.xsd.Variables;
 import org.cemantika.testing.model.Grafo;
+import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.uml.util.UmlUtils;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Stereotype;
-import org.eclipse.uml2.uml.UMLFactory;
-import org.eclipse.uml2.uml.UMLPackage;
 
 public class CxGUtils {
 	public IFile readCxG(IFile contextualGraph, IFile conceitualModel) {
@@ -79,53 +74,9 @@ public class CxGUtils {
 		//return dominiosGrafo;
         System.out.println("");
         
-        return createActivityFromCxG(internalCxG);
+        return null;//createActivityFromCxG(internalCxG);
 	}
 
-	private IFile createActivityFromCxG(InternalCxG internalCxG) {
-		org.eclipse.uml2.uml.Package pack = UMLFactory.eINSTANCE.createPackage();
-		Activity parentActivity = (Activity) pack.createPackagedElement("Focus", UMLPackage.eINSTANCE.getActivity());
-		ActivityNode inicio = parentActivity.createNode("Inicio", UMLPackage.eINSTANCE.getInitialNode());
-		ActivityNode fim = parentActivity.createNode("Fim", UMLPackage.eINSTANCE.getActivityFinalNode());	
-		
-		ActivityNode decisao = parentActivity.createNode("Decisao Localizacao", UMLPackage.eINSTANCE.getDecisionNode());
-		decisao.createNameExpression("sensors", null).setSymbol("gps, wifi");
-		ActivityNode juncao = parentActivity.createNode("Funcao", UMLPackage.eINSTANCE.getMergeNode());
-		
-		ActivityNode permiteCamera = parentActivity.createNode("Permite camera", UMLPackage.eINSTANCE.getOpaqueAction());
-		ActivityNode proibeCamera = parentActivity.createNode("Proibe camera", UMLPackage.eINSTANCE.getOpaqueAction());
-		
-		ControlFlow cf = (ControlFlow) parentActivity.createEdge("",UMLPackage.eINSTANCE.getControlFlow());
-		cf.setSource(inicio);
-		cf.setTarget(decisao);
-		
-		ControlFlow cf2 = (ControlFlow) parentActivity.createEdge("GPS identifica reuniao",UMLPackage.eINSTANCE.getControlFlow());
-		cf2.setSource(decisao);
-		cf2.setTarget(proibeCamera);
-		
-		ControlFlow cf3 = (ControlFlow) parentActivity.createEdge("GPS nao identifica reuniao",UMLPackage.eINSTANCE.getControlFlow());
-		cf3.setSource(decisao);
-		cf3.setTarget(permiteCamera);
-		
-		ControlFlow cf4 = (ControlFlow) parentActivity.createEdge("",UMLPackage.eINSTANCE.getControlFlow());
-		cf4.setSource(permiteCamera);
-		cf4.setTarget(juncao);
-		
-		ControlFlow cf5 = (ControlFlow) parentActivity.createEdge("",UMLPackage.eINSTANCE.getControlFlow());
-		cf5.setSource(proibeCamera);
-		cf5.setTarget(juncao);
-		
-		ControlFlow cf6 = (ControlFlow) parentActivity.createEdge("",UMLPackage.eINSTANCE.getControlFlow());
-		cf6.setSource(juncao);
-		cf6.setTarget(fim);
-		
-		UmlUtils uml = new UmlUtils();
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("NoCamInMeetingSpec/test/context/testing/temp/noCamInMeetingActivity.uml"));
-		
-		uml.save(pack, file);
-		
-		return file;
-	}
 
 	private void fillInternalModel(InternalCxG internalCxG, List<ArrayList<String>> caminhos, IFile conceitualModel) {
 		int i = 0;
@@ -428,5 +379,10 @@ public class CxGUtils {
 		public Connections getConnections() {
 			return connections;
 		}
+	}
+
+	public static Set<LogicalContext> getLogicalContexts(IFile contextualGraph, IFile file) {
+		// TODO Use Context Simulator hierarchy
+		return null;
 	}
 }
