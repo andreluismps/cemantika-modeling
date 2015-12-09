@@ -15,6 +15,7 @@ import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.modeling.listener.overview.CreateContextKnowledgeTestBase;
 import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
+import org.cemantika.testing.cktb.view.ManageContextKnowledgeTestBase;
 import org.cemantika.testing.generator.TestCaseGenerator;
 import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
@@ -50,6 +51,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -352,7 +354,7 @@ public class ContextTesting extends FormPage {
 			
 			Set<LogicalContext> cktbData = loadCKTB();
 			
-			cktbData.addAll(logicalContexts);
+			//cktbData.addAll(logicalContexts);
 			
 			showCKTBEditor();
 			
@@ -365,8 +367,9 @@ public class ContextTesting extends FormPage {
 		}
 
 		private void showCKTBEditor() {
-			// TODO Show CKTB Editor to fill new values
-			
+			Dialog dialog = new ManageContextKnowledgeTestBase(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell());
+			dialog.open();
+			System.out.println("open window");
 		}
 
 		//TODO refazer scenarios e hierarquia.
