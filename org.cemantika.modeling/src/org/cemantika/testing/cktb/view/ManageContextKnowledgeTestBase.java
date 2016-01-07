@@ -57,11 +57,6 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 			list.add("user time is not betweeen appointment begin/end: " + loopIndex);
 		}
 		
-		
-        
-        //final Combo combo = new Combo(composite_1, SWT.NONE);
-        //combo.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-
         final Composite composite_2 = new Composite(composite, SWT.NONE);
         composite_2.setLayout(new GridLayout(1, true));
         composite_2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
@@ -90,47 +85,6 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 				
 			}
 
-			private void createPhysicalContextGroup(final Composite composite_2, Object physicalContext) {
-				Group group = createSensorGroup(composite_2, "TODO - physicalContext Name");
-				
-				// for  Physical context group, create elements inside group
-				Object physicalElement = null;
-//				switch (physicalContext.getType()) {
-//				case BOOLEAN:
-					createSensorDataCheckField(group, physicalElement);
-//					break;
-
-//				default:
-					createSensorDataTextField(group, physicalElement);
-					createSensorDataTextField(group, physicalElement);
-//					break;
-//				}
-				
-			}
-
-			private void createSensorDataCheckField(Group group, Object physicalElement) {
-				Button check = new Button(group, SWT.CHECK);
-                check.setText("TODO - physicalElement ckeck");
-				check.setSelection(true);
-                check.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-			}
-
-			private void createSensorDataTextField(Group group, Object physicalElement) {
-				Label label = new Label(group, SWT.NONE);
-                label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-                label.setText("TODO - physicalElement Field");
-
-                Text text = new Text(group, SWT.NONE);
-                text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1 ));
-                text.setText("TODO - physicalElement Field Value");
-			}
-			
-			private void disposeChildrenControls(final Composite composite_2) {
-				for (Control control : composite_2.getChildren()) {
-			        control.dispose();
-			    }
-			}
-
 			public void widgetDefaultSelected(SelectionEvent event) {
 				int[] selections = list.getSelectionIndices();
 				String outText = "";
@@ -142,6 +96,47 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 
         return container;
     }
+    
+    private void createPhysicalContextGroup(final Composite composite_2, Object physicalContext) {
+		Group group = createSensorGroup(composite_2, "TODO - physicalContext Name");
+		
+		// for  Physical context group, create elements inside group
+		Object physicalElement = null;
+//		switch (physicalContext.getType()) {
+//		case BOOLEAN:
+			createSensorDataCheckField(group, physicalElement);
+//			break;
+
+//		default:
+			createSensorDataTextField(group, physicalElement);
+			createSensorDataTextField(group, physicalElement);
+//			break;
+//		}
+		
+	}
+    
+    private void createSensorDataCheckField(Group group, Object physicalElement) {
+		Button check = new Button(group, SWT.CHECK);
+        check.setText("TODO - physicalElement ckeck");
+		check.setSelection(true);
+        check.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+	}
+
+	private void createSensorDataTextField(Group group, Object physicalElement) {
+		Label label = new Label(group, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        label.setText("TODO - physicalElement Field");
+
+        Text text = new Text(group, SWT.NONE);
+        text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1 ));
+        text.setText("TODO - physicalElement Field Value");
+	}
+	
+	private void disposeChildrenControls(final Composite composite_2) {
+		for (Control control : composite_2.getChildren()) {
+	        control.dispose();
+	    }
+	}
     
     public Group createSensorGroup(final Composite composite_2, String name) {
 		Group group = new Group(composite_2, SWT.SHADOW_OUT);
