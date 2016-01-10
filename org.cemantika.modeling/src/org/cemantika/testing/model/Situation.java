@@ -1,36 +1,46 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.cemantika.testing.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Color;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.cemantika.testing.util.Constants;
 
-@XmlRootElement
-public class Situation {
-	private List<LogicalContext> logicalContexts = new ArrayList<LogicalContext>();
-	
-	private String name;
-	
-	public Situation(){
-		
-	}
+/**
+ *
+ * @author MHL
+ */
+public class Situation extends AbstractContext{
 
-	public void setLogicalContexts(List<LogicalContext> logicalContexts) {
-		this.logicalContexts = logicalContexts;
-	}
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6275195839246421095L;
 
-	@XmlElement(name="logicalContext")
-	public List<LogicalContext> getLogicalContexts() {
-		return logicalContexts;
-	}
+	public Situation(String name){
+      setName(name);    
+      
+      //leafIcon = Constants.getInstance().getImageIcon(Constants.URL_ICON_SITUATION);
+    }
+        
+    @Override
+    public String getTableRepresentation() {
+      return "S: "+getName();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	@XmlAttribute
-	public String getName() {
-		return name;
-	}
+    @Override
+    public Color getBackgroundColor() {
+        return Constants.COLOR_SITUATION;
+    }
+    
+    @Override
+    public void addChildContext(AbstractContext context){
+        if(!(context instanceof Scenario)){
+          getContextList().add(context);  
+        }
+    }
+
+
 }

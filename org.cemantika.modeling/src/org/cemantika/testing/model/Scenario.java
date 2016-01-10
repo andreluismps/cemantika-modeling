@@ -1,38 +1,99 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.cemantika.testing.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Color;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.cemantika.testing.util.Constants;
 
-@XmlRootElement
-public class Scenario {
-	private List<Situation> situations = new ArrayList<Situation>();
-	
-	private String name;
-	
-	public Scenario(){
-		
-	}
+/**
+ *
+ * @author MHL
+ */
+public class Scenario extends AbstractContext{
 
-	@XmlElement(name="situation")
-	public List<Situation> getSituations() {
-		return situations;
-	}
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6159223338162142559L;
 
-	public void setSituations(List<Situation> situations) {
-		this.situations = situations;
-	}
+	private int index = 0;
+    
+    private int currentTransmissionIndex = 0;
+    
+    public Scenario(String name){
+      setName(name);    
+      
+      //leafIcon = Constants.getInstance().getImageIcon(Constants.URL_ICON_SCENARIO);
+      
+      addChildContext(new TimeSlot(0));
+    }
+        
+    @Override
+    public String getTableRepresentation() {
+      return "SC: "+getName();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	@XmlAttribute
-	public String getName() {
-		return name;
-	}
-	
+    @Override
+    public Color getBackgroundColor() {
+        return Constants.COLOR_SITUATION;
+    }
+    
+    @Override
+    public void addChildContext(AbstractContext context){
+        if(context instanceof TimeSlot){
+          getContextList().add(context);  
+        }
+    }
+    
+    @Override
+    public void addChildContext(AbstractContext context, int timeSlot){
+        if(!(context instanceof TimeSlot) &&
+           !(context instanceof Scenario)){
+            
+            while(getContextList().size() <= timeSlot){
+               addChildContext(new TimeSlot(++index)); 
+            }
+            getContextList().get(timeSlot).addChildContext(context);
+        }else if(context instanceof Scenario){
+            //Just for the case: TIMELINE
+            while((getContextList().size()) <= (timeSlot+context.getContextList().size()-1)){
+               addChildContext(new TimeSlot(++index)); 
+            }
+            
+            for(int i=timeSlot;i<context.getContextList().size()+timeSlot;i++){
+                for(AbstractContext currentContext: context.getContextList().get(i-timeSlot).getContextList()){
+                    //getContextList().get(i).addChildContext(currentContext); 
+                    TimeSlot t = (TimeSlot) getContextList().get(i);
+                    t.addChildContext(currentContext);
+                }
+            }
+        }
+    }
+    
+    public int getMaxDepth(){
+        int depth = 0;
+        
+        for(AbstractContext slot: getContextList()){
+            if(slot.getContextList().size()>depth){
+                depth = slot.getContextList().size();
+            }
+        }
+
+        return depth;
+    }
+
+    public int getCurrentTransmissionIndex() {
+        return currentTransmissionIndex;
+    }
+
+    public void setCurrentTransmissionIndex(int currentTransmissionIndex) {
+        this.currentTransmissionIndex = currentTransmissionIndex;
+    }
+    
+    
+
 
 }

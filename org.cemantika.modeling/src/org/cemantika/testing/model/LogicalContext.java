@@ -1,43 +1,43 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.cemantika.testing.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Color;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.cemantika.testing.util.Constants;
 
-@XmlRootElement
-public class LogicalContext {
-	private List<String> sensors = new ArrayList<String>();
-	
-	private String name;
-	
-	public LogicalContext(){
-		
-	}
+/**
+ *
+ * @author MHL
+ */
+public class LogicalContext extends AbstractContext{
 
-	public LogicalContext(String name, List<String> sensors){
-		this.name = name;
-		this.sensors = sensors;
-	}
-	@XmlElement(name="sensor")
-	public List<String> getSensors() {
-		return sensors;
-	}
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1310999892562774018L;
 
-	public void setSensors(List<String> sensors) {
-		this.sensors = sensors;
-	}
+	public LogicalContext(String name){
+        setName(name);
+    }
+    
+    @Override
+    public String getTableRepresentation() {
+        return "L: "+getName();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Override
+    public Color getBackgroundColor() {
+        return Constants.COLOR_LOGICAL;
+    }
+    
+    @Override
+    public void addChildContext(AbstractContext context){
+        if(context instanceof LogicalContext || context instanceof PhysicalContext && !getContextList().contains(context)){
+          getContextList().add(context);  
+        }
+    }
 
-	@XmlAttribute
-	public String getName() {
-		return name;
-	}
-	
-	
 }

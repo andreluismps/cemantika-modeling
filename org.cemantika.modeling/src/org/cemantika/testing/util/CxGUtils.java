@@ -2,7 +2,10 @@ package org.cemantika.testing.util;
 
 import java.beans.Introspector;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -30,6 +33,7 @@ import org.cemantika.testing.cxg.xsd.Variable;
 import org.cemantika.testing.cxg.xsd.Variables;
 import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
+import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.uml.util.UmlUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.util.EList;
@@ -40,7 +44,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Stereotype;
 
 public class CxGUtils {
-	public IFile readCxG(IFile contextualGraph, IFile conceitualModel) {
+	public static Map<String, LogicalContext> getLogicalContexts(IFile contextualGraph, IFile conceptualModel) {
 		
 		Process p = extractProcessFromCxG(contextualGraph);
 
@@ -70,15 +74,171 @@ public class CxGUtils {
         List<ArrayList<String>> caminhos = grafo.listarCaminhos(grafo, internalCxG.getStart().getId(), internalCxG.getEnd().getId());
         
         //obtem os sensores
-        fillInternalModel(internalCxG, caminhos, conceitualModel);		
+        fillInternalModel(internalCxG, caminhos, conceptualModel);		
 		//return dominiosGrafo;
         System.out.println("");
         
-        return null;//createActivityFromCxG(internalCxG);
+        return getLogicalContexts(internalCxG, caminhos, conceptualModel);
 	}
 
 
-	private void fillInternalModel(InternalCxG internalCxG, List<ArrayList<String>> caminhos, IFile conceitualModel) {
+	private static Map<String, LogicalContext> getLogicalContexts(InternalCxG internalCxG, List<ArrayList<String>> caminhos, IFile conceptualModel) {
+		int i = 0;
+        int pos = 0;
+        int ctCount = 0;
+        Constraints constraints;
+        Map<String, LogicalContext> logicalContexts = new HashMap<String, LogicalContext>();
+        LogicalContext logicalContext;
+        
+        for(ArrayList<String> path : caminhos){
+        	i = 0;
+        	ctCount++;
+	        for (String node : path) {
+	            if (pos != 0){
+	            	for (Split noContextual :internalCxG.getContextualNodes()) {
+	            		if (!noContextual.getId().equals(path.get(pos))){
+	            			continue;
+	            		}
+            			for (Object o : noContextual.getMetaDataOrConstraints()) {
+            				if(!(o instanceof Constraints)){
+            					continue;
+            				}
+        					constraints = (Constraints) o;
+        					for (Constraint constraint : constraints.getConstraint()) {
+        						if(constraint.getToNodeId().equals(node)){
+        							logicalContext = new LogicalContext(constraint.getName());
+        							
+        							Set<PhysicalContext> physicalContexts = getPhysicalContexts(constraint.getValue(), conceptualModel, internalCxG);
+        							for (PhysicalContext physicalContext : physicalContexts) {
+        								logicalContext.addChildContext(physicalContext);
+									}
+        							
+        							logicalContexts.put(logicalContext.getName(), logicalContext);
+								}
+							}
+						}	            		
+	            	}
+	            	pos = 0;
+	            }
+	            for (Split noContextual : internalCxG.getContextualNodes()) {
+					if (noContextual.getId().equals(node)){
+						pos = i;
+						break;
+					}
+				}
+	            i++;
+	        }
+	    }
+		return logicalContexts;
+	}
+
+
+	private static Set<PhysicalContext> getPhysicalContexts(String constraint, IFile conceptualModel, InternalCxG internalCxG) {
+		Set<PhysicalContext> physicalContexts = new HashSet<PhysicalContext>();
+		
+        String condition = parseConstraint(constraint);
+        
+        String [] statements = condition.split(" ");
+        
+        UmlUtils uml = new UmlUtils();
+        org.eclipse.uml2.uml.Package package_ = uml.load(conceptualModel);
+    	List<Class> classes = UmlUtils.getClasses(package_);
+        
+        for (String statement : statements) {
+        	statement = statement.trim();
+        	String [] statmentElements = statement.split("\\.");
+        	Class clazz = getUMLClazz(internalCxG.getVariables(), statmentElements, classes);
+        	
+        	if (clazz == null ){
+        		continue;
+        	}
+        	String contextualElement = getContextualElement(statmentElements, clazz);
+        	
+        	if (contextualElement != null)
+        		physicalContexts.addAll(getPhysicalContextFromContextualElement(clazz.getName(), contextualElement, classes));
+		}
+		//return sensors;
+		return physicalContexts;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Set<PhysicalContext> getPhysicalContextFromContextualElement(String clazz, String attribute, List<Class> classes) {
+		Set<PhysicalContext> physicalContexts = new HashSet<PhysicalContext>();	
+    	
+    	
+    	for (org.eclipse.uml2.uml.Class class1 : classes) {
+    		//obtem a classe do elemento contextual
+    		if (!clazz.equals(class1.getName())){
+    			continue;
+    		}
+    	
+			//o elemento contextual esta associado a qual fonte de contexto?
+			List<Association> associations = UmlUtils.getAssociations(class1);
+			for (Association association : associations) {
+				association.getAppliedStereotypes();
+				if (!(UmlUtils.hasStereotype(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE) &&
+					attribute.equals(UmlUtils.getElementTaggedValue(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE, "element")))){
+					continue;
+				}
+				System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
+				EList<org.eclipse.uml2.uml.Type> types = association.getEndTypes();
+				List<EObject> sensorList = new ArrayList<EObject>();
+				for (org.eclipse.uml2.uml.Type type : types) {
+					Stereotype ster = type.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_STEREOTYPE); 
+					if (ster == null){
+						continue;
+					}
+					System.out.println("Context Source of Contextual Element.: " + type.getName());
+					//a fonte de contexto esta associada a quais APIs?
+					List<Association> CSAssociations = type.getAssociations();
+					for (Association CSAssociation : CSAssociations) {
+						//encontra as classes do endpoint da associacao
+						EList<org.eclipse.uml2.uml.Type> CSEndTypes = CSAssociation.getEndTypes();
+						for (org.eclipse.uml2.uml.Type CSEndType : CSEndTypes) {
+							//encontra associacoes da fonte de contexto
+							Stereotype CSEndTypeSter = CSEndType.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_API_STEREOTYPE);
+							//a classe eh uma CSAPI?
+							if (CSEndTypeSter == null){
+								continue;
+							}
+							System.out.println("Context Source API ................:" + CSEndType.getName());
+							sensorList = (List<EObject>) CSEndType.getValue(CSEndTypeSter, "sensors");
+							if (!sensorList.isEmpty()){
+								System.out.print("Sensors from Context Source..........: ");
+							}
+							for (EObject eObject : sensorList) {
+								addPhysicalContextToSet(physicalContexts, eObject);
+								System.out.print(eObject.toString() + " ");
+							}
+							System.out.println("");
+							
+						}
+					}
+				}
+			}
+    		
+		}
+    	return physicalContexts;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	private static void addPhysicalContextToSet(Set<PhysicalContext> physicalContexts, EObject eObject) {
+		java.lang.Class<? extends PhysicalContext> clz = null;
+		try {
+			clz = (java.lang.Class<? extends PhysicalContext>) java.lang.Class.forName("org.cemantika.testing.contextSource." + eObject.toString());
+			physicalContexts.add(clz.newInstance());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	private static void fillInternalModel(InternalCxG internalCxG, List<ArrayList<String>> caminhos, IFile conceitualModel) {
 		int i = 0;
         int pos = 0;
         int ctCount = 0;
@@ -125,7 +285,7 @@ public class CxGUtils {
 	    }
 	}
 
-	private List<String> extractSensors(String constraint, IFile conceitualModel, InternalCxG internalCxG) {
+	private static List<String> extractSensors(String constraint, IFile conceitualModel, InternalCxG internalCxG) {
 		List<String> sensors = new ArrayList<String>();
         		
         String condition = parseConstraint(constraint);
@@ -153,7 +313,7 @@ public class CxGUtils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<String> getSensorsFromContextualElement(String clazz, String attribute, List<Class> classes) {
+	private static List<String> getSensorsFromContextualElement(String clazz, String attribute, List<Class> classes) {
     	List<String>  sensors = new ArrayList<String>();	
     	
     	
@@ -212,7 +372,7 @@ public class CxGUtils {
     	return sensors;
 	}
 		
-	private Class getUMLClazz(Variables vars, String[] statmentElements, List<Class> classes) {
+	private static Class getUMLClazz(Variables vars, String[] statmentElements, List<Class> classes) {
 		String statementVariable = statmentElements[0];
 		Class clazz = null;
 		for (Variable var : vars.getVariable()) {
@@ -223,7 +383,7 @@ public class CxGUtils {
 		return clazz;
 	}
 	
-	private String getContextualElement(String[] statmentElements, Class clazz) {
+	private static String getContextualElement(String[] statmentElements, Class clazz) {
 		int i = 0;
 		String contextualElement = null;
 		for (String statmentElement : statmentElements) {
@@ -251,7 +411,7 @@ public class CxGUtils {
 	}
 	
 	
-	private String getType(Variable variable){
+	private static String getType(Variable variable){
 		for(Object typeOrValue : variable.getTypeOrValue()){
 			if (typeOrValue instanceof Type){
 				Type type = (Type) typeOrValue;
@@ -261,7 +421,7 @@ public class CxGUtils {
 		return null;
 	}
 	
-	private String parseConstraint(String constraint) {
+	private static String parseConstraint(String constraint) {
 		constraint.toLowerCase();
 		constraint = constraint.replace("return ", "").replace(".equals", "  ")
         					   .replace("!", "    ").replace("&&", "  ")
@@ -273,7 +433,7 @@ public class CxGUtils {
 		return constraint;
 	}
 
-	private Grafo createGrafo(InternalCxG internalCxG) {
+	private static Grafo createGrafo(InternalCxG internalCxG) {
 		Grafo grafo = new Grafo();
         if (internalCxG.getConnections() != null){
         	for (Connection connection : internalCxG.getConnections().getConnection()) {
@@ -283,7 +443,7 @@ public class CxGUtils {
 		return grafo;
 	}
 
-	private InternalCxG extractNodes(Object nodesOrConnectionsOrHeaders, InternalCxG internalCxG) {
+	private static InternalCxG extractNodes(Object nodesOrConnectionsOrHeaders, InternalCxG internalCxG) {
 		
 		Nodes nos = (Nodes) nodesOrConnectionsOrHeaders;
 		for (Object no : nos.getStartOrEndOrActionNode()){
@@ -380,9 +540,14 @@ public class CxGUtils {
 			return connections;
 		}
 	}
-
-	public static Set<LogicalContext> getLogicalContexts(IFile contextualGraph, IFile file) {
-		// TODO Use Context Simulator hierarchy
-		return null;
-	}
 }
+/*
+[
+user time is not betweeen appointment begin/end[[Appointment[[]]]], 
+SSID of meeting room not detected[[Wi-Fi[[]]]], 
+GPS data indicate meeting site[[GPS[[]], Cell ID[[]]]], 
+GPS data do not indicate meeting site[[GPS[[]], Cell ID[[]]]], 
+SSID of meeting room detected[[Wi-Fi[[]]]], 
+user time is betweeen appointment begin/end[[Appointment[[]]]]]
+
+*/

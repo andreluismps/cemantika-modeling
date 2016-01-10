@@ -1,13 +1,11 @@
 package org.cemantika.modeling.form;
 
-import java.beans.Introspector;
-import java.io.File;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.cemantika.modeling.Activator;
@@ -16,13 +14,9 @@ import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.modeling.listener.overview.CreateContextKnowledgeTestBase;
 import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
 import org.cemantika.testing.cktb.view.ManageContextKnowledgeTestBase;
-import org.cemantika.testing.generator.TestCaseGenerator;
 import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
-import org.cemantika.testing.model.Scenario;
-import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.util.CxGUtils;
-import org.cemantika.testing.util.XMLOperator;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
 import org.drools.KnowledgeBase;
@@ -33,21 +27,13 @@ import org.drools.builder.ResourceType;
 import org.drools.definition.process.Connection;
 import org.drools.definition.process.Node;
 import org.drools.io.ResourceFactory;
-import org.drools.process.core.Context;
-import org.drools.process.core.context.variable.Variable;
-import org.drools.process.core.context.variable.VariableScope;
 import org.drools.ruleflow.core.RuleFlowProcess;
-import org.drools.workflow.core.Constraint;
-import org.drools.workflow.core.node.EndNode;
-import org.drools.workflow.core.node.Split;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -69,9 +55,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.eclipse.uml2.uml.Association;
-import org.eclipse.uml2.uml.Stereotype;
-import org.eclipse.uml2.uml.Type;
 
 
 public class ContextTesting extends FormPage {
@@ -350,13 +333,13 @@ public class ContextTesting extends FormPage {
 		
 		private void identifyLogicalContexts(IFile contextualGraph) {
 			
-			Set<LogicalContext> logicalContexts = CxGUtils.getLogicalContexts(contextualGraph, file);
-			
-			Set<LogicalContext> cktbData = loadCKTB();
+			Map<String, LogicalContext> logicalContexts = CxGUtils.getLogicalContexts(contextualGraph, file);
+			System.out.println(logicalContexts);
+			//Set<LogicalContext> cktbData = loadCKTB();
 			
 			//cktbData.addAll(logicalContexts);
 			
-			showCKTBEditor();
+			showCKTBEditor(logicalContexts);
 			
 		}
 		
@@ -366,8 +349,8 @@ public class ContextTesting extends FormPage {
 			return null;
 		}
 
-		private void showCKTBEditor() {
-			Dialog dialog = new ManageContextKnowledgeTestBase(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell());
+		private void showCKTBEditor(Map<String, LogicalContext> logicalContexts) {
+			Dialog dialog = new ManageContextKnowledgeTestBase(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(), logicalContexts);
 			dialog.open();
 			System.out.println("open window");
 		}
@@ -382,18 +365,18 @@ public class ContextTesting extends FormPage {
 			
 			//Derive cases
 			
-			IFile testCaseInput = new CxGUtils().readCxG(contextualGraph, file);			
+			//IFile testCaseInput = new CxGUtils().readCxG(contextualGraph, file);			
 			
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			
-			Scenario scenario = new TestCaseGenerator().testCaseGeneration(new File(testCaseInput.getLocationURI()));
+			//Scenario scenario = new TestCaseGenerator().testCaseGeneration(new File(testCaseInput.getLocationURI()));
 			
 			FileDialog dialog = new FileDialog( shell, SWT.SAVE);
 	        dialog.setText("Save Test Case as");
 	        dialog.setFileName(".xml");
 	        String[] filterExt = { "*.xml"};
 	        dialog.setFilterExtensions(filterExt);
-	        XMLOperator.generateXMLFile(scenario, new File(dialog.open()));
+	        //XMLOperator.generateXMLFile(scenario, new File(dialog.open()));
 			
 	    }
 		
@@ -401,31 +384,31 @@ public class ContextTesting extends FormPage {
 	    //Situation = all logical contexts in a path (name: )
 	    //Logical context = set of sensors in a contextual node (name: tem perigo)
 		//Incluir deffect patterns para context sources
-		private void parseProcess(RuleFlowProcess ruleFlowProcess) throws ClassNotFoundException{
-	    	
-			List<ArrayList<String>> caminhos = listPaths(ruleFlowProcess);
-			List<Split> splits = getSplitNodes(ruleFlowProcess);
-	        //encontra caminhos
-	        
-	        
-	        //Get a Scenario
-			
-			Activator plugin = Activator.getDefault();
-			IWorkbench workbench = plugin.getWorkbench();
-			Shell shell = workbench.getActiveWorkbenchWindow().getShell();
-			
-	        Scenario scenario = new Scenario();
-	        scenario.setName("Scenario #1");
-	        scenario.setSituations(getSituations(splits, caminhos, ruleFlowProcess));
-	        scenario.getSituations();
-	        FileDialog dialog = new FileDialog( shell, SWT.SAVE);
-	        dialog.setText("Save Test Case as");
-	        dialog.setFileName(".xml");
-	        String[] filterExt = { "*.xml"};
-	        dialog.setFilterExtensions(filterExt);
-	        XMLOperator.generateXMLFile(scenario, new File(dialog.open()));
-	    	
-	    }		
+//		private void parseProcess(RuleFlowProcess ruleFlowProcess) throws ClassNotFoundException{
+//	    	
+//			List<ArrayList<String>> caminhos = listPaths(ruleFlowProcess);
+//			List<Split> splits = getSplitNodes(ruleFlowProcess);
+//	        //encontra caminhos
+//	        
+//	        
+//	        //Get a Scenario
+//			
+//			Activator plugin = Activator.getDefault();
+//			IWorkbench workbench = plugin.getWorkbench();
+//			Shell shell = workbench.getActiveWorkbenchWindow().getShell();
+//			
+//	        //Scenario scenario = new Scenario();
+//	        //scenario.setName("Scenario #1");
+//	        //scenario.setSituations(getSituations(splits, caminhos, ruleFlowProcess));
+//	        //scenario.getSituations();
+//	        FileDialog dialog = new FileDialog( shell, SWT.SAVE);
+//	        dialog.setText("Save Test Case as");
+//	        dialog.setFileName(".xml");
+//	        String[] filterExt = { "*.xml"};
+//	        dialog.setFilterExtensions(filterExt);
+//	        //XMLOperator.generateXMLFile(scenario, new File(dialog.open()));
+//	    	
+//	    }		
 
 	    private KnowledgeBase readRule(IFile contextualGraph) throws Exception {
 	   	    
@@ -457,204 +440,204 @@ public class ContextTesting extends FormPage {
 	    	return grafo;
 	    }
 	    
-	    private List<ArrayList<String>> listPaths(RuleFlowProcess ruleFlowProcess){
-	    	Grafo grafo = fillGrafo(ruleFlowProcess);
-	    	Node start = ruleFlowProcess.getStart();
-	    	Node end = getEndNode(ruleFlowProcess);	
-	    	
-	    	return grafo.listarCaminhos(grafo, ""+start.getId(), ""+end.getId());
-	    }
-	    
-	    private Node getEndNode(RuleFlowProcess ruleFlowProcess) {
-	    	for (Node node : ruleFlowProcess.getNodes()) {
-	    		if (node instanceof EndNode) {
-	    			return node;
-	    		}
-	    	}
-			return null;
-		}
-	    
-	    private List<Split> getSplitNodes(RuleFlowProcess ruleFlowProcess) {
-	    	List<Split> splits = new ArrayList<Split>();
-	    	for (Node node : ruleFlowProcess.getNodes()) {
-	    		if (node instanceof Split) {
-					splits.add((Split) node);
-				}
-	    	}
-	    	return splits;
-		}
+//	    private List<ArrayList<String>> listPaths(RuleFlowProcess ruleFlowProcess){
+//	    	Grafo grafo = fillGrafo(ruleFlowProcess);
+//	    	Node start = ruleFlowProcess.getStart();
+//	    	Node end = getEndNode(ruleFlowProcess);	
+//	    	
+//	    	return grafo.listarCaminhos(grafo, ""+start.getId(), ""+end.getId());
+//	    }
+//	    
+//	    private Node getEndNode(RuleFlowProcess ruleFlowProcess) {
+//	    	for (Node node : ruleFlowProcess.getNodes()) {
+//	    		if (node instanceof EndNode) {
+//	    			return node;
+//	    		}
+//	    	}
+//			return null;
+//		}
+//	    
+//	    private List<Split> getSplitNodes(RuleFlowProcess ruleFlowProcess) {
+//	    	List<Split> splits = new ArrayList<Split>();
+//	    	for (Node node : ruleFlowProcess.getNodes()) {
+//	    		if (node instanceof Split) {
+//					splits.add((Split) node);
+//				}
+//	    	}
+//	    	return splits;
+//		}
+//
+//		private List<Situation> getSituations(List<Split> splits, List<ArrayList<String>> caminhos, RuleFlowProcess ruleFlowProcess) {
+//			List<Situation> situations = new ArrayList<Situation>();
+//			int i = 0;
+//	        for(ArrayList<String> path : caminhos){
+//	        	Situation situation = getSituation(splits, path, ruleFlowProcess);
+//	        	situation.setName("Situation #" + ++i);
+//	        	situations.add(situation);
+//		    }
+//			return situations;
+//		}
+//
+//		private Situation getSituation(List<Split> splits, ArrayList<String> path, RuleFlowProcess ruleFlowProcess) {
+//			int i = 0, pos = 0;
+//			Situation situation = new Situation();
+//			for (String node : path) {
+//			    if (pos != 0){
+//			    	for (Split split : splits) {
+//			    		if (split.getId() == Integer.parseInt(path.get(pos))){
+//			    			List<org.drools.definition.process.Connection> conns = split.getOutgoingConnections("DROOLS_DEFAULT");
+//							for (org.drools.definition.process.Connection conn : conns) {
+//								if (conn.getTo().getId() == Integer.parseInt(node)){
+//									situation.getLogicalContexts().add(getLogicalContext(split.getConstraint(conn), ruleFlowProcess));
+//								}
+//								
+//							}
+//						}
+//					}
+//			    	pos = 0;
+//			    }
+//			    for (Split noContextual : splits) {
+//					if (noContextual.getId() == Integer.parseInt(node)){
+//						pos = i;
+//						break;
+//					}
+//				}
+//			    i++;
+//			}
+//			return situation;
+//		}
 
-		private List<Situation> getSituations(List<Split> splits, List<ArrayList<String>> caminhos, RuleFlowProcess ruleFlowProcess) {
-			List<Situation> situations = new ArrayList<Situation>();
-			int i = 0;
-	        for(ArrayList<String> path : caminhos){
-	        	Situation situation = getSituation(splits, path, ruleFlowProcess);
-	        	situation.setName("Situation #" + ++i);
-	        	situations.add(situation);
-		    }
-			return situations;
-		}
-
-		private Situation getSituation(List<Split> splits, ArrayList<String> path, RuleFlowProcess ruleFlowProcess) {
-			int i = 0, pos = 0;
-			Situation situation = new Situation();
-			for (String node : path) {
-			    if (pos != 0){
-			    	for (Split split : splits) {
-			    		if (split.getId() == Integer.parseInt(path.get(pos))){
-			    			List<org.drools.definition.process.Connection> conns = split.getOutgoingConnections("DROOLS_DEFAULT");
-							for (org.drools.definition.process.Connection conn : conns) {
-								if (conn.getTo().getId() == Integer.parseInt(node)){
-									situation.getLogicalContexts().add(getLogicalContext(split.getConstraint(conn), ruleFlowProcess));
-								}
-								
-							}
-						}
-					}
-			    	pos = 0;
-			    }
-			    for (Split noContextual : splits) {
-					if (noContextual.getId() == Integer.parseInt(node)){
-						pos = i;
-						break;
-					}
-				}
-			    i++;
-			}
-			return situation;
-		}
-
-		private LogicalContext getLogicalContext(Constraint constraint, RuleFlowProcess ruleFlowProcess) {
-			return new LogicalContext(constraint.getName(), getSensors(constraint, ruleFlowProcess));
-		}
-
-		private List<String> getSensors(Constraint constraint, RuleFlowProcess ruleFlowProcess) {
-            
-			List<String> sensors = new ArrayList<String>();
-			
-            List<Context> contexts = ruleFlowProcess.getContexts("VariableScope");
-            VariableScope varscope = (VariableScope) contexts.get(0);
-            List<Variable> vars = varscope.getVariables();
-            
-            String condition = parseConstraint(constraint);
-            String [] statements = condition.split(" ");
-            for (String statement : statements) {
-            	statement = statement.trim();
-            	String [] statmentElements = statement.split("\\.");
-            	Class<?> clazz = getClazz(vars, statmentElements);
-            	if (clazz != null)
-            		sensors.addAll(getSensorsFromContextualElement(clazz.getSimpleName(), getContextualElement(statmentElements, clazz).getName()));
-			}
-			return sensors;
-		}
-
-		private Field getContextualElement(String[] statmentElements, Class<?> clazz) {
-			int i = 0;
-			Field contextualElement = null;
-			for (String statmentElement : statmentElements) {
-				statmentElement = Introspector.decapitalize(statmentElement);
-				if (i != 0) {
-					Field[] fields = clazz.getDeclaredFields();
-					for (Field clazzField : fields) {
-						if (clazzField.getName().equals(statmentElement)){
-							contextualElement = clazzField;
-						}
-					}
-				}
-				i++;
-			}
-			return contextualElement;
-		}
-
-		private Class<?> getClazz(List<Variable> vars, String[] statmentElements) {
-			String statementVariable = statmentElements[0];
-			Class<?> clazz = null;
-			for (Variable var : vars) {
-				if (var.getName().equals(statementVariable)) {
-					try {
-						clazz = Thread.currentThread().getContextClassLoader().loadClass(var.getType().getStringType());
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			return clazz;
-		}
-
-		private String parseConstraint(Constraint constraint) {
-			String condition = constraint.getConstraint();
-            condition.toLowerCase();
-            condition = condition.replace("return ", "").replace(".equals", "  ")
-            					 .replace("!", "    ").replace("&&", "  ")
-            					 .replace("||", " ").replace('(', '\0')
-            					 .replace(')', '\0').replace(';', '\0')
-            					 .replace("'", "").replace("\"", "")
-            					 .replace(".get", ".").replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","")
-            					 .trim().replaceAll(" +", " ");
-			return condition;
-		}
-
-		// TODO - Retirar parse do diagrama. O codigo anotado como context source deve estar sendo geraodo 
-	    private List<String> getSensorsFromContextualElement(String clazz, String attribute) {
-	    	List<String>  sensors = new ArrayList<String>();	
-	    	UmlUtils uml = new UmlUtils();
-			this.package_ = uml.load(file);
-	    	List<org.eclipse.uml2.uml.Class> classes = UmlUtils.getClasses(package_);
-	    	for (org.eclipse.uml2.uml.Class class1 : classes) {
-	    		//obtem a classe do elemento contextual
-	    		if (!clazz.equals(class1.getName())){
-	    			continue;
-	    		}
-	    	
-    			//o elemento contextual esta associado a qual fonte de contexto?
-    			List<Association> associations = UmlUtils.getAssociations(class1);
-    			for (Association association : associations) {
-    				association.getAppliedStereotypes();
-    				if (!(UmlUtils.hasStereotype(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE) &&
-    					attribute.equals(UmlUtils.getElementTaggedValue(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE, "element")))){
-    					continue;
-    				}
-					System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
-					EList<Type> types = association.getEndTypes();
-					List<EObject> sensorList = new ArrayList<EObject>();
-					for (Type type : types) {
-						Stereotype ster = type.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_STEREOTYPE); 
-						if (ster == null){
-							continue;
-						}
-						System.out.println("Context Source of Contextual Element.: " + type.getName());
-						//a fonte de contexto esta associada a quais APIs?
-						List<Association> CSAssociations = type.getAssociations();
-						for (Association CSAssociation : CSAssociations) {
-							//encontra as classes do endpoint da associacao
-							EList<Type> CSEndTypes = CSAssociation.getEndTypes();
-							for (Type CSEndType : CSEndTypes) {
-								//encontra associacoes da fonte de contexto
-								Stereotype CSEndTypeSter = CSEndType.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_API_STEREOTYPE);
-								//a classe eh uma CSAPI?
-								if (CSEndTypeSter == null){
-									continue;
-								}
-								System.out.println("Context Source API ................:" + CSEndType.getName());
-								sensorList = (List<EObject>) CSEndType.getValue(CSEndTypeSter, "sensors");
-								if (!sensorList.isEmpty()){
-									System.out.print("Sensors from Context Source..........: ");
-								}
-								for (EObject eObject : sensorList) {
-									sensors.add(eObject.toString());
-									System.out.print(eObject.toString() + " ");
-								}
-								System.out.println("");
-								
-							}
-						}
-					}
-				}
-	    		
-			}
-	    	return sensors;
-		}
-		
+//		private LogicalContext getLogicalContext(Constraint constraint, RuleFlowProcess ruleFlowProcess) {
+//			return new LogicalContext(constraint.getName(), getSensors(constraint, ruleFlowProcess));
+//		}
+//
+//		private List<String> getSensors(Constraint constraint, RuleFlowProcess ruleFlowProcess) {
+//            
+//			List<String> sensors = new ArrayList<String>();
+//			
+//            List<Context> contexts = ruleFlowProcess.getContexts("VariableScope");
+//            VariableScope varscope = (VariableScope) contexts.get(0);
+//            List<Variable> vars = varscope.getVariables();
+//            
+//            String condition = parseConstraint(constraint);
+//            String [] statements = condition.split(" ");
+//            for (String statement : statements) {
+//            	statement = statement.trim();
+//            	String [] statmentElements = statement.split("\\.");
+//            	Class<?> clazz = getClazz(vars, statmentElements);
+//            	if (clazz != null)
+//            		sensors.addAll(getSensorsFromContextualElement(clazz.getSimpleName(), getContextualElement(statmentElements, clazz).getName()));
+//			}
+//			return sensors;
+//		}
+//
+//		private Field getContextualElement(String[] statmentElements, Class<?> clazz) {
+//			int i = 0;
+//			Field contextualElement = null;
+//			for (String statmentElement : statmentElements) {
+//				statmentElement = Introspector.decapitalize(statmentElement);
+//				if (i != 0) {
+//					Field[] fields = clazz.getDeclaredFields();
+//					for (Field clazzField : fields) {
+//						if (clazzField.getName().equals(statmentElement)){
+//							contextualElement = clazzField;
+//						}
+//					}
+//				}
+//				i++;
+//			}
+//			return contextualElement;
+//		}
+//
+//		private Class<?> getClazz(List<Variable> vars, String[] statmentElements) {
+//			String statementVariable = statmentElements[0];
+//			Class<?> clazz = null;
+//			for (Variable var : vars) {
+//				if (var.getName().equals(statementVariable)) {
+//					try {
+//						clazz = Thread.currentThread().getContextClassLoader().loadClass(var.getType().getStringType());
+//					} catch (ClassNotFoundException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//			return clazz;
+//		}
+//
+//		private String parseConstraint(Constraint constraint) {
+//			String condition = constraint.getConstraint();
+//            condition.toLowerCase();
+//            condition = condition.replace("return ", "").replace(".equals", "  ")
+//            					 .replace("!", "    ").replace("&&", "  ")
+//            					 .replace("||", " ").replace('(', '\0')
+//            					 .replace(')', '\0').replace(';', '\0')
+//            					 .replace("'", "").replace("\"", "")
+//            					 .replace(".get", ".").replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","")
+//            					 .trim().replaceAll(" +", " ");
+//			return condition;
+//		}
+//
+//		// TODO - Retirar parse do diagrama. O codigo anotado como context source deve estar sendo geraodo 
+//	    private List<String> getSensorsFromContextualElement(String clazz, String attribute) {
+//	    	List<String>  sensors = new ArrayList<String>();	
+//	    	UmlUtils uml = new UmlUtils();
+//			this.package_ = uml.load(file);
+//	    	List<org.eclipse.uml2.uml.Class> classes = UmlUtils.getClasses(package_);
+//	    	for (org.eclipse.uml2.uml.Class class1 : classes) {
+//	    		//obtem a classe do elemento contextual
+//	    		if (!clazz.equals(class1.getName())){
+//	    			continue;
+//	    		}
+//	    	
+//    			//o elemento contextual esta associado a qual fonte de contexto?
+//    			List<Association> associations = UmlUtils.getAssociations(class1);
+//    			for (Association association : associations) {
+//    				association.getAppliedStereotypes();
+//    				if (!(UmlUtils.hasStereotype(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE) &&
+//    					attribute.equals(UmlUtils.getElementTaggedValue(association, UmlUtils.ACQUISITION_ASSOCIATION_STEREOTYPE, "element")))){
+//    					continue;
+//    				}
+//					System.out.println("Contextual Element identified on Node: " + clazz+ "." + attribute);
+//					EList<Type> types = association.getEndTypes();
+//					List<EObject> sensorList = new ArrayList<EObject>();
+//					for (Type type : types) {
+//						Stereotype ster = type.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_STEREOTYPE); 
+//						if (ster == null){
+//							continue;
+//						}
+//						System.out.println("Context Source of Contextual Element.: " + type.getName());
+//						//a fonte de contexto esta associada a quais APIs?
+//						List<Association> CSAssociations = type.getAssociations();
+//						for (Association CSAssociation : CSAssociations) {
+//							//encontra as classes do endpoint da associacao
+//							EList<Type> CSEndTypes = CSAssociation.getEndTypes();
+//							for (Type CSEndType : CSEndTypes) {
+//								//encontra associacoes da fonte de contexto
+//								Stereotype CSEndTypeSter = CSEndType.getAppliedStereotype(UmlUtils.CONTEXT_SOURCE_API_STEREOTYPE);
+//								//a classe eh uma CSAPI?
+//								if (CSEndTypeSter == null){
+//									continue;
+//								}
+//								System.out.println("Context Source API ................:" + CSEndType.getName());
+//								sensorList = (List<EObject>) CSEndType.getValue(CSEndTypeSter, "sensors");
+//								if (!sensorList.isEmpty()){
+//									System.out.print("Sensors from Context Source..........: ");
+//								}
+//								for (EObject eObject : sensorList) {
+//									sensors.add(eObject.toString());
+//									System.out.print(eObject.toString() + " ");
+//								}
+//								System.out.println("");
+//								
+//							}
+//						}
+//					}
+//				}
+//	    		
+//			}
+//	    	return sensors;
+//		}
+//		
 	}
 	
 	private class GotoPage extends HyperlinkAdapter {

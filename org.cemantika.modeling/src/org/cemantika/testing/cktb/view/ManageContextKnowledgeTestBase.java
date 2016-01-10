@@ -1,5 +1,11 @@
 package org.cemantika.testing.cktb.view;
 
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.cemantika.testing.model.AbstractContext;
+import org.cemantika.testing.model.LogicalContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -20,10 +26,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class ManageContextKnowledgeTestBase extends Dialog {
+	
+	private Map<String, LogicalContext> logicalContexts;
 
-    public ManageContextKnowledgeTestBase(final Shell parent) 
+    public ManageContextKnowledgeTestBase(final Shell parent, Map<String, LogicalContext> logicalContexts) 
     {
         super(parent);
+        this.logicalContexts = logicalContexts;
     }
 
     @Override
@@ -32,54 +41,38 @@ public class ManageContextKnowledgeTestBase extends Dialog {
         final Composite container = (Composite) super.createDialogArea(parent);
         container.setLayout(new FillLayout());
 
-        final ScrolledComposite scrolledComposite = new ScrolledComposite(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-        scrolledComposite.setExpandHorizontal(true);
-        scrolledComposite.setExpandVertical(true);
+        final ScrolledComposite scrolledComposite = createMainComposite(container);
 
-        final Composite composite = new Composite(scrolledComposite, SWT.NONE);
-        composite.setLayout(new GridLayout(2, false));
-        scrolledComposite.setContent(composite);
-        scrolledComposite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        final Composite composite = createSplittedComposite(scrolledComposite);
 
-        final Composite composite_1 = new Composite(composite, SWT.NONE);
-        composite_1.setLayout(new GridLayout(1, false));
-        composite_1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-
-        final Label lblDefault = new Label(composite_1, SWT.NONE);
-        lblDefault.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-        lblDefault.setText("Logical Contexts:");
-
-        final List list = new List(composite_1, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(250, 380);
-		list.setLayoutData(myGrid);
-		//list.setBounds(0, 0, 100, 500);
-		for (int loopIndex = 0; loopIndex < 50; loopIndex++) {
-			list.add("user time is not betweeen appointment begin/end: " + loopIndex);
-		}
+        final List list = createLogicalContextsCompositeList(composite);
 		
-        final Composite composite_2 = new Composite(composite, SWT.NONE);
-        composite_2.setLayout(new GridLayout(1, true));
-        composite_2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-
-        final Composite composite_3 = new Composite(composite, SWT.NONE);
-        composite_3.setLayout(new GridLayout());
-        composite_3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        final Composite physicalContextsComposite = createPhysicalContextsComposite(composite);
         
-        list.addSelectionListener(new SelectionListener() {
+        addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, physicalContextsComposite);
+
+        return container;
+    }
+
+	private void addListenersToLogicalContextsCompositeList(
+			final ScrolledComposite scrolledComposite,
+			final Composite composite, final List list,
+			final Composite physicalContextsComposite) {
+		list.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent event) {
-				int[] selections = list.getSelectionIndices();
-				String outText = "";
-				for (int loopIndex = 0; loopIndex < selections.length; loopIndex++)
-					outText += selections[loopIndex] + " ";
-				System.out.println("You selected: " + outText);
+				int index = list.getSelectionIndex();
 				
-				disposeChildrenControls(composite_2);
-				//Obtem contextos fisicos do contexto logico selecionado na lista
-				//para cada contexto fisico:
-				Object physicalContext = null;
-				createPhysicalContextGroup(composite_2, physicalContext);
-                
+				LogicalContext logicalContext = logicalContexts.get(list.getItem(index));
+				
+				System.out.println(list.getItem(index));
+				
+				disposeChildrenControls(physicalContextsComposite);
+				
+				for (AbstractContext physicalContext : logicalContext.getContextList()) {
+					createPhysicalContextGroup(physicalContextsComposite, physicalContext);
+				}
+				
                 scrolledComposite.layout(true, true);
                 scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				
@@ -93,12 +86,54 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 				System.out.println("You selected: " + outText);
 			}
 		});
+	}
 
-        return container;
-    }
+	private Composite createPhysicalContextsComposite(final Composite composite) {
+		final Composite physicalContextsComposite = new Composite(composite, SWT.NONE);
+        physicalContextsComposite.setLayout(new GridLayout(1, true));
+        physicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		return physicalContextsComposite;
+	}
+
+	private List createLogicalContextsCompositeList(final Composite composite) {
+		final Composite logicalContextsComposite = new Composite(composite, SWT.NONE);
+        logicalContextsComposite.setLayout(new GridLayout(1, false));
+        logicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
+        final Label lblDefault = new Label(logicalContextsComposite, SWT.NONE);
+        lblDefault.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblDefault.setText("Logical Contexts:");
+
+        final List list = new List(logicalContextsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(250, 380);
+		list.setLayoutData(myGrid);
+		
+		SortedSet<String> orderedLogicalContexts = new TreeSet<String>(logicalContexts.keySet());
+
+		for (String logicalContextName : orderedLogicalContexts) {
+			list.add(logicalContextName);
+		}
+		return list;
+	}
+
+	private Composite createSplittedComposite(
+			final ScrolledComposite scrolledComposite) {
+		final Composite composite = new Composite(scrolledComposite, SWT.NONE);
+        composite.setLayout(new GridLayout(2, false));
+        scrolledComposite.setContent(composite);
+        scrolledComposite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		return composite;
+	}
+
+	private ScrolledComposite createMainComposite(final Composite container) {
+		final ScrolledComposite scrolledComposite = new ScrolledComposite(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+		return scrolledComposite;
+	}
     
-    private void createPhysicalContextGroup(final Composite composite_2, Object physicalContext) {
-		Group group = createSensorGroup(composite_2, "TODO - physicalContext Name");
+    private void createPhysicalContextGroup(final Composite composite_2, AbstractContext physicalContext) {
+		Group group = createSensorGroup(composite_2, physicalContext.getName());
 		
 		// for  Physical context group, create elements inside group
 		Object physicalElement = null;
