@@ -12,7 +12,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import org.cemantika.uml.model.HashCodeUtil;
-import org.eclipse.swt.widgets.Group;
 
 /**
  *

@@ -12,6 +12,8 @@ import javax.swing.JTextField;
 
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.util.Constants;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 
 /**
  *
@@ -97,5 +99,28 @@ public class Calendar extends PhysicalContext{
     public String getCommand(){
         return "app-"+date+"-"+startTime+"-"+endTime;
     }
+    
+    public void createPhysicalContextDetails(Group group) throws SecurityException, NoSuchFieldException {
+    	
+    	createPhysicalContextDetailLabel(group, "Appointment Name");
+        Text txtAppointmentName = createPhysicalContextDetailText(group);
+        addFocusListener(txtAppointmentName, Calendar.class.getDeclaredField("appointmentName"), this);
+        txtAppointmentName.setText(appointmentName);
+        
+        createPhysicalContextDetailLabel(group, "Start (hh:mm:ss)");
+        Text txtStartTime = createPhysicalContextDetailText(group);
+        addFocusListener(txtStartTime, Calendar.class.getDeclaredField("startTime"), this);
+        txtStartTime.setText(startTime);
+        
+        createPhysicalContextDetailLabel(group, "End (hh:mm:ss)");
+        Text txtEndTime = createPhysicalContextDetailText(group);
+        addFocusListener(txtEndTime, Calendar.class.getDeclaredField("endTime"), this);
+        txtEndTime.setText(endTime);
+        
+        createPhysicalContextDetailLabel(group, "Date (dd.mm.yyyy)");
+        Text txtDate = createPhysicalContextDetailText(group);
+        addFocusListener(txtDate, Calendar.class.getDeclaredField("date"), this);
+        txtDate.setText(date);
+	}
     
 }

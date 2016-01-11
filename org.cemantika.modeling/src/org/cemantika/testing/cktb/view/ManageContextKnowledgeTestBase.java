@@ -17,14 +17,12 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 public class ManageContextKnowledgeTestBase extends Dialog {
 	
@@ -42,13 +40,13 @@ public class ManageContextKnowledgeTestBase extends Dialog {
         final Composite container = (Composite) super.createDialogArea(parent);
         container.setLayout(new FillLayout());
 
-        final ScrolledComposite scrolledComposite = createMainComposite(container);
+        ScrolledComposite scrolledComposite = createMainComposite(container);
 
-        final Composite composite = createSplittedComposite(scrolledComposite);
+        Composite composite = createSplittedComposite(scrolledComposite);
 
-        final List list = createLogicalContextsCompositeList(composite);
+        List list = createLogicalContextsCompositeList(composite);
 		
-        final Composite physicalContextsComposite = createPhysicalContextsComposite(composite);
+        Composite physicalContextsComposite = createPhysicalContextsComposite(composite);
         
         addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, physicalContextsComposite);
 
@@ -62,11 +60,8 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 		list.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent event) {
-				int index = list.getSelectionIndex();
-				
-				LogicalContext logicalContext = logicalContexts.get(list.getItem(index));
-				
-				System.out.println(list.getItem(index));
+
+				LogicalContext logicalContext = logicalContexts.get(list.getItem(list.getSelectionIndex()));
 				
 				disposeChildrenControls(physicalContextsComposite);
 				
@@ -79,33 +74,27 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 				
 			}
 
-			public void widgetDefaultSelected(SelectionEvent event) {
-				int[] selections = list.getSelectionIndices();
-				String outText = "";
-				for (int loopIndex = 0; loopIndex < selections.length; loopIndex++)
-					outText += selections[loopIndex] + " ";
-				System.out.println("You selected: " + outText);
-			}
+			public void widgetDefaultSelected(SelectionEvent event) {}
 		});
 	}
 
-	private Composite createPhysicalContextsComposite(final Composite composite) {
-		final Composite physicalContextsComposite = new Composite(composite, SWT.NONE);
+	private Composite createPhysicalContextsComposite(Composite composite) {
+		Composite physicalContextsComposite = new Composite(composite, SWT.NONE);
         physicalContextsComposite.setLayout(new GridLayout(1, true));
         physicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		return physicalContextsComposite;
 	}
 
-	private List createLogicalContextsCompositeList(final Composite composite) {
-		final Composite logicalContextsComposite = new Composite(composite, SWT.NONE);
+	private List createLogicalContextsCompositeList(Composite composite) {
+		Composite logicalContextsComposite = new Composite(composite, SWT.NONE);
         logicalContextsComposite.setLayout(new GridLayout(1, false));
         logicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-        final Label lblDefault = new Label(logicalContextsComposite, SWT.NONE);
+        Label lblDefault = new Label(logicalContextsComposite, SWT.NONE);
         lblDefault.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lblDefault.setText("Logical Contexts:");
 
-        final List list = new List(logicalContextsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+        List list = new List(logicalContextsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 		GridData myGrid = new GridData(250, 380);
 		list.setLayoutData(myGrid);
 		
@@ -117,16 +106,16 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 		return list;
 	}
 
-	private Composite createSplittedComposite(final ScrolledComposite scrolledComposite) {
-		final Composite composite = new Composite(scrolledComposite, SWT.NONE);
+	private Composite createSplittedComposite(ScrolledComposite scrolledComposite) {
+		Composite composite = new Composite(scrolledComposite, SWT.NONE);
         composite.setLayout(new GridLayout(2, false));
         scrolledComposite.setContent(composite);
         scrolledComposite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return composite;
 	}
 
-	private ScrolledComposite createMainComposite(final Composite container) {
-		final ScrolledComposite scrolledComposite = new ScrolledComposite(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	private ScrolledComposite createMainComposite(Composite container) {
+		ScrolledComposite scrolledComposite = new ScrolledComposite(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
 		return scrolledComposite;
@@ -136,9 +125,7 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 		Group group = createSensorGroup(composite_2, physicalContext.getName());
 		try {
 			((PhysicalContext)physicalContext).createPhysicalContextDetails(group);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -172,123 +159,4 @@ public class ManageContextKnowledgeTestBase extends Dialog {
     {
         return new Point(700, 520);
     }
-
-	
-	/*
-	int APPLY_ID = 2048;
-	private Text txtFirstName;
-	  private Text lastNameText;
-
-
-
-	public ManageContextKnowledgeTestBase(Shell parentShell) {
-		super(parentShell);
-	}
-
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite area = (Composite) super.createDialogArea(parent);
-		
-		final Composite container = new Composite(area, SWT.NONE);
-	    container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	    GridLayout layout = new GridLayout(2, false);
-	    container.setLayout(layout);
-		
-		final List list = new List(container, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
-		GridData myGrid = new GridData(GridData.FILL_BOTH);
-		list.setLayoutData(myGrid);
-		list.setBounds(0, 0, 200, 200);
-		for (int loopIndex = 0; loopIndex < 50; loopIndex++) {
-			list.add("Battery Low: " + loopIndex);
-		}
-
-		list.addSelectionListener(new SelectionListener() {
-
-			public void widgetSelected(SelectionEvent event) {
-				int[] selections = list.getSelectionIndices();
-				String outText = "";
-				for (int loopIndex = 0; loopIndex < selections.length; loopIndex++)
-					outText += selections[loopIndex] + " ";
-				System.out.println("You selected: " + outText);
-				//Composite container = new Composite(area, SWT.NONE);
-				createFirstName(container);
-			    createLastName(container);
-			}
-
-			public void widgetDefaultSelected(SelectionEvent event) {
-				int[] selections = list.getSelectionIndices();
-				String outText = "";
-				for (int loopIndex = 0; loopIndex < selections.length; loopIndex++)
-					outText += selections[loopIndex] + " ";
-				System.out.println("You selected: " + outText);
-			}
-		});
-				  
-
-		createButton(container, APPLY_ID, "Apply", true);
-		Button button = new Button(container, SWT.PUSH);
-		button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false,
-				false));
-		button.setText("Press me");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("Pressed");
-			}
-		});
-
-		return container;
-	}
-
-	@Override
-	protected void okPressed() {
-		System.out.println("OK");
-		super.okPressed();
-	}
-
-	// overriding this methods allows you to set the
-	// title of the custom dialog
-	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText("Manage Context Knowledge Test Base");
-	}
-
-	@Override
-	protected void buttonPressed(int buttonId) {
-		super.buttonPressed(buttonId);
-		if (buttonId == APPLY_ID) {
-			System.out.println("Aplly");
-		}
-
-	}
-
-	@Override
-	protected Point getInitialSize() {
-		return new Point(450, 300);
-	}
-	
-	private void createFirstName(Composite container) {
-	    Label lbtFirstName = new Label(container, SWT.NONE);
-	    lbtFirstName.setText("First Name");
-
-	    GridData dataFirstName = new GridData();
-	    dataFirstName.grabExcessHorizontalSpace = true;
-	    dataFirstName.horizontalAlignment = GridData.FILL;
-
-	    txtFirstName = new Text(container, SWT.BORDER);
-	    txtFirstName.setLayoutData(dataFirstName);
-	  }
-	  
-	  private void createLastName(Composite container) {
-	    Label lbtLastName = new Label(container, SWT.NONE);
-	    lbtLastName.setText("Last Name");
-	    
-	    GridData dataLastName = new GridData();
-	    dataLastName.grabExcessHorizontalSpace = true;
-	    dataLastName.horizontalAlignment = GridData.FILL;
-	    lastNameText = new Text(container, SWT.BORDER);
-	    lastNameText.setLayoutData(dataLastName);
-	  }
-*/
 }
