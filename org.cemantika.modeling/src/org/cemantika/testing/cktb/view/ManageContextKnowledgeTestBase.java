@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
+import org.cemantika.testing.model.PhysicalContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -116,8 +117,7 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 		return list;
 	}
 
-	private Composite createSplittedComposite(
-			final ScrolledComposite scrolledComposite) {
+	private Composite createSplittedComposite(final ScrolledComposite scrolledComposite) {
 		final Composite composite = new Composite(scrolledComposite, SWT.NONE);
         composite.setLayout(new GridLayout(2, false));
         scrolledComposite.setContent(composite);
@@ -134,37 +134,13 @@ public class ManageContextKnowledgeTestBase extends Dialog {
     
     private void createPhysicalContextGroup(final Composite composite_2, AbstractContext physicalContext) {
 		Group group = createSensorGroup(composite_2, physicalContext.getName());
-		
-		// for  Physical context group, create elements inside group
-		Object physicalElement = null;
-//		switch (physicalContext.getType()) {
-//		case BOOLEAN:
-			createSensorDataCheckField(group, physicalElement);
-//			break;
-
-//		default:
-			createSensorDataTextField(group, physicalElement);
-			createSensorDataTextField(group, physicalElement);
-//			break;
-//		}
-		
-	}
-    
-    private void createSensorDataCheckField(Group group, Object physicalElement) {
-		Button check = new Button(group, SWT.CHECK);
-        check.setText("TODO - physicalElement ckeck");
-		check.setSelection(true);
-        check.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-	}
-
-	private void createSensorDataTextField(Group group, Object physicalElement) {
-		Label label = new Label(group, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        label.setText("TODO - physicalElement Field");
-
-        Text text = new Text(group, SWT.NONE);
-        text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1 ));
-        text.setText("TODO - physicalElement Field Value");
+		try {
+			((PhysicalContext)physicalContext).createPhysicalContextDetails(group);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void disposeChildrenControls(final Composite composite_2) {

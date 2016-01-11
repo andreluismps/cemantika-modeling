@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import org.cemantika.uml.model.HashCodeUtil;
+import org.eclipse.swt.widgets.Group;
 
 /**
  *
@@ -108,6 +109,5 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 	public int compareTo(AbstractContext abstractContext) {
 		return this.name.compareTo(abstractContext.name);
 	}
-  
-  
+	
 }

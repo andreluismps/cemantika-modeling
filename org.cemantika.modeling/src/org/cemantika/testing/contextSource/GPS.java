@@ -5,6 +5,7 @@
 package org.cemantika.testing.contextSource;
 
 import java.awt.GridLayout;
+import java.io.ObjectInputStream.GetField;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -13,6 +14,10 @@ import javax.swing.JTextField;
 
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.util.Constants;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 
 /**
  *
@@ -87,10 +92,22 @@ public class GPS extends PhysicalContext{
         return sb.toString();
     }
     
-    @Override
-    public String getCommand(){
-        return "geo fix " + longitude + " " + latitude + " "
-                    + altitude;
-    }
-    
+    public void createPhysicalContextDetails(Group group) throws SecurityException, NoSuchFieldException {
+    	
+    	createPhysicalContextDetailLabel(group, "Latitude");
+        final Text latitudeText = createPhysicalContextDetailText(group);
+        addFocusListener(latitudeText, GPS.class.getDeclaredField("latitude"), this);
+        latitudeText.setText(String.valueOf(GPS.this.latitude));
+        
+        createPhysicalContextDetailLabel(group, "Longitude");
+        final Text longitudeText = createPhysicalContextDetailText(group);
+        addFocusListener(longitudeText, GPS.class.getDeclaredField("longitude"), this);
+        longitudeText.setText(String.valueOf(GPS.this.longitude));
+        
+        createPhysicalContextDetailLabel(group, "Altitude");
+        final Text altitudeText = createPhysicalContextDetailText(group);
+        addFocusListener(altitudeText, GPS.class.getDeclaredField("altitude"), this);
+        altitudeText.setText(String.valueOf(GPS.this.altitude));
+	}	
+        
 }
