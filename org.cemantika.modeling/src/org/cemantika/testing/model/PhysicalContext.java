@@ -4,19 +4,11 @@
  */
 package org.cemantika.testing.model;
 
-import java.awt.Color;
-import java.awt.GridLayout;
 import java.lang.reflect.Field;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.cemantika.testing.util.Constants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -48,44 +40,6 @@ public class PhysicalContext extends AbstractContext{
         //Physical Context can`t have children
     }
 
-    @Override
-    public String getTableRepresentation() {
-        return "P: "+getName();
-    }
-
-    @Override
-    public Color getBackgroundColor() {
-        return Constants.COLOR_PHYSICAL;
-    }
-    
-    //TODO: Abstract machen
-    public void savePanel(){
-        
-    }
-    
-    //TODO: Abstract machen
-    public String getTextAreaRepresentation() {
-        return getName()+":";
-    }
-    
-    //TODO: Abstract machen
-    public JPanel getPanel(){
-       JPanel panel = new JPanel();
-
-        JLabel jLabel1 = new JLabel();
-
-        panel.setLayout(new GridLayout(3, 2));
-
-        jLabel1.setText("Not implemented yet");
-        panel.add(jLabel1);
-
-       return panel;
-    }
-    
-    //TODO: Abstract machen
-    public String getCommand(){
-        return "";
-    }
     public void createPhysicalContextDetails(Group group) throws SecurityException, NoSuchFieldException{}
     
     protected Text createPhysicalContextDetailText(Group group) {

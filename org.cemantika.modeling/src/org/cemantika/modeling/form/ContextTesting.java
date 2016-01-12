@@ -350,7 +350,7 @@ public class ContextTesting extends FormPage {
 		}
 
 		private void showCKTBEditor(Map<String, LogicalContext> logicalContexts) {
-			Dialog dialog = new ManageContextKnowledgeTestBase(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(), logicalContexts);
+			Dialog dialog = new ManageContextKnowledgeTestBase(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(), manager, logicalContexts);
 			dialog.open();
 			System.out.println("open window");
 		}

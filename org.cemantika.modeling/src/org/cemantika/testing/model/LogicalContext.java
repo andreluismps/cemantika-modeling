@@ -4,9 +4,6 @@
  */
 package org.cemantika.testing.model;
 
-import java.awt.Color;
-
-import org.cemantika.testing.util.Constants;
 
 /**
  *
@@ -21,16 +18,6 @@ public class LogicalContext extends AbstractContext{
 
 	public LogicalContext(String name){
         setName(name);
-    }
-    
-    @Override
-    public String getTableRepresentation() {
-        return "L: "+getName();
-    }
-
-    @Override
-    public Color getBackgroundColor() {
-        return Constants.COLOR_LOGICAL;
     }
     
     @Override

@@ -30,5 +30,6 @@ Bundle-ClassPath: .,
  mvel2.jar,
  xpp3_min.jar,
  xpp3.jar,
- xstream.jar
+ xstream.jar,
+ gson-2.3.1.jar
  

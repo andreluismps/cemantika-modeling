@@ -4,12 +4,9 @@
  */
 package org.cemantika.testing.model;
 
-import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.ImageIcon;
 
 import org.cemantika.uml.model.HashCodeUtil;
 
@@ -26,13 +23,7 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 	private List<AbstractContext> lstContext = new ArrayList<AbstractContext>();
     
     private String name;
-    
-    protected ImageIcon leafIcon;
-    
-    public abstract String getTableRepresentation();
-    
-    public abstract Color getBackgroundColor();
-    
+        
     public void addChildContext(AbstractContext context, int timeSlot){
         addChildContext(context);
     }
@@ -59,12 +50,6 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
         lstContext.remove(context);
     }  
     
-    public ImageIcon getLeafIcon() {
-        if(leafIcon != null)
-            return leafIcon;
-        else
-            return new ImageIcon();
-    }
     
   @Override
   public AbstractContext clone()

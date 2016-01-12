@@ -4,7 +4,6 @@
  */
 package org.cemantika.testing.model;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,15 +51,6 @@ public class TimeSlot extends AbstractContext{
         }
     }
 
-    @Override
-    public String getTableRepresentation() {
-        return new StringBuilder("Time: ").append(id).toString();
-    }
-
-    @Override
-    public Color getBackgroundColor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public void addChildContext(AbstractContext context) {

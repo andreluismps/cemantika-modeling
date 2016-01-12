@@ -4,9 +4,6 @@
  */
 package org.cemantika.testing.model;
 
-import java.awt.Color;
-
-import org.cemantika.testing.util.Constants;
 
 /**
  *
@@ -29,16 +26,6 @@ public class Scenario extends AbstractContext{
       //leafIcon = Constants.getInstance().getImageIcon(Constants.URL_ICON_SCENARIO);
       
       addChildContext(new TimeSlot(0));
-    }
-        
-    @Override
-    public String getTableRepresentation() {
-      return "SC: "+getName();
-    }
-
-    @Override
-    public Color getBackgroundColor() {
-        return Constants.COLOR_SITUATION;
     }
     
     @Override

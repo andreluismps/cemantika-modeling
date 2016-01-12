@@ -1,9 +1,18 @@
 package org.cemantika.testing.cktb.view;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
@@ -24,14 +33,21 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.gson.Gson;
+
 public class ManageContextKnowledgeTestBase extends Dialog {
 	
+	private PluginManager manager;
 	private Map<String, LogicalContext> logicalContexts;
 
-    public ManageContextKnowledgeTestBase(final Shell parent, Map<String, LogicalContext> logicalContexts) 
+    public ManageContextKnowledgeTestBase(final Shell parent, PluginManager manager, Map<String, LogicalContext> logicalContexts) 
     {
         super(parent);
         this.logicalContexts = logicalContexts;
+        this.manager = manager;
+        
+		copyFile(new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE)), new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE) + ".bkp"));
+		
     }
 
     @Override
@@ -159,4 +175,61 @@ public class ManageContextKnowledgeTestBase extends Dialog {
     {
         return new Point(700, 520);
     }
+    
+    @Override
+    protected void okPressed() {
+      persistCKTB();
+      super.okPressed();
+    }
+    
+    @Override
+    protected void cancelPressed() {
+      cancelModificationsOnCKTB();
+      super.cancelPressed();
+    }
+
+	private void cancelModificationsOnCKTB() {
+		copyFile(new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE) + ".bkp"), new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE)));
+		
+	}
+
+	private void persistCKTB() {
+
+		Gson gson = new Gson();
+		String json = gson.toJson(logicalContexts);
+		
+		try {
+			FileWriter writer = new FileWriter(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE));
+			writer.write(json);
+			writer.close();
+			File backup = new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE)+".bkp");
+			backup.delete();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void copyFile(File source, File dest) {
+		InputStream is = null;
+		OutputStream os = null;
+		try {
+
+			is = new FileInputStream(source);
+			os = new FileOutputStream(dest);
+			byte[] buffer = new byte[1024];
+			int length;
+
+			while ((length = is.read(buffer)) > 0) {
+				os.write(buffer, 0, length);
+			}
+			is.close();
+			os.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
