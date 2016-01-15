@@ -31,5 +31,8 @@ Bundle-ClassPath: .,
  xpp3_min.jar,
  xpp3.jar,
  xstream.jar,
- gson-2.3.1.jar
+ gson-2.3.1.jar,
+ reflections-0.9.10.jar,
+ guava-18.0.jar,
+ javassist-3.18.2-GA.jar
  

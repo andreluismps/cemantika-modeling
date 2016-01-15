@@ -16,7 +16,12 @@ public class LogicalContext extends AbstractContext{
 	 */
 	private static final long serialVersionUID = 1310999892562774018L;
 
+	public LogicalContext(){
+		super();
+    }
+	
 	public LogicalContext(String name){
+		super();
         setName(name);
     }
     

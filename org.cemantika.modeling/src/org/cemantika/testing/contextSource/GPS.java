@@ -27,9 +27,9 @@ public class GPS extends PhysicalContext{
         super(Constants.GPS);
         
         //Model
-        latitude = 0;
-        longitude = 0;
-        altitude = 0;
+        //latitude = 0;
+        //longitude = 0;
+        //altitude = 0;
         
         
     }

@@ -29,11 +29,13 @@ public class PhysicalContext extends AbstractContext{
 	 */
 	private static final long serialVersionUID = -437658113632518586L;
 
-	public PhysicalContext(String name){
-      setName(name);    
-      
-      //leafIcon = Constants.getInstance().getImageIcon(Constants.URL_ICON_PHYSICAL);
+	public PhysicalContext(){
+
     }
+	
+	public PhysicalContext(String name) {
+		setName(name);
+	}
     
     @Override
     public void addChildContext(AbstractContext context){

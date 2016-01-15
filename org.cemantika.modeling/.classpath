@@ -8,5 +8,8 @@
 	<classpathentry exported="true" kind="lib" path="drools-compiler.jar" sourcepath="/Users/andreluismps/Downloads/drools-5.0-src"/>
 	<classpathentry exported="true" kind="lib" path="drools-core.jar" sourcepath="/Users/andreluismps/Downloads/drools-5.0-src"/>
 	<classpathentry exported="true" kind="lib" path="gson-2.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="guava-18.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="reflections-0.9.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="javassist-3.18.2-GA.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

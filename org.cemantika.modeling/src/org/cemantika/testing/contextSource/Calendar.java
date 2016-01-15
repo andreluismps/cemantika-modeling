@@ -29,10 +29,10 @@ public class Calendar extends PhysicalContext{
         super(Constants.CALENDAR);
         
         //Model
-        appointmentName = "Meeting 1";
-        startTime = "08:00";
-        endTime = "09:00";
-        date = "30.04.2014";
+        //appointmentName = "Meeting 1";
+        //startTime = "08:00";
+        //endTime = "09:00";
+        //date = "30.04.2014";
         
         
     }
@@ -42,22 +42,22 @@ public class Calendar extends PhysicalContext{
     	createPhysicalContextDetailLabel(group, "Appointment Name");
         Text txtAppointmentName = createPhysicalContextDetailText(group);
         addFocusListener(txtAppointmentName, Calendar.class.getDeclaredField("appointmentName"), this);
-        txtAppointmentName.setText(appointmentName);
+        txtAppointmentName.setText((appointmentName != null) ? appointmentName : "");
         
         createPhysicalContextDetailLabel(group, "Start (hh:mm:ss)");
         Text txtStartTime = createPhysicalContextDetailText(group);
         addFocusListener(txtStartTime, Calendar.class.getDeclaredField("startTime"), this);
-        txtStartTime.setText(startTime);
+        txtStartTime.setText((startTime != null) ? startTime : "");
         
         createPhysicalContextDetailLabel(group, "End (hh:mm:ss)");
         Text txtEndTime = createPhysicalContextDetailText(group);
         addFocusListener(txtEndTime, Calendar.class.getDeclaredField("endTime"), this);
-        txtEndTime.setText(endTime);
+        txtEndTime.setText((endTime != null) ? endTime : "");
         
         createPhysicalContextDetailLabel(group, "Date (dd.mm.yyyy)");
         Text txtDate = createPhysicalContextDetailText(group);
         addFocusListener(txtDate, Calendar.class.getDeclaredField("date"), this);
-        txtDate.setText(date);
+        txtDate.setText((date != null) ? date : "");
 	}
     
 }

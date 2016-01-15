@@ -6,9 +6,14 @@ package org.cemantika.testing.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.cemantika.testing.util.GsonUtils;
+import org.cemantika.testing.util.RuntimeTypeAdapterFactory;
 import org.cemantika.uml.model.HashCodeUtil;
+import org.reflections.Reflections;
 
 /**
  *
@@ -23,6 +28,32 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 	private List<AbstractContext> lstContext = new ArrayList<AbstractContext>();
     
     private String name;
+    
+	private static final RuntimeTypeAdapterFactory<AbstractContext> adapter = RuntimeTypeAdapterFactory.of(AbstractContext.class);
+
+	private static final HashSet<Class<?>> registeredClasses = new HashSet<Class<?>>();
+
+	static {
+		GsonUtils.registerType(adapter);
+		Reflections reflections = new Reflections("org.cemantika.testing.contextSource");
+		
+		Set<Class<? extends AbstractContext>> allClasses = reflections.getSubTypesOf(AbstractContext.class);
+		reflections = new Reflections("org.cemantika.testing.contextSource");
+		allClasses.addAll(reflections.getSubTypesOf(AbstractContext.class));
+		for (Class<? extends AbstractContext> clazz : allClasses) {
+			adapter.registerSubtype(clazz);
+		}
+	}
+
+	private synchronized void registerClass() {
+		if (!AbstractContext.registeredClasses.contains(this.getClass())) {
+			adapter.registerSubtype(this.getClass());
+		}
+	}
+
+	public AbstractContext() {
+		registerClass();
+	}
         
     public void addChildContext(AbstractContext context, int timeSlot){
         addChildContext(context);

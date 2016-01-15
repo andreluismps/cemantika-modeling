@@ -22,8 +22,8 @@ public class WiFi extends PhysicalContext{
 	 */
 	private static final long serialVersionUID = -894979986671295654L;
 	//Model
-    private boolean value1 = false;
-    private String value2 = "";
+    private boolean value1;
+    private String value2;
     
     //TODO Rechtsbuendig
     public WiFi(){

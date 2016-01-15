@@ -1,21 +1,29 @@
 package org.cemantika.testing.cktb.view;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
+import org.cemantika.testing.util.CxGUtils;
+import org.cemantika.testing.util.GsonUtils;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -34,22 +42,24 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class ManageContextKnowledgeTestBase extends Dialog {
 	
 	private PluginManager manager;
 	private Map<String, LogicalContext> logicalContexts;
+	private Group grpSensor;
 
-    public ManageContextKnowledgeTestBase(final Shell parent, PluginManager manager, Map<String, LogicalContext> logicalContexts) 
+    public ManageContextKnowledgeTestBase(final Shell parent, PluginManager manager, Map<String, LogicalContext> logicalContexts, IFile contextualGraph, IFile file) 
     {
         super(parent);
-        this.logicalContexts = logicalContexts;
         this.manager = manager;
+        this.logicalContexts = loadCKTB(contextualGraph, file);
         
-		copyFile(new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE)), new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE) + ".bkp"));
+		copyFile(new File(getCKTBPath()), new File(getCKTBPath() + ".bkp"));
 		
     }
-
+    
     @Override
     protected Control createDialogArea(final Composite parent) 
     {
@@ -153,11 +163,11 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 	}
     
     public Group createSensorGroup(final Composite composite_2, String name) {
-		Group group = new Group(composite_2, SWT.SHADOW_OUT);
-		group.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 1, 1 ) );
-		group.setLayout( new GridLayout( 2, true ) );
-		group.setText(name);
-		return group;
+		grpSensor = new Group(composite_2, SWT.SHADOW_OUT);
+		grpSensor.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 1, 1 ) );
+		grpSensor.setLayout( new GridLayout( 2, true ) );
+		grpSensor.setText(name);
+		return grpSensor;
 	}
 
     @Override
@@ -176,38 +186,82 @@ public class ManageContextKnowledgeTestBase extends Dialog {
         return new Point(700, 520);
     }
     
-    @Override
-    protected void okPressed() {
-      persistCKTB();
-      super.okPressed();
-    }
-    
-    @Override
-    protected void cancelPressed() {
-      cancelModificationsOnCKTB();
-      super.cancelPressed();
-    }
+	@Override
+	protected void okPressed() {
+		//Needed because last text field don not lose focus 
+		grpSensor.setEnabled(false);
+		persistCKTB();
+		super.okPressed();
+	}
+
+	@Override
+	protected void cancelPressed() {
+		cancelModificationsOnCKTB();
+		super.cancelPressed();
+	}
 
 	private void cancelModificationsOnCKTB() {
-		copyFile(new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE) + ".bkp"), new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE)));
+		copyFile(new File(getCKTBPath() + ".bkp"), new File(getCKTBPath()));
 		
+	}
+
+	private String getCKTBPath() {
+		return manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE);
 	}
 
 	private void persistCKTB() {
 
-		Gson gson = new Gson();
+		Gson gson = GsonUtils.getGson();
 		String json = gson.toJson(logicalContexts);
 		
 		try {
-			FileWriter writer = new FileWriter(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE));
+			FileWriter writer = new FileWriter(getCKTBPath());
 			writer.write(json);
 			writer.close();
-			File backup = new File(manager.get(PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE)+".bkp");
+			File backup = new File(getCKTBPath()+".bkp");
 			backup.delete();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private Map<String, LogicalContext> loadCKTB(IFile contextualGraph, IFile file){
+    	
+    	//read from CxG
+    	Map<String, LogicalContext> logicalContextCxG = CxGUtils.getLogicalContexts(contextualGraph, file);
+    	
+    	//read from file
+    	Map<String, LogicalContext> logicalContextsResult = readCKTBFromFile();
+    	
+    	for (Entry<String, LogicalContext> logicalContextEntry : logicalContextCxG.entrySet()) {
+			if (!logicalContextsResult.containsValue(logicalContextEntry.getValue()))
+				logicalContextsResult.put(logicalContextEntry.getKey(), logicalContextEntry.getValue());
+		}
+
+    	return logicalContextsResult;
+    }
+	
+	@SuppressWarnings("unchecked")
+	private Map<String, LogicalContext> readCKTBFromFile() {
+
+		Map<String, LogicalContext> logicalCKTB = new HashMap<String, LogicalContext>();
+		
+		Type type = new TypeToken<Map<String, LogicalContext>>() {}.getType();
+		Gson gson = GsonUtils.getGson();
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(getCKTBPath()));
+
+			logicalCKTB.putAll((Map<String, LogicalContext>) gson.fromJson(br, type));
+			
+			br.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return logicalCKTB;
 	}
 	
 	private void copyFile(File source, File dest) {

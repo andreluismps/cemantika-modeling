@@ -275,6 +275,7 @@ public class ContextTesting extends FormPage {
 		private org.eclipse.uml2.uml.Package package_;
 		private IFile file;
 		private Tab tab;
+		private Map<String, LogicalContext> logicalContexts;
 
 		public BehaviorModelListener(Tab tab) {
 			this.tab = tab;
@@ -331,26 +332,10 @@ public class ContextTesting extends FormPage {
 			return contextualGraph;
 		}
 		
+		
 		private void identifyLogicalContexts(IFile contextualGraph) {
-			
-			Map<String, LogicalContext> logicalContexts = CxGUtils.getLogicalContexts(contextualGraph, file);
-			System.out.println(logicalContexts);
-			//Set<LogicalContext> cktbData = loadCKTB();
-			
-			//cktbData.addAll(logicalContexts);
-			
-			showCKTBEditor(logicalContexts);
-			
-		}
-		
-		
-		private Set<LogicalContext> loadCKTB() {
-			// TODO load CKTB file data
-			return null;
-		}
-
-		private void showCKTBEditor(Map<String, LogicalContext> logicalContexts) {
-			Dialog dialog = new ManageContextKnowledgeTestBase(Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(), manager, logicalContexts);
+			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+			Dialog dialog = new ManageContextKnowledgeTestBase(shell, manager, logicalContexts, contextualGraph, file);
 			dialog.open();
 			System.out.println("open window");
 		}
