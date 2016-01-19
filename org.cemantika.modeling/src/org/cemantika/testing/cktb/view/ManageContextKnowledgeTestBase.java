@@ -231,6 +231,9 @@ public class ManageContextKnowledgeTestBase extends Dialog {
     	//read from CxG
     	Map<String, LogicalContext> logicalContextCxG = CxGUtils.getLogicalContexts(contextualGraph, file);
     	
+    	//add context defects
+    	logicalContextCxG = CxGUtils.getLogicalContextsFaults(logicalContextCxG);
+    	
     	//read from file
     	Map<String, LogicalContext> logicalContextsResult = readCKTBFromFile();
     	

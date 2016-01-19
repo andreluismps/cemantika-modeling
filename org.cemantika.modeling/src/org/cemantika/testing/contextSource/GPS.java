@@ -4,6 +4,7 @@
  */
 package org.cemantika.testing.contextSource;
 
+import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.util.Constants;
 import org.eclipse.swt.widgets.Group;
@@ -23,16 +24,18 @@ public class GPS extends PhysicalContext{
 	//Model
     private double latitude, longitude, altitude;
         
-    public GPS(){
-        super(Constants.GPS);
-        
-        //Model
-        //latitude = 0;
-        //longitude = 0;
-        //altitude = 0;
-        
-        
-    }
+	public GPS() {
+		super(Constants.GPS);
+
+		getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_INCORRECTNESS);
+		getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_FALSE_READING);
+
+		getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_UNRELIABILITY);
+		getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
+		getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_WRONG_INTERPRETATION);
+		getContextDefectPatterns().add(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION);
+
+	}
     
     public void createPhysicalContextDetails(Group group) throws SecurityException, NoSuchFieldException {
     	

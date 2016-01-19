@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -31,6 +32,8 @@ import org.cemantika.testing.cxg.xsd.Start;
 import org.cemantika.testing.cxg.xsd.Type;
 import org.cemantika.testing.cxg.xsd.Variable;
 import org.cemantika.testing.cxg.xsd.Variables;
+import org.cemantika.testing.model.AbstractContext;
+import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.Grafo;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
@@ -540,14 +543,31 @@ public class CxGUtils {
 			return connections;
 		}
 	}
-}
-/*
-[
-user time is not betweeen appointment begin/end[[Appointment[[]]]], 
-SSID of meeting room not detected[[Wi-Fi[[]]]], 
-GPS data indicate meeting site[[GPS[[]], Cell ID[[]]]], 
-GPS data do not indicate meeting site[[GPS[[]], Cell ID[[]]]], 
-SSID of meeting room detected[[Wi-Fi[[]]]], 
-user time is betweeen appointment begin/end[[Appointment[[]]]]]
 
-*/
+	public static Map<String, LogicalContext> getLogicalContextsFaults(Map<String, LogicalContext> logicalContextCxG) {
+		//combine faults with logical contexts
+		Map<String, LogicalContext> createdLogicalContexts = new HashMap<String, LogicalContext>();
+		for (Entry<String, LogicalContext> logicalContextEntry : logicalContextCxG.entrySet()) {
+			LogicalContext logicalContext = logicalContextEntry.getValue();
+			createdLogicalContexts.putAll(createLogicalContextsFalts(logicalContext));
+		}
+		
+		logicalContextCxG.putAll(createdLogicalContexts);
+		
+		return logicalContextCxG;
+	}
+
+
+	private static Map<? extends String, ? extends LogicalContext> createLogicalContextsFalts(LogicalContext logicalContext) {
+		Map<String, LogicalContext> createdLogicalContexts = new HashMap<String, LogicalContext>();
+		for (AbstractContext abstractContext : logicalContext.getContextList()) {
+			
+			for(ContextDefectPattern contextDefectPattern : ((PhysicalContext)abstractContext).getContextDefectPatterns()){
+				LogicalContext createdLogicalContext = (LogicalContext) logicalContext.clone();
+				createdLogicalContext.setName(createdLogicalContext.getName() + " - " + abstractContext.getName() + " - " + contextDefectPattern.toString());
+				createdLogicalContexts.put(createdLogicalContext.getName(), createdLogicalContext);
+			}
+		}
+		return createdLogicalContexts;
+	}
+}

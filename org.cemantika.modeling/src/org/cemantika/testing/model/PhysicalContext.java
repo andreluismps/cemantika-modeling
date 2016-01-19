@@ -5,6 +5,8 @@
 package org.cemantika.testing.model;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -28,9 +30,11 @@ public class PhysicalContext extends AbstractContext{
 	 * 
 	 */
 	private static final long serialVersionUID = -437658113632518586L;
+	
+	private List<ContextDefectPattern> contextDefectPatterns = new ArrayList<ContextDefectPattern>();
 
 	public PhysicalContext(){
-
+		contextDefectPatterns.add(ContextDefectPattern.INCOMPLETE_UNAIVALABALITY);
     }
 	
 	public PhysicalContext(String name) {
@@ -41,6 +45,8 @@ public class PhysicalContext extends AbstractContext{
     public void addChildContext(AbstractContext context){
         //Physical Context can`t have children
     }
+    
+    
 
     public void createPhysicalContextDetails(Group group) throws SecurityException, NoSuchFieldException{}
     
@@ -107,6 +113,14 @@ public class PhysicalContext extends AbstractContext{
 				
 			}
 		});
+	}
+
+	public void setContextDefectPatterns(List<ContextDefectPattern> contextDefectPatterns) {
+		this.contextDefectPatterns = contextDefectPatterns;
+	}
+
+	public List<ContextDefectPattern> getContextDefectPatterns() {
+		return contextDefectPatterns;
 	}
     
     
