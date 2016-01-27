@@ -34,7 +34,8 @@ import org.cemantika.testing.cxg.xsd.Variable;
 import org.cemantika.testing.cxg.xsd.Variables;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
-import org.cemantika.testing.model.Grafo;
+import org.cemantika.testing.model.CxG;
+import org.cemantika.testing.model.Graph;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.uml.util.UmlUtils;
@@ -49,11 +50,28 @@ import org.eclipse.uml2.uml.Stereotype;
 public class CxGUtils {
 	public static Map<String, LogicalContext> getLogicalContexts(IFile contextualGraph, IFile conceptualModel) {
 		
-		Process p = extractProcessFromCxG(contextualGraph);
+		Process extractedCxG = extractProcessFromCxG(contextualGraph);
 
-        InternalCxG internalCxG = new InternalCxG();
+        CxG internalCxG = new CxG();
         
-        for (Object nodesOrConnectionsOrHeaders : p.getHeaderOrNodesOrConnections()) {
+        List<ArrayList<String>> caminhos = getPathsFromCxG(extractedCxG, internalCxG);
+        
+        //obtem os sensores
+        fillInternalModel(internalCxG, caminhos, conceptualModel);		
+		//return dominiosGrafo;
+        System.out.println("");
+        
+        return getLogicalContexts(internalCxG, caminhos, conceptualModel);
+	}
+
+	public static List<ArrayList<String>> getPathsFromCxG(IFile conceptualModel, IFile contextualGraph, Process extractedCxG, CxG internalCxG){
+		extractedCxG = extractProcessFromCxG(contextualGraph);
+        
+        return getPathsFromCxG(extractedCxG, internalCxG);
+	}
+
+	private static List<ArrayList<String>> getPathsFromCxG(Process p, CxG internalCxG) {
+		for (Object nodesOrConnectionsOrHeaders : p.getHeaderOrNodesOrConnections()) {
         	
         	if (nodesOrConnectionsOrHeaders instanceof Header){
         		
@@ -71,21 +89,15 @@ public class CxGUtils {
 		}
         
         //popula grafo
-        Grafo grafo = createGrafo(internalCxG);
+        Graph grafo = createGrafo(internalCxG);
         
         //encontra caminhos
         List<ArrayList<String>> caminhos = grafo.listarCaminhos(grafo, internalCxG.getStart().getId(), internalCxG.getEnd().getId());
-        
-        //obtem os sensores
-        fillInternalModel(internalCxG, caminhos, conceptualModel);		
-		//return dominiosGrafo;
-        System.out.println("");
-        
-        return getLogicalContexts(internalCxG, caminhos, conceptualModel);
+		return caminhos;
 	}
 
 
-	private static Map<String, LogicalContext> getLogicalContexts(InternalCxG internalCxG, List<ArrayList<String>> caminhos, IFile conceptualModel) {
+	private static Map<String, LogicalContext> getLogicalContexts(CxG internalCxG, List<ArrayList<String>> caminhos, IFile conceptualModel) {
 		int i = 0;
         int pos = 0;
         int ctCount = 0;
@@ -136,7 +148,7 @@ public class CxGUtils {
 	}
 
 
-	private static Set<PhysicalContext> getPhysicalContexts(String constraint, IFile conceptualModel, InternalCxG internalCxG) {
+	private static Set<PhysicalContext> getPhysicalContexts(String constraint, IFile conceptualModel, CxG internalCxG) {
 		Set<PhysicalContext> physicalContexts = new HashSet<PhysicalContext>();
 		
         String condition = parseConstraint(constraint);
@@ -241,7 +253,7 @@ public class CxGUtils {
 	}
 
 
-	private static void fillInternalModel(InternalCxG internalCxG, List<ArrayList<String>> caminhos, IFile conceitualModel) {
+	private static void fillInternalModel(CxG internalCxG, List<ArrayList<String>> caminhos, IFile conceitualModel) {
 		int i = 0;
         int pos = 0;
         int ctCount = 0;
@@ -288,7 +300,7 @@ public class CxGUtils {
 	    }
 	}
 
-	private static List<String> extractSensors(String constraint, IFile conceitualModel, InternalCxG internalCxG) {
+	private static List<String> extractSensors(String constraint, IFile conceitualModel, CxG internalCxG) {
 		List<String> sensors = new ArrayList<String>();
         		
         String condition = parseConstraint(constraint);
@@ -436,8 +448,8 @@ public class CxGUtils {
 		return constraint;
 	}
 
-	private static Grafo createGrafo(InternalCxG internalCxG) {
-		Grafo grafo = new Grafo();
+	private static Graph createGrafo(CxG internalCxG) {
+		Graph grafo = new Graph();
         if (internalCxG.getConnections() != null){
         	for (Connection connection : internalCxG.getConnections().getConnection()) {
         		grafo.adicionaAresta(connection.getFrom(), connection.getTo());
@@ -446,7 +458,7 @@ public class CxGUtils {
 		return grafo;
 	}
 
-	private static InternalCxG extractNodes(Object nodesOrConnectionsOrHeaders, InternalCxG internalCxG) {
+	private static CxG extractNodes(Object nodesOrConnectionsOrHeaders, CxG internalCxG) {
 		
 		Nodes nos = (Nodes) nodesOrConnectionsOrHeaders;
 		for (Object no : nos.getStartOrEndOrActionNode()){
@@ -506,43 +518,6 @@ public class CxGUtils {
 
 		return  jb.getValue();
 	}
-	
-	private static class InternalCxG{
-		private Variables variables;
-		private Start start;
-		private End end;
-		private List<Split> contextualNodes = new ArrayList<Split>();
-		private Connections connections;
-		
-		public void setStart(Start start) {
-			this.start = start;
-		}
-		public Start getStart() {
-			return start;
-		}
-		public void setEnd(End end) {
-			this.end = end;
-		}
-		public End getEnd() {
-			return end;
-		}
-		
-		public List<Split> getContextualNodes() {
-			return contextualNodes;
-		}
-		public void setVariables(Variables variables) {
-			this.variables = variables;
-		}
-		public Variables getVariables() {
-			return variables;
-		}
-		public void setConnections(Connections connections) {
-			this.connections = connections;
-		}
-		public Connections getConnections() {
-			return connections;
-		}
-	}
 
 	public static Map<String, LogicalContext> getLogicalContextsFaults(Map<String, LogicalContext> logicalContextCxG) {
 		//combine faults with logical contexts
@@ -564,6 +539,10 @@ public class CxGUtils {
 			
 			for(ContextDefectPattern contextDefectPattern : ((PhysicalContext)abstractContext).getContextDefectPatterns()){
 				LogicalContext createdLogicalContext = (LogicalContext) logicalContext.clone();
+				createdLogicalContext.setContextList(new ArrayList<AbstractContext>());
+				for (AbstractContext physicalContext : logicalContext.getContextList()){
+					createdLogicalContext.addChildContext(physicalContext.clone());
+				}
 				createdLogicalContext.setName(createdLogicalContext.getName() + " - " + abstractContext.getName() + " - " + contextDefectPattern.toString());
 				createdLogicalContexts.put(createdLogicalContext.getName(), createdLogicalContext);
 			}

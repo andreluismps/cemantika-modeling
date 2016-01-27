@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class Grafo {
+public class Graph {
 	private Map<String, LinkedHashSet<String>> map = new HashMap<String, LinkedHashSet<String>>();
 
     public void adicionaAresta(String node1, String node2) {
@@ -29,17 +29,18 @@ public class Grafo {
         return new LinkedList<String>(adjacente);
     }
 	
-	public List<ArrayList<String>> listarCaminhos(Grafo grafo, String noInicial, String noFinal) {
+	public List<ArrayList<String>> listarCaminhos(Graph graph, String noInicial, String noFinal) {
 		ArrayList<String> visitado = new ArrayList<String>();
     	visitado.add(noInicial);
     	
     	ArrayList<ArrayList<String>> caminhos = new ArrayList<ArrayList<String>>();
     	
-		listarCaminhos(grafo, visitado, caminhos, noInicial, noFinal);
+		listarCaminhos(graph, visitado, caminhos, noInicial, noFinal);
 		return caminhos;
 	}
 	
-	private void listarCaminhos(Grafo grafo, List<String> visitado, List<ArrayList<String>> caminhos, String noAtual, String noFinal) {        
+	@SuppressWarnings("unchecked")
+	private void listarCaminhos(Graph grafo, List<String> visitado, List<ArrayList<String>> caminhos, String noAtual, String noFinal) {        
 	    
 		if (noAtual.equals(noFinal)) { 
 	        caminhos.add(new ArrayList(Arrays.asList(visitado.toArray())));

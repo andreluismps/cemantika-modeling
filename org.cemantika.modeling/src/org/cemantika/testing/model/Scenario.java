@@ -21,11 +21,7 @@ public class Scenario extends AbstractContext{
     private int currentTransmissionIndex = 0;
     
     public Scenario(String name){
-      setName(name);    
-      
-      //leafIcon = Constants.getInstance().getImageIcon(Constants.URL_ICON_SCENARIO);
-      
-      addChildContext(new TimeSlot(0));
+      setName(name);
     }
     
     @Override

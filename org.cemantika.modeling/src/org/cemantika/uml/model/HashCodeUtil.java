@@ -134,7 +134,4 @@ public final class HashCodeUtil {
     return aObject.getClass().isArray();
   }
   
-  private static void log(String aMessage){
-    System.out.println(aMessage);
-  }
 } 

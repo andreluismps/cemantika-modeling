@@ -18,7 +18,7 @@ public enum ContextDefectPattern {
 	GLANULARITY_MISMATCH_IMPRECISION("Granularity Mismatch / Imprecision"),
 	
 	PROBLEMATIC_RULE_LOGIC_NOT_INTERPRETABLE("Problematic Rule Logic / Not Interpretable"),
-	PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR(""),
+	PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR("Problematic Rule Logic / Wrong Behavior"),
 	
 	OVERLAPPING_SENSORS_CONCURRENT_VALUES("Overlapping Sensors / Concurrent Values"),
 	OVERLAPPING_SENSORS_UNPREDICTABLE("Overlapping Sensors / Unpredictable");

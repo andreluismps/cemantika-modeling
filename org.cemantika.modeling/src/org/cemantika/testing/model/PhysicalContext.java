@@ -31,7 +31,7 @@ public class PhysicalContext extends AbstractContext{
 	 */
 	private static final long serialVersionUID = -437658113632518586L;
 	
-	private List<ContextDefectPattern> contextDefectPatterns = new ArrayList<ContextDefectPattern>();
+	private transient List<ContextDefectPattern> contextDefectPatterns = new ArrayList<ContextDefectPattern>();
 
 	public PhysicalContext(){
 		contextDefectPatterns.add(ContextDefectPattern.INCOMPLETE_UNAIVALABALITY);

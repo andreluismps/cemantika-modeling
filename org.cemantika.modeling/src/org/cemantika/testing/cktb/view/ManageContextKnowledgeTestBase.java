@@ -121,7 +121,7 @@ public class ManageContextKnowledgeTestBase extends Dialog {
         lblDefault.setText("Logical Contexts:");
 
         List list = new List(logicalContextsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(250, 380);
+		GridData myGrid = new GridData(450, 380);
 		list.setLayoutData(myGrid);
 		
 		SortedSet<String> orderedLogicalContexts = new TreeSet<String>(logicalContexts.keySet());
@@ -231,7 +231,7 @@ public class ManageContextKnowledgeTestBase extends Dialog {
     	//read from CxG
     	Map<String, LogicalContext> logicalContextCxG = CxGUtils.getLogicalContexts(contextualGraph, file);
     	
-    	//add context defects
+    	//add sensor defects in logical contexts
     	logicalContextCxG = CxGUtils.getLogicalContextsFaults(logicalContextCxG);
     	
     	//read from file
@@ -246,7 +246,7 @@ public class ManageContextKnowledgeTestBase extends Dialog {
     }
 	
 	@SuppressWarnings("unchecked")
-	private Map<String, LogicalContext> readCKTBFromFile() {
+	public Map<String, LogicalContext> readCKTBFromFile() {
 
 		Map<String, LogicalContext> logicalCKTB = new HashMap<String, LogicalContext>();
 		
