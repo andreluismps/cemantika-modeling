@@ -8,12 +8,14 @@ import org.cemantika.testing.cxg.xsd.End;
 import org.cemantika.testing.cxg.xsd.Split;
 import org.cemantika.testing.cxg.xsd.Start;
 import org.cemantika.testing.cxg.xsd.Variables;
+import org.cemantika.testing.cxg.xsd.ActionNode;
 
 public class CxG {
 	private Variables variables;
 	private Start start;
 	private End end;
 	private List<Split> contextualNodes = new ArrayList<Split>();
+	private List<ActionNode> actionNodes = new ArrayList<ActionNode>();
 	private Connections connections;
 
 	public void setStart(Start start) {
@@ -50,5 +52,21 @@ public class CxG {
 
 	public Connections getConnections() {
 		return connections;
+	}
+
+	public void setActionNodes(List<ActionNode> actionNodes) {
+		this.actionNodes = actionNodes;
+	}
+
+	public List<ActionNode> getActionNodes() {
+		return actionNodes;
+	}
+	
+	public ActionNode getActionById(String nodeId){
+		for (ActionNode actionNode : actionNodes){
+			if (actionNode.getId().equals(nodeId))
+				return actionNode;
+		}
+		return null;
 	}
 }

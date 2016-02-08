@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.cemantika.testing.cxg.xsd.ActionNode;
 import org.cemantika.testing.cxg.xsd.Connection;
 import org.cemantika.testing.cxg.xsd.Constraint;
 import org.cemantika.testing.cxg.xsd.Constraints;
@@ -95,6 +96,9 @@ public class TestCaseGenerator {
 				}
 			}
 		    i++;
+		    ActionNode actionNode = internalCxG.getActionById(node);
+            if (actionNode != null)
+            	situation.getExpectedActions().add(actionNode.getName());
 		}
 		return situation;
 	}

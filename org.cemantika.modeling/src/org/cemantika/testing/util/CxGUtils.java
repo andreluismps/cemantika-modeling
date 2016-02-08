@@ -19,6 +19,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
+import org.cemantika.testing.cxg.xsd.ActionNode;
 import org.cemantika.testing.cxg.xsd.Connection;
 import org.cemantika.testing.cxg.xsd.Connections;
 import org.cemantika.testing.cxg.xsd.Constraint;
@@ -466,8 +467,10 @@ public class CxGUtils {
 				internalCxG.setStart((Start) no);
 			}else if (no instanceof End) {
 				internalCxG.setEnd((End) no);					
-			}else if (no instanceof Split) {;
+			}else if (no instanceof Split) {
 				internalCxG.getContextualNodes().add((Split) no);
+			}else if (no instanceof ActionNode) {
+				internalCxG.getActionNodes().add((ActionNode) no);
 			}
 		}
 		return internalCxG;

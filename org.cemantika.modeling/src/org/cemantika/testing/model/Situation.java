@@ -4,6 +4,9 @@
  */
 package org.cemantika.testing.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  *
@@ -15,6 +18,8 @@ public class Situation extends AbstractContext{
 	 * 
 	 */
 	private static final long serialVersionUID = 6275195839246421095L;
+	
+	private List<String> expectedActions = new ArrayList<String>(); 
 
 	public Situation(String name){
       setName(name);    
@@ -26,6 +31,14 @@ public class Situation extends AbstractContext{
           getContextList().add(context);  
         }
     }
+
+	public void setExpectedActions(List<String> expectedActions) {
+		this.expectedActions = expectedActions;
+	}
+
+	public List<String> getExpectedActions() {
+		return expectedActions;
+	}
 
 
 }

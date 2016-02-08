@@ -16,8 +16,10 @@ import org.cemantika.modeling.listener.overview.CreateContextKnowledgeTestBase;
 import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
 import org.cemantika.testing.cktb.view.ManageContextKnowledgeTestBase;
 import org.cemantika.testing.generator.TestCaseGenerator;
+import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
+import org.cemantika.testing.model.TestSuite;
 import org.cemantika.testing.util.GsonUtils;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
@@ -352,6 +354,12 @@ public class ContextTesting extends FormPage {
 			//TODO Include deffect patterns into context sources and scenarios
 			List<Scenario> testCases = new TestCaseGenerator(logicalContexts).testCaseGeneration(contextualGraph, file);
 			
+			TestSuite testSuite = new TestSuite();
+			testSuite.setTestCases(new ArrayList<AbstractContext>());
+			for (AbstractContext scenario : testCases)
+				testSuite.getTestCases().add(scenario);
+			
+			
 			FileDialog dialog = new FileDialog( shell, SWT.SAVE);
 	        dialog.setText("Save Test Case as");
 	        dialog.setFileName(".json");
@@ -360,10 +368,15 @@ public class ContextTesting extends FormPage {
 	        
 	        //TODO refactor gson use
 	        Gson gson = GsonUtils.getGson();
-			String json = gson.toJson(testCases);
+			String json = gson.toJson(testSuite);
+			
+			String jsonFile = null;
 			
 			try {
-				FileWriter writer = new FileWriter(dialog.open());
+				
+				jsonFile = dialog.open();
+				
+				FileWriter writer = new FileWriter(jsonFile);
 				writer.write(json);
 				writer.close();
 			} catch (IOException e) {
