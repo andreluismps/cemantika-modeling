@@ -22,7 +22,7 @@ public class GPS extends PhysicalContext{
 	private static final long serialVersionUID = -2796409290683390549L;
 
 	//Model
-    private double latitude, longitude, altitude;
+    private double latitude, longitude, altitude, accuracy;
         
 	public GPS() {
 		super(Constants.GPS);
@@ -31,7 +31,7 @@ public class GPS extends PhysicalContext{
 		//getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_FALSE_READING);
 
 		//getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_UNRELIABILITY);
-		getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
+		//getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
 		//getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_WRONG_INTERPRETATION);
 		getContextDefectPatterns().add(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION);
 
@@ -53,6 +53,11 @@ public class GPS extends PhysicalContext{
         Text txtAltitude = createPhysicalContextDetailText(group);
         addFocusListener(txtAltitude, GPS.class.getDeclaredField("altitude"), this);
         txtAltitude.setText(String.valueOf(altitude));
+        
+        createPhysicalContextDetailLabel(group, "Accuracy (meters)");
+        Text txtAccuracy = createPhysicalContextDetailText(group);
+        addFocusListener(txtAccuracy, GPS.class.getDeclaredField("accuracy"), this);
+        txtAccuracy.setText(String.valueOf(accuracy));
 	}	
         
 }

@@ -35,6 +35,7 @@ import org.cemantika.testing.cxg.xsd.Variable;
 import org.cemantika.testing.cxg.xsd.Variables;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
+import org.cemantika.testing.model.ContextSourceDefectPattern;
 import org.cemantika.testing.model.CxG;
 import org.cemantika.testing.model.Graph;
 import org.cemantika.testing.model.LogicalContext;
@@ -527,7 +528,7 @@ public class CxGUtils {
 		Map<String, LogicalContext> createdLogicalContexts = new HashMap<String, LogicalContext>();
 		for (Entry<String, LogicalContext> logicalContextEntry : logicalContextCxG.entrySet()) {
 			LogicalContext logicalContext = logicalContextEntry.getValue();
-			createdLogicalContexts.putAll(createLogicalContextsFalts(logicalContext));
+			createdLogicalContexts.putAll(createLogicalContextsFaults(logicalContext));
 		}
 		
 		logicalContextCxG.putAll(createdLogicalContexts);
@@ -536,17 +537,19 @@ public class CxGUtils {
 	}
 
 
-	private static Map<? extends String, ? extends LogicalContext> createLogicalContextsFalts(LogicalContext logicalContext) {
+	private static Map<? extends String, ? extends LogicalContext> createLogicalContextsFaults(LogicalContext logicalContext) {
 		Map<String, LogicalContext> createdLogicalContexts = new HashMap<String, LogicalContext>();
-		for (AbstractContext abstractContext : logicalContext.getContextList()) {
+		for (AbstractContext physicalContextAbs : logicalContext.getContextList()) {
 			
-			for(ContextDefectPattern contextDefectPattern : ((PhysicalContext)abstractContext).getContextDefectPatterns()){
+			for(ContextDefectPattern contextDefectPattern : ((PhysicalContext)physicalContextAbs).getContextDefectPatterns()){
 				LogicalContext createdLogicalContext = (LogicalContext) logicalContext.clone();
 				createdLogicalContext.setContextList(new ArrayList<AbstractContext>());
+				createdLogicalContext.setContextSourceDefectPatterns(new ArrayList<ContextSourceDefectPattern>());
+				createdLogicalContext.getContextSourceDefectPatterns().add( new ContextSourceDefectPattern(physicalContextAbs.getName(), contextDefectPattern));
 				for (AbstractContext physicalContext : logicalContext.getContextList()){
 					createdLogicalContext.addChildContext(physicalContext.clone());
 				}
-				createdLogicalContext.setName(createdLogicalContext.getName() + " - " + abstractContext.getName() + " - " + contextDefectPattern.toString());
+				createdLogicalContext.setName(createdLogicalContext.getName() + " - " + physicalContextAbs.getName() + " - " + contextDefectPattern.toString());
 				createdLogicalContexts.put(createdLogicalContext.getName(), createdLogicalContext);
 			}
 		}

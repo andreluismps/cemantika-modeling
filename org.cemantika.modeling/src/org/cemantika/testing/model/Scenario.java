@@ -4,6 +4,8 @@
  */
 package org.cemantika.testing.model;
 
+import java.util.ArrayList;
+
 
 /**
  *
@@ -22,6 +24,18 @@ public class Scenario extends AbstractContext{
     
     public Scenario(String name){
       setName(name);
+    }
+    
+    public static Scenario newInstance(Scenario scenario){
+    	
+    	Scenario newInstance = new Scenario(scenario.getName());
+    	newInstance.setContextList(new ArrayList<AbstractContext>());
+    	for (AbstractContext context : scenario.getContextList()){
+    		TimeSlot newTimeSlot = TimeSlot.newInstance((TimeSlot) context);
+    		newInstance.addChildContext(newTimeSlot);
+    	}
+    	
+    	return newInstance;
     }
     
     @Override

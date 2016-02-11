@@ -4,6 +4,9 @@
  */
 package org.cemantika.testing.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  *
@@ -15,7 +18,9 @@ public class LogicalContext extends AbstractContext{
 	 * 
 	 */
 	private static final long serialVersionUID = 1310999892562774018L;
-
+	
+	private List<ContextSourceDefectPattern> contextSourceDefectPatterns;
+	
 	public LogicalContext(){
 		super();
     }
@@ -23,6 +28,7 @@ public class LogicalContext extends AbstractContext{
 	public LogicalContext(String name){
 		super();
         setName(name);
+        contextSourceDefectPatterns = new ArrayList<ContextSourceDefectPattern>();
     }
     
     @Override
@@ -31,5 +37,19 @@ public class LogicalContext extends AbstractContext{
           getContextList().add(context);  
         }
     }
+
+	public void setContextSourceDefectPatterns(
+			List<ContextSourceDefectPattern> contextSourceDefectPatterns) {
+		this.contextSourceDefectPatterns = contextSourceDefectPatterns;
+	}
+
+	public List<ContextSourceDefectPattern> getContextSourceDefectPatterns() {
+		return contextSourceDefectPatterns;
+	}
+
+	public static LogicalContext newInstance(LogicalContext context) {
+		// TODO Auto-generated method stub
+		return context;
+	}
 
 }

@@ -255,8 +255,9 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(getCKTBPath()));
-
-			logicalCKTB.putAll((Map<String, LogicalContext>) gson.fromJson(br, type));
+			Object logicalContextsFromCKTB = gson.fromJson(br, type);
+			if (logicalContextsFromCKTB != null)
+				logicalCKTB.putAll((Map<String, LogicalContext>) logicalContextsFromCKTB);
 			
 			br.close();
 

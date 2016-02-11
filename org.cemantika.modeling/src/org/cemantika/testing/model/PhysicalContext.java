@@ -122,6 +122,11 @@ public class PhysicalContext extends AbstractContext{
 	public List<ContextDefectPattern> getContextDefectPatterns() {
 		return contextDefectPatterns;
 	}
+
+	public static PhysicalContext newInstance(PhysicalContext context) {
+		// TODO Auto-generated method stub
+		return context;
+	}
     
     
 }

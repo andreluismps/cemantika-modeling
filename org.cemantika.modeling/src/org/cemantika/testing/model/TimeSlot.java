@@ -24,6 +24,26 @@ public class TimeSlot extends AbstractContext{
 
     private Map<String, PhysicalContext> mapPhysicalContext;
     
+
+	public static TimeSlot newInstance(TimeSlot timeslot) {
+
+		TimeSlot newInstance = new TimeSlot(timeslot.id);
+		newInstance.setContextList(new ArrayList<AbstractContext>());
+		for (AbstractContext context : timeslot.getContextList()){
+			if(context instanceof Situation){
+				Situation situation = Situation.newInstance((Situation)context);
+				newInstance.addChildContext(situation);
+			}else if (context instanceof LogicalContext) {
+				LogicalContext logicalContext = LogicalContext.newInstance((LogicalContext)context);
+				newInstance.addChildContext(logicalContext);
+			}else if (context instanceof PhysicalContext) {
+				PhysicalContext physicalContext = PhysicalContext.newInstance((PhysicalContext)context);
+				newInstance.addChildContext(physicalContext);
+			}
+		}
+		return newInstance;
+	}
+    
     public TimeSlot(int id){
         setName("Time: "+id);
                 

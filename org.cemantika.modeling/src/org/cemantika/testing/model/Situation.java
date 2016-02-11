@@ -40,5 +40,11 @@ public class Situation extends AbstractContext{
 		return expectedActions;
 	}
 
+	public static Situation newInstance(Situation context) {
+		Situation newInstance = new Situation(context.getName());
+		newInstance.setContextList(new ArrayList<AbstractContext>(context.getContextList()));
+		return newInstance;
+	}
+
 
 }
