@@ -22,7 +22,7 @@ public class GPS extends PhysicalContext{
 	private static final long serialVersionUID = -2796409290683390549L;
 
 	//Model
-    private double latitude, longitude, altitude, accuracy;
+    private double latitude, longitude, altitude;
         
 	public GPS() {
 		super(Constants.GPS);
@@ -54,10 +54,6 @@ public class GPS extends PhysicalContext{
         addFocusListener(txtAltitude, GPS.class.getDeclaredField("altitude"), this);
         txtAltitude.setText(String.valueOf(altitude));
         
-        createPhysicalContextDetailLabel(group, "Accuracy (meters)");
-        Text txtAccuracy = createPhysicalContextDetailText(group);
-        addFocusListener(txtAccuracy, GPS.class.getDeclaredField("accuracy"), this);
-        txtAccuracy.setText(String.valueOf(accuracy));
 	}	
         
 }
