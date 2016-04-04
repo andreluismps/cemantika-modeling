@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
+import org.cemantika.testing.cktb.db.DataBase;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -42,6 +43,7 @@ public class CreateContextKnowledgeTestBase implements Listener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		DataBase.createDb(DataBase.getConnection(fileName + ".db"));
 		
 	}
 

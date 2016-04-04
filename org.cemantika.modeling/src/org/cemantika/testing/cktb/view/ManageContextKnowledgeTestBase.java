@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -18,6 +19,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
+import org.cemantika.testing.cktb.db.DataBase;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
@@ -214,6 +216,27 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 		Gson gson = GsonUtils.getGson();
 		String json = gson.toJson(logicalContexts);
 		
+		int logicalId = 0;
+		int physicalId = 0;
+		String jsonValues = "";
+		java.util.List<String> inserts = new ArrayList<String>();
+		for (Entry<String, LogicalContext> logicalContextEntry : logicalContexts.entrySet()) {
+			logicalId++;
+			inserts.add("INSERT INTO logicalContext (id, name) values (" + logicalId + ", '" + logicalContextEntry.getKey() + "')");
+			for (AbstractContext abstractContext : logicalContextEntry.getValue().getContextList()) {
+				 
+				if (abstractContext instanceof PhysicalContext){
+					physicalId++;
+					PhysicalContext physicalContext = (PhysicalContext) abstractContext;
+					jsonValues = gson.toJson(physicalContext);
+					inserts.add("INSERT INTO physicalContext (id, jsonValues) values (" + physicalId + ", '" + jsonValues +"')");
+					inserts.add("INSERT INTO logicalPhysicalContext (idLogical, idPhysical) values (" + logicalId + ", " + physicalId +")");
+				}
+			}
+		}
+		
+		DataBase.executeUpdate(inserts, DataBase.getConnection(getCKTBPath()+".db"));
+		
 		try {
 			FileWriter writer = new FileWriter(getCKTBPath());
 			writer.write(json);
@@ -234,7 +257,7 @@ public class ManageContextKnowledgeTestBase extends Dialog {
     	//add sensor defects in logical contexts
     	logicalContextCxG = CxGUtils.getLogicalContextsFaults(logicalContextCxG);
     	
-    	//read from file
+    	//read from file TODO get from db
     	Map<String, LogicalContext> logicalContextsResult = readCKTBFromFile();
     	
     	for (Entry<String, LogicalContext> logicalContextEntry : logicalContextCxG.entrySet()) {

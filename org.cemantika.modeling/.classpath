@@ -11,5 +11,6 @@
 	<classpathentry exported="true" kind="lib" path="guava-18.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="reflections-0.9.10.jar"/>
 	<classpathentry exported="true" kind="lib" path="javassist-3.18.2-GA.jar"/>
+	<classpathentry kind="lib" path="sqlite-jdbc-3.8.11.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
