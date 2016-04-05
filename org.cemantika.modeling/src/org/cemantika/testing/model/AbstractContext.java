@@ -24,6 +24,9 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 	 * 
 	 */
 	private static final long serialVersionUID = 2703014888130627743L;
+	
+	
+	private transient Integer id;
 
 	private List<AbstractContext> lstContext = new ArrayList<AbstractContext>();
     
@@ -128,6 +131,14 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 	@Override
 	public int compareTo(AbstractContext abstractContext) {
 		return this.name.compareTo(abstractContext.name);
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getId() {
+		return id;
 	}
 	
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -214,28 +213,22 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 	private void persistCKTB() {
 
 		Gson gson = GsonUtils.getGson();
-		String json = gson.toJson(logicalContexts);
 		
-		int logicalId = 0;		
-		java.util.List<String> inserts = new ArrayList<String>();
-		//TODO persist with update too
+		Integer id = null;		
+		java.util.List<String> commands = new ArrayList<String>();
+		
 		for (Entry<String, LogicalContext> logicalContextEntry : logicalContexts.entrySet()) {
-			logicalId++;
-			inserts.add("INSERT INTO logicalContext (id, name, jsonValue) values (" + logicalId + ", '" + logicalContextEntry.getKey() + "', '"+ gson.toJson(logicalContextEntry.getValue()) + "')");
+			String name = logicalContextEntry.getKey();
+			String jsonValue = gson.toJson(logicalContextEntry.getValue());
+			id = logicalContextEntry.getValue().getId();
+			if (id == null)
+				commands.add("INSERT INTO logicalContext (name, jsonValue) values ('" + name + "', '"+ jsonValue + "')");
+			else
+				commands.add("UPDATE logicalContext SET name = '"  + name + "', jsonValue = '" + jsonValue + "' where id = " + id);
 		}
 		
-		DataBase.executeUpdate(inserts, DataBase.getConnection(getCKTBPath()+".db"));
+		DataBase.executeUpdate(commands, DataBase.getConnection(getCKTBPath()+".db"));
 		
-		try {
-			FileWriter writer = new FileWriter(getCKTBPath());
-			writer.write(json);
-			writer.close();
-			File backup = new File(getCKTBPath()+".bkp");
-			backup.delete();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private Map<String, LogicalContext> loadCKTB(IFile contextualGraph, IFile file){
@@ -270,7 +263,7 @@ public class ManageContextKnowledgeTestBase extends Dialog {
 		try {
 			while (logicalRs.next()) {
 				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				
+				logicalContext.setId(logicalRs.getInt("id"));
 				logicalCKTB.put(logicalContext.getName(), logicalContext);
 				
 			}

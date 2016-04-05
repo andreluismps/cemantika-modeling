@@ -57,7 +57,7 @@ import com.google.gson.Gson;
 public class ContextTesting extends FormPage {
 	
 	private enum Tab {
-		IDENTIFY_LOGICAL_CONTEXTS_TAB, TEST_CASE_GENERATION_TAB;
+		IDENTIFY_LOGICAL_CONTEXTS_TAB, TEST_CASE_GENERATION_TAB, IDENTIFY_SITUATIONS_TAB;
     }
 	
 	private FormToolkit toolkit;
@@ -76,9 +76,14 @@ public class ContextTesting extends FormPage {
 		"Import Context Knowledge Test Base (CKTB) for context data reuse for this project.";
 	
 	private static final String IDENTIFY_LOGICAL_CONTEXTS = 
-		  "The objective of this task is to identify logical contexts in Context Behavior model and add them to CKTB.\n" +
-		  "The inputs to this task are: Context Conceptual Model and its generated code and a Context Behavior Model.\n" +
+		  "The objective of this task is to identify logical contexts and its expected behavior in Context Behavior model and add them to CKTB.\n" +
+		  "The inputs to this task are: Context Conceptual Model, the Context Behavior Model and sensor related defects pattern.\n" +
 		  "Identify Logical Contexts in Behavior Model constructed based on identified focus below:";
+	
+	private static final String IDENTIFY_SITUATIONS = 
+		  "The objective of this task is to identify situations in Context Behavior model and add them to CKTB.\n" +
+		  "The inputs to this task are: Context Conceptual Model, the Context Behavior Model and previously identified logical contexts.\n" +
+		  "Identify Situations and its expected behavior in Behavior Model constructed based on identified focus below:";
 	
 	private static final String TEST_CASE_GENERATION = 
 		  "The objective of this task is to generate test cases for context simulators test execution.\n" +
@@ -105,6 +110,8 @@ public class ContextTesting extends FormPage {
         addImportCKTB();
         
         addIdentifyLogicalContextsInBehaviorModel();
+        
+        addIdentifySituationsInBehaviorModel();
         
         addTestCaseGeneration();		
 	}
@@ -172,6 +179,35 @@ public class ContextTesting extends FormPage {
 		behaviorModel.addHyperlinkListener(new BehaviorModelListener(Tab.IDENTIFY_LOGICAL_CONTEXTS_TAB));
 
 		importCKTB.setClient(sectionClient);
+
+	}
+	
+	private void addIdentifySituationsInBehaviorModel() {
+		Section importSituationsCKTB = CemantikaForm.createSection(
+				toolkit, scrolledForm, Section.DESCRIPTION | Section.TITLE_BAR
+						| Section.TWISTIE | Section.EXPANDED,
+				"Identify Situations in Behavior Model",
+				IDENTIFY_SITUATIONS);
+
+		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
+		importSituationsCKTB.setLayoutData(td);
+
+		Composite sectionClient = toolkit
+				.createComposite(importSituationsCKTB);
+		sectionClient.setLayout(new TableWrapLayout());
+		
+		this.behaviorModel = toolkit.createFormText(sectionClient, true);
+
+		td = new TableWrapData(TableWrapData.FILL_GRAB);
+		behaviorModel.setLayoutData(td);
+		StringBuffer html = behaviorModels();
+		behaviorModel.setImage("artifact", Activator.getDefault()
+				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
+
+		behaviorModel.setText(html.toString(), true, true);
+		behaviorModel.addHyperlinkListener(new BehaviorModelListener(Tab.IDENTIFY_SITUATIONS_TAB));
+
+		importSituationsCKTB.setClient(sectionClient);
 
 	}
 	
