@@ -17,9 +17,9 @@ public class DataBase {
 		List<String> tablesDDL = new ArrayList<String>();
 		tablesDDL.add("CREATE TABLE scenario (id numeric, name text)");
 		tablesDDL.add("CREATE TABLE situation (id numeric, name text, expectedBehavior text)");
-		tablesDDL.add("CREATE TABLE logicalContext (id numeric, name text)");
-		tablesDDL.add("CREATE TABLE physicalContext (id numeric, jsonValues text)");
-		tablesDDL.add("CREATE TABLE logicalPhysicalContext (idLogical numeric, idPhysical numeric)");
+		tablesDDL.add("CREATE TABLE logicalContext (id numeric, name text, jsonValue text)");
+		//tablesDDL.add("CREATE TABLE physicalContext (id numeric, jsonValues text)");
+		//tablesDDL.add("CREATE TABLE logicalPhysicalContext (idLogical numeric, idPhysical numeric)");
 		tablesDDL.add("CREATE TABLE situationLogicalContext (idSituation numeric, idLogical numeric)");
 		tablesDDL.add("CREATE TABLE scenarioSituationContext (idScenario numeric, idSituation numeric)");
 		
@@ -55,11 +55,11 @@ public class DataBase {
 			stmt = conn.createStatement();
 			stmt.setQueryTimeout(iTimeout);
 			rs = stmt.executeQuery(command);
-
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			 try { rs.close(); stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
+			// try { rs.close(); stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
 		}
 		
 		return rs;
