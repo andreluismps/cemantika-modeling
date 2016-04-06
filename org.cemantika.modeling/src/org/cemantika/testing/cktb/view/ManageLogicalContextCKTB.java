@@ -45,13 +45,13 @@ import org.eclipse.swt.widgets.Shell;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class ManageContextKnowledgeTestBase extends Dialog {
+public class ManageLogicalContextCKTB extends Dialog {
 	
 	private PluginManager manager;
 	private Map<String, LogicalContext> logicalContexts;
 	private Group grpSensor;
 
-    public ManageContextKnowledgeTestBase(final Shell parent, PluginManager manager, Map<String, LogicalContext> logicalContexts, IFile contextualGraph, IFile file) 
+    public ManageLogicalContextCKTB(final Shell parent, PluginManager manager, Map<String, LogicalContext> logicalContexts, IFile contextualGraph, IFile file) 
     {
         super(parent);
         this.manager = manager;

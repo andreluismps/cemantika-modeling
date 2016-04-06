@@ -40,6 +40,7 @@ import org.cemantika.testing.model.CxG;
 import org.cemantika.testing.model.Graph;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
+import org.cemantika.testing.model.Situation;
 import org.cemantika.uml.util.UmlUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.util.EList;
@@ -554,5 +555,76 @@ public class CxGUtils {
 			}
 		}
 		return createdLogicalContexts;
+	}
+
+	public static Map<String, Situation> getSituations(IFile contextualGraph, IFile conceptualModel) {
+		Process extractexCxG = null;
+		CxG internalCxG = new CxG();
+		List<ArrayList<String>> caminhos = CxGUtils.getPathsFromCxG(contextualGraph, conceptualModel, extractexCxG, internalCxG);
+		
+		List<Split> splits = internalCxG.getContextualNodes();
+		
+		List<Situation> situations = getSituations(splits, caminhos, extractexCxG, internalCxG);
+		
+		return null;
+	}
+	
+	private static List<Situation> getSituations(List<Split> splits, List<ArrayList<String>> caminhos, Process extractexCxG, CxG internalCxG) {
+		List<Situation> situations = new ArrayList<Situation>();
+		int i = 0;
+        for(ArrayList<String> path : caminhos){
+        	Situation situation = null;//getSituation(splits, path, extractexCxG, internalCxG, logicalContexts);
+        	situation.setName("Situation #" + ++i);
+        	situations.add(situation);
+	    }
+		return situations;
+	}
+	
+	private Situation getSituation(List<Split> splits, ArrayList<String> path, Process extractexCxG, CxG internalCxG, Map<String, LogicalContext> logicalContexts) {
+		int i = 0, pos = 0;
+		Situation situation = new Situation("");
+		for (String node : path) {
+		    if (pos != 0){
+		    	for (Split split : splits) {
+		    		if (split.getId().equals(path.get(pos))){
+						for (Connection conn : internalCxG.getConnections().getConnection()) {
+							if (conn.getTo().equals(node)){
+								LogicalContext logicalContext = getLogicalContext(split, conn.getTo(), internalCxG, logicalContexts);
+								situation.addChildContext(logicalContext);
+							}
+							
+						}
+					}
+				}
+		    	pos = 0;
+		    }
+		    for (Split noContextual : splits) {
+				if (noContextual.getId().equals(node)){
+					pos = i;
+					break;
+				}
+			}
+		    i++;
+		    ActionNode actionNode = internalCxG.getActionById(node);
+            if (actionNode != null)
+            	situation.getExpectedActions().add(actionNode.getName());
+		}
+		return situation;
+	}
+	
+	public static LogicalContext getLogicalContext(Split split, String toNodeId, CxG internalCxG, Map<String, LogicalContext>logicalContexts) {
+		
+		for (Object o : split.getMetaDataOrConstraints()) {
+			if(!(o instanceof Constraints)){
+				continue;
+			}
+			Constraints constraints = (Constraints) o;
+			for (Constraint constraint : constraints.getConstraint()) {
+				if(constraint.getToNodeId().equals(toNodeId)){
+					return logicalContexts.get(constraint.getName());					
+				}
+			}
+		}
+		return null;
 	}
 }

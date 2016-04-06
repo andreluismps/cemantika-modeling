@@ -14,11 +14,13 @@ import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.modeling.listener.overview.CreateContextKnowledgeTestBase;
 import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
-import org.cemantika.testing.cktb.view.ManageContextKnowledgeTestBase;
+import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
+import org.cemantika.testing.cktb.view.ManageSituationCKTB;
 import org.cemantika.testing.generator.TestCaseGenerator;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
+import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TestSuite;
 import org.cemantika.testing.util.GsonUtils;
 import org.cemantika.uml.model.Focus;
@@ -308,6 +310,7 @@ public class ContextTesting extends FormPage {
 		private IFile file;
 		private Tab tab;
 		private Map<String, LogicalContext> logicalContexts;
+		private Map<String, Situation> situations;
 
 		public BehaviorModelListener(Tab tab) {
 			this.tab = tab;
@@ -337,6 +340,10 @@ public class ContextTesting extends FormPage {
 			case IDENTIFY_LOGICAL_CONTEXTS_TAB:
 				identifyLogicalContexts(contextualGraph);
 				break;
+				
+			case IDENTIFY_SITUATIONS_TAB:
+				identifySituations(contextualGraph);
+				break;	
 			case TEST_CASE_GENERATION_TAB:
 				generateTestSuit(contextualGraph);
 				break;
@@ -367,7 +374,14 @@ public class ContextTesting extends FormPage {
 		
 		private void identifyLogicalContexts(IFile contextualGraph) {
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
-			Dialog dialog = new ManageContextKnowledgeTestBase(shell, manager, logicalContexts, contextualGraph, file);
+			Dialog dialog = new ManageLogicalContextCKTB(shell, manager, logicalContexts, contextualGraph, file);
+			dialog.open();
+			System.out.println("open window");
+		}
+		
+		private void identifySituations(IFile contextualGraph) {
+			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+			Dialog dialog = new ManageSituationCKTB(shell, manager, situations, contextualGraph, file);
 			dialog.open();
 			System.out.println("open window");
 		}
@@ -381,7 +395,7 @@ public class ContextTesting extends FormPage {
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			
 			//TODO refactor readCKTB to read file through "util"
-			logicalContexts  = new ManageContextKnowledgeTestBase(shell, manager, logicalContexts, contextualGraph, file).readCKTBFromFile();
+			logicalContexts  = new ManageLogicalContextCKTB(shell, manager, logicalContexts, contextualGraph, file).readCKTBFromFile();
 			
 			//Scenario = all graph's paths (scenarios list).
 		    //Situation = all logical contexts in a path (name: )

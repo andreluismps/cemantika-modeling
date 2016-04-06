@@ -120,7 +120,7 @@ public class TestCaseGenerator {
 		}
 		return scenario;
 	}
-	
+	@Deprecated
 	private List<Situation> getSituations(List<Split> splits, List<ArrayList<String>> caminhos, Process extractexCxG, CxG internalCxG) {
 		List<Situation> situations = new ArrayList<Situation>();
 		int i = 0;
@@ -132,6 +132,7 @@ public class TestCaseGenerator {
 		return situations;
 	}
 	
+	@Deprecated
 	private Situation getSituation(List<Split> splits, ArrayList<String> path, Process extractexCxG, CxG internalCxG) {
 		int i = 0, pos = 0;
 		Situation situation = new Situation("");
@@ -163,7 +164,7 @@ public class TestCaseGenerator {
 		}
 		return situation;
 	}
-
+	@Deprecated
 	private LogicalContext getLogicalContext(Split split, String toNodeId, CxG internalCxG) {
 		
 		for (Object o : split.getMetaDataOrConstraints()) {
