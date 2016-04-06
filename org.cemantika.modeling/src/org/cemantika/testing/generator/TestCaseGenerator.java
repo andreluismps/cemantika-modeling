@@ -34,7 +34,7 @@ public class TestCaseGenerator {
 	public List<Scenario> testCaseGeneration(IFile conceptualModel, IFile contextualGraph){
 		
 		List<Scenario> testCases = new ArrayList<Scenario>();
-		
+		/*
 		Process extractexCxG = null;
 		CxG internalCxG = new CxG();
 		List<ArrayList<String>> caminhos = CxGUtils.getPathsFromCxG(contextualGraph, conceptualModel, extractexCxG, internalCxG);
@@ -45,7 +45,7 @@ public class TestCaseGenerator {
 		
 		testCases.add(baseScenario);
 		testCases.addAll(generateGranularityMismatchImprecisionScenarios(baseScenario));
-		
+		*/
 		return testCases;
 	}
 

@@ -19,6 +19,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
+import org.cemantika.testing.cktb.dao.LogicalContextCKTBDAO;
 import org.cemantika.testing.cxg.xsd.ActionNode;
 import org.cemantika.testing.cxg.xsd.Connection;
 import org.cemantika.testing.cxg.xsd.Connections;
@@ -61,16 +62,8 @@ public class CxGUtils {
         
         //obtem os sensores
         fillInternalModel(internalCxG, caminhos, conceptualModel);		
-		//return dominiosGrafo;
-        System.out.println("");
-        
+		
         return getLogicalContexts(internalCxG, caminhos, conceptualModel);
-	}
-
-	public static List<ArrayList<String>> getPathsFromCxG(IFile conceptualModel, IFile contextualGraph, Process extractedCxG, CxG internalCxG){
-		extractedCxG = extractProcessFromCxG(contextualGraph);
-        
-        return getPathsFromCxG(extractedCxG, internalCxG);
 	}
 
 	private static List<ArrayList<String>> getPathsFromCxG(Process p, CxG internalCxG) {
@@ -524,7 +517,7 @@ public class CxGUtils {
 		return  jb.getValue();
 	}
 
-	public static Map<String, LogicalContext> getLogicalContextsFaults(Map<String, LogicalContext> logicalContextCxG) {
+	public static Map<String, LogicalContext> getFaultyLogicalContexts(Map<String, LogicalContext> logicalContextCxG) {
 		//combine faults with logical contexts
 		Map<String, LogicalContext> createdLogicalContexts = new HashMap<String, LogicalContext>();
 		for (Entry<String, LogicalContext> logicalContextEntry : logicalContextCxG.entrySet()) {
@@ -557,30 +550,33 @@ public class CxGUtils {
 		return createdLogicalContexts;
 	}
 
-	public static Map<String, Situation> getSituations(IFile contextualGraph, IFile conceptualModel) {
-		Process extractexCxG = null;
+	public static Map<String, Situation> getSituations(IFile contextualGraph, String CKTBPath){
+		
+		Process extractedCxG = extractProcessFromCxG(contextualGraph);
 		CxG internalCxG = new CxG();
-		List<ArrayList<String>> caminhos = CxGUtils.getPathsFromCxG(contextualGraph, conceptualModel, extractexCxG, internalCxG);
+		List<ArrayList<String>> caminhos = getPathsFromCxG(extractedCxG, internalCxG);
 		
 		List<Split> splits = internalCxG.getContextualNodes();
 		
-		List<Situation> situations = getSituations(splits, caminhos, extractexCxG, internalCxG);
+		Map<String, Situation> situations = getSituations(splits, caminhos, extractedCxG, internalCxG, CKTBPath);
 		
-		return null;
+		return situations;
 	}
 	
-	private static List<Situation> getSituations(List<Split> splits, List<ArrayList<String>> caminhos, Process extractexCxG, CxG internalCxG) {
-		List<Situation> situations = new ArrayList<Situation>();
+	private static Map<String, Situation> getSituations(List<Split> splits, List<ArrayList<String>> caminhos, Process extractexCxG, CxG internalCxG, String CKTBPath) {
+		Map<String, Situation> situations = new HashMap<String, Situation>();
 		int i = 0;
         for(ArrayList<String> path : caminhos){
-        	Situation situation = null;//getSituation(splits, path, extractexCxG, internalCxG, logicalContexts);
+        	Situation situation = getSituation(splits, path, extractexCxG, internalCxG, CKTBPath);
         	situation.setName("Situation #" + ++i);
-        	situations.add(situation);
+        	situations.put(situation.getName(), situation);
 	    }
 		return situations;
 	}
 	
-	private Situation getSituation(List<Split> splits, ArrayList<String> path, Process extractexCxG, CxG internalCxG, Map<String, LogicalContext> logicalContexts) {
+	private static Situation getSituation(List<Split> splits, ArrayList<String> path, Process extractexCxG, CxG internalCxG, String CKTBPath) {
+		Map<String, LogicalContext> logicalContexts = new LogicalContextCKTBDAO(CKTBPath).getAll();
+		
 		int i = 0, pos = 0;
 		Situation situation = new Situation("");
 		for (String node : path) {

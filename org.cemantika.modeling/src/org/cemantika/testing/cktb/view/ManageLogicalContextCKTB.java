@@ -7,23 +7,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
-import org.cemantika.testing.cktb.db.DataBase;
+import org.cemantika.testing.cktb.dao.LogicalContextCKTBDAO;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.util.CxGUtils;
-import org.cemantika.testing.util.GsonUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -41,9 +35,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 public class ManageLogicalContextCKTB extends Dialog {
 	
@@ -211,33 +202,16 @@ public class ManageLogicalContextCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-
-		Gson gson = GsonUtils.getGson();
-		
-		Integer id = null;		
-		java.util.List<String> commands = new ArrayList<String>();
-		
-		for (Entry<String, LogicalContext> logicalContextEntry : logicalContexts.entrySet()) {
-			String name = logicalContextEntry.getKey();
-			String jsonValue = gson.toJson(logicalContextEntry.getValue());
-			id = logicalContextEntry.getValue().getId();
-			if (id == null)
-				commands.add("INSERT INTO logicalContext (name, jsonValue) values ('" + name + "', '"+ jsonValue + "')");
-			else
-				commands.add("UPDATE logicalContext SET name = '"  + name + "', jsonValue = '" + jsonValue + "' where id = " + id);
-		}
-		
-		DataBase.executeUpdate(commands, DataBase.getConnection(getCKTBPath()+".db"));
-		
+		new LogicalContextCKTBDAO(getCKTBPath()+".db").Save(logicalContexts);
 	}
 	
-	private Map<String, LogicalContext> loadCKTB(IFile contextualGraph, IFile file){
+	private Map<String, LogicalContext> loadCKTB(IFile contextualGraph, IFile conceptualModel){
     	
     	//read from CxG
-    	Map<String, LogicalContext> logicalContextCxG = CxGUtils.getLogicalContexts(contextualGraph, file);
+    	Map<String, LogicalContext> logicalContextCxG = CxGUtils.getLogicalContexts(contextualGraph, conceptualModel);
     	
     	//add sensor defects in logical contexts
-    	logicalContextCxG = CxGUtils.getLogicalContextsFaults(logicalContextCxG);
+    	logicalContextCxG = CxGUtils.getFaultyLogicalContexts(logicalContextCxG);
     	
     	//read from db
     	Map<String, LogicalContext> logicalContextsResult = readCKTBFromFile();
@@ -251,27 +225,7 @@ public class ManageLogicalContextCKTB extends Dialog {
     }
 	
 	public Map<String, LogicalContext> readCKTBFromFile() {
-
-		Map<String, LogicalContext> logicalCKTB = new HashMap<String, LogicalContext>();
-		
-		String logicalQuery = "SELECT * FROM logicalContext";
-		
-		LogicalContext logicalContext = null;
-		ResultSet logicalRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(getCKTBPath()+".db"));
-		Type type = new TypeToken<LogicalContext>() {}.getType();
-		Gson gson = GsonUtils.getGson();
-		try {
-			while (logicalRs.next()) {
-				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				logicalContext.setId(logicalRs.getInt("id"));
-				logicalCKTB.put(logicalContext.getName(), logicalContext);
-				
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return logicalCKTB;
+		return new LogicalContextCKTBDAO(getCKTBPath()+".db").getAll();
 	}
 	
 	private void copyFile(File source, File dest) {

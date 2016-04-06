@@ -1,21 +1,12 @@
 package org.cemantika.testing.cktb.view;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.cktb.db.DataBase;
@@ -57,8 +48,6 @@ public class ManageSituationCKTB extends Dialog {
         super(parent);
         this.manager = manager;
         this.situations = loadCKTB(contextualGraph, file);
-        
-		copyFile(new File(getCKTBPath()), new File(getCKTBPath() + ".bkp"));
 		
     }
     
@@ -203,7 +192,6 @@ public class ManageSituationCKTB extends Dialog {
 	}
 
 	private void cancelModificationsOnCKTB() {
-		copyFile(new File(getCKTBPath() + ".bkp"), new File(getCKTBPath()));
 		
 	}
 
@@ -212,35 +200,18 @@ public class ManageSituationCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-
-		Gson gson = GsonUtils.getGson();
-		
-		Integer id = null;		
-		java.util.List<String> commands = new ArrayList<String>();
-		
-		for (Entry<String, Situation> logicalContextEntry : situations.entrySet()) {
-			String name = logicalContextEntry.getKey();
-			String jsonValue = gson.toJson(logicalContextEntry.getValue());
-			id = logicalContextEntry.getValue().getId();
-			if (id == null)
-				commands.add("INSERT INTO logicalContext (name, jsonValue) values ('" + name + "', '"+ jsonValue + "')");
-			else
-				commands.add("UPDATE logicalContext SET name = '"  + name + "', jsonValue = '" + jsonValue + "' where id = " + id);
-		}
-		
-		DataBase.executeUpdate(commands, DataBase.getConnection(getCKTBPath()+".db"));
 		
 	}
 	
-	private Map<String, Situation> loadCKTB(IFile contextualGraph, IFile file){
+	private Map<String, Situation> loadCKTB(IFile contextualGraph, IFile conceptualModel){
     	
     	//read from CxG
-    	Map<String, Situation> situationCxG = CxGUtils.getSituations(contextualGraph, file);
+    	Map<String, Situation> situationCxG = CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db");
     	/*
-    	//add sensor defects in logical contexts
-    	situationCxG = CxGUtils.getLogicalContextsFaults(situationCxG);
+    	//TODO add situations with sensor defects
+    	situationCxG = CxGUtils.getFaultySituations(situationCxG);
     	
-    	//read from db
+    	//TODO read from db
     	Map<String, Situation> logicalContextsResult = readCKTBFromFile();
     	
     	for (Entry<String, LogicalContext> logicalContextEntry : situationCxG.entrySet()) {
@@ -250,7 +221,8 @@ public class ManageSituationCKTB extends Dialog {
 
     	return logicalContextsResult;
     	*/
-		return null;
+    	
+    	return situationCxG;
     }
 	
 	public Map<String, LogicalContext> readCKTBFromFile() {
@@ -275,28 +247,5 @@ public class ManageSituationCKTB extends Dialog {
 		}
 		
 		return logicalCKTB;
-	}
-	
-	private void copyFile(File source, File dest) {
-		InputStream is = null;
-		OutputStream os = null;
-		try {
-
-			is = new FileInputStream(source);
-			os = new FileOutputStream(dest);
-			byte[] buffer = new byte[1024];
-			int length;
-
-			while ((length = is.read(buffer)) > 0) {
-				os.write(buffer, 0, length);
-			}
-			is.close();
-			os.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

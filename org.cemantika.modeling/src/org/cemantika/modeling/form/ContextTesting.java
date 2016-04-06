@@ -376,14 +376,12 @@ public class ContextTesting extends FormPage {
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			Dialog dialog = new ManageLogicalContextCKTB(shell, manager, logicalContexts, contextualGraph, file);
 			dialog.open();
-			System.out.println("open window");
 		}
 		
 		private void identifySituations(IFile contextualGraph) {
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			Dialog dialog = new ManageSituationCKTB(shell, manager, situations, contextualGraph, file);
 			dialog.open();
-			System.out.println("open window");
 		}
 
 		//Use compiled CxG from drools requires created java classes - Direct parse of XML is used instead.

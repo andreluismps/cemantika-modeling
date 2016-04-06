@@ -16,8 +16,8 @@ public class DataBase {
 	public static void createDb(Connection conn){
 		List<String> tablesDDL = new ArrayList<String>();
 		tablesDDL.add("CREATE TABLE scenario (id numeric, name text)");
-		tablesDDL.add("CREATE TABLE situation (id numeric, name text, expectedBehavior text)");
-		tablesDDL.add("CREATE TABLE logicalContext (id INTEGER PRIMARY KEY   AUTOINCREMENT, name text, jsonValue text)");
+		tablesDDL.add("CREATE TABLE situation (id numeric, name text, cxg name text, expectedBehavior text)");
+		tablesDDL.add("CREATE TABLE logicalContext (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, jsonValue text)");
 		//tablesDDL.add("CREATE TABLE physicalContext (id numeric, jsonValues text)");
 		//tablesDDL.add("CREATE TABLE logicalPhysicalContext (idLogical numeric, idPhysical numeric)");
 		tablesDDL.add("CREATE TABLE situationLogicalContext (idSituation numeric, idLogical numeric)");
