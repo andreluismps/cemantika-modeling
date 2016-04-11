@@ -58,7 +58,7 @@ public class PhysicalContext extends AbstractContext{
 
 	protected void createPhysicalContextDetailLabel(Group group, String labelText) {
 		Label label = new Label(group, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         label.setText(labelText);
 	}
 	
@@ -68,52 +68,7 @@ public class PhysicalContext extends AbstractContext{
 		check.setSelection(true);
         check.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         return check;
-	}
-	
-	protected void addFocusListener(final Text textField, final Field classField, final Object instance){
-		textField.addFocusListener(new FocusListener() {
-			
-			@Override
-			public void focusLost(FocusEvent e) {
-				try {
-					classField.setAccessible(true);
-					if (classField.getType().equals(double.class))
-						classField.setDouble(instance, Double.parseDouble(textField.getText()));
-					else if (classField.getType().equals(String.class))
-						classField.set(instance, textField.getText());
-					
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}				
-			}
-			
-			@Override
-			public void focusGained(FocusEvent e) {}
-		});
-	}
-	
-	protected void addSelectionListener(final Button checkField, final Field classField, final Object instance){
-		checkField.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				classField.setAccessible(true);
-				
-				try {
-					classField.setBoolean(instance, checkField.getSelection());
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-	}
+	}	
 
 	public void setContextDefectPatterns(List<ContextDefectPattern> contextDefectPatterns) {
 		this.contextDefectPatterns = contextDefectPatterns;

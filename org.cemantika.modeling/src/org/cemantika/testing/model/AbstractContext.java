@@ -5,6 +5,7 @@
 package org.cemantika.testing.model;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,12 @@ import java.util.Set;
 import org.cemantika.testing.util.GsonUtils;
 import org.cemantika.testing.util.RuntimeTypeAdapterFactory;
 import org.cemantika.uml.model.HashCodeUtil;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Text;
 import org.reflections.Reflections;
 
 /**
@@ -139,6 +146,51 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 
 	public Integer getId() {
 		return id;
+	}
+	
+	protected void addFocusListener(final Text textField, final Field classField, final Object instance){
+		textField.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				try {
+					classField.setAccessible(true);
+					if (classField.getType().equals(double.class))
+						classField.setDouble(instance, Double.parseDouble(textField.getText()));
+					else if (classField.getType().equals(String.class))
+						classField.set(instance, textField.getText());
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {}
+		});
+	}
+	
+	protected void addSelectionListener(final Button checkField, final Field classField, final Object instance){
+		checkField.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				classField.setAccessible(true);
+				
+				try {
+					classField.setBoolean(instance, checkField.getSelection());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 	
 }

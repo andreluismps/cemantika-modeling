@@ -579,6 +579,7 @@ public class CxGUtils {
 		
 		int i = 0, pos = 0;
 		Situation situation = new Situation("");
+		StringBuilder actions = new StringBuilder();
 		for (String node : path) {
 		    if (pos != 0){
 		    	for (Split split : splits) {
@@ -603,8 +604,9 @@ public class CxGUtils {
 		    i++;
 		    ActionNode actionNode = internalCxG.getActionById(node);
             if (actionNode != null)
-            	situation.getExpectedActions().add(actionNode.getName());
+            	actions.append(actionNode.getName()).append("; ");
 		}
+		situation.setExpectedBehavior(actions.toString());
 		return situation;
 	}
 	

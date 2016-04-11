@@ -10,9 +10,7 @@ import java.util.TreeSet;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.cktb.db.DataBase;
-import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
-import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.util.CxGUtils;
 import org.cemantika.testing.util.GsonUtils;
@@ -45,9 +43,11 @@ public class ManageSituationCKTB extends Dialog {
 
     public ManageSituationCKTB(final Shell parent, PluginManager manager, Map<String, Situation> logicalContexts, IFile contextualGraph, IFile file) 
     {
+    	
         super(parent);
         this.manager = manager;
         this.situations = loadCKTB(contextualGraph, file);
+        //this.setShellStyle(getShellStyle() | SWT.RESIZE);
 		
     }
     
@@ -61,11 +61,11 @@ public class ManageSituationCKTB extends Dialog {
 
         Composite composite = createSplittedComposite(scrolledComposite);
 
-        List list = createLogicalContextsCompositeList(composite);
+        List list = createSituationsCompositeList(composite);
 		
-        Composite physicalContextsComposite = createPhysicalContextsComposite(composite);
+        Composite situationDetailComposite = createSituationDetailComposite(composite);
         
-        addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, physicalContextsComposite);
+        addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, situationDetailComposite);
 
         return container;
     }
@@ -73,20 +73,18 @@ public class ManageSituationCKTB extends Dialog {
 	private void addListenersToLogicalContextsCompositeList(
 			final ScrolledComposite scrolledComposite,
 			final Composite composite, final List list,
-			final Composite physicalContextsComposite) {
+			final Composite situationDetailComposite) {
 		list.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent event) {
 
 				Situation situation = situations.get(list.getItem(list.getSelectionIndex()));
 				
-				disposeChildrenControls(physicalContextsComposite);
+				disposeChildrenControls(situationDetailComposite);
 				
-				for (AbstractContext physicalContext : situation.getContextList()) {
-					createPhysicalContextGroup(physicalContextsComposite, physicalContext);
-				}
+				createSituationDetailGroup(situationDetailComposite, situation);
 				
-                scrolledComposite.layout(true, true);
+				scrolledComposite.layout(true, true);
                 scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				
 			}
@@ -95,30 +93,30 @@ public class ManageSituationCKTB extends Dialog {
 		});
 	}
 
-	private Composite createPhysicalContextsComposite(Composite composite) {
-		Composite physicalContextsComposite = new Composite(composite, SWT.NONE);
-        physicalContextsComposite.setLayout(new GridLayout(1, true));
-        physicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		return physicalContextsComposite;
+	private Composite createSituationDetailComposite(Composite composite) {
+		Composite situationDetailComposite = new Composite(composite, SWT.NONE);
+        situationDetailComposite.setLayout(new GridLayout(1, true));
+        situationDetailComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true));
+		return situationDetailComposite;
 	}
 
-	private List createLogicalContextsCompositeList(Composite composite) {
-		Composite logicalContextsComposite = new Composite(composite, SWT.NONE);
-        logicalContextsComposite.setLayout(new GridLayout(1, false));
-        logicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+	private List createSituationsCompositeList(Composite composite) {
+		Composite situationsComposite = new Composite(composite, SWT.NONE);
+        situationsComposite.setLayout(new GridLayout(1, false));
+        situationsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-        Label lblDefault = new Label(logicalContextsComposite, SWT.NONE);
+        Label lblDefault = new Label(situationsComposite, SWT.NONE);
         lblDefault.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-        lblDefault.setText("Logical Contexts:");
+        lblDefault.setText("Situations:");
 
-        List list = new List(logicalContextsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+        List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 		GridData myGrid = new GridData(450, 380);
 		list.setLayoutData(myGrid);
 		
-		SortedSet<String> orderedLogicalContexts = new TreeSet<String>(situations.keySet());
+		SortedSet<String> orderedSituations = new TreeSet<String>(situations.keySet());
 
-		for (String logicalContextName : orderedLogicalContexts) {
-			list.add(logicalContextName);
+		for (String situationName : orderedSituations) {
+			list.add(situationName);
 		}
 		return list;
 	}
@@ -138,10 +136,13 @@ public class ManageSituationCKTB extends Dialog {
 		return scrolledComposite;
 	}
     
-    private void createPhysicalContextGroup(final Composite composite_2, AbstractContext physicalContext) {
-		Group group = createSensorGroup(composite_2, physicalContext.getName());
+    private void createSituationDetailGroup(final Composite composite_2, Situation situation) {
+		Group group = new Group(composite_2, SWT.SHADOW_OUT);
+		group.setLayoutData( new GridData(450, 380));
+		group.setLayout( new GridLayout( 1, true ) );
+		group.setText(situation.getName());
 		try {
-			((PhysicalContext)physicalContext).createPhysicalContextDetails(group);
+			situation.createLogicalContextDetails(group);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -153,14 +154,6 @@ public class ManageSituationCKTB extends Dialog {
 	    }
 	}
     
-    public Group createSensorGroup(final Composite composite_2, String name) {
-		grpSensor = new Group(composite_2, SWT.SHADOW_OUT);
-		grpSensor.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 1, 1 ) );
-		grpSensor.setLayout( new GridLayout( 2, true ) );
-		grpSensor.setText(name);
-		return grpSensor;
-	}
-
     @Override
     protected void createButtonsForButtonBar(final Composite parent) 
     {
@@ -174,7 +167,7 @@ public class ManageSituationCKTB extends Dialog {
     @Override
     protected Point getInitialSize() 
     {
-        return new Point(700, 520);
+        return new Point(950, 520);
     }
     
 	@Override

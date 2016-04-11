@@ -156,8 +156,8 @@ public class ManageLogicalContextCKTB extends Dialog {
     
     public Group createSensorGroup(final Composite composite_2, String name) {
 		grpSensor = new Group(composite_2, SWT.SHADOW_OUT);
-		grpSensor.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 1, 1 ) );
-		grpSensor.setLayout( new GridLayout( 2, true ) );
+		grpSensor.setLayoutData( new GridData(450, 160));
+		grpSensor.setLayout( new GridLayout( 1, true ) );
 		grpSensor.setText(name);
 		return grpSensor;
 	}
@@ -175,7 +175,7 @@ public class ManageLogicalContextCKTB extends Dialog {
     @Override
     protected Point getInitialSize() 
     {
-        return new Point(700, 520);
+        return new Point(950, 520);
     }
     
 	@Override
