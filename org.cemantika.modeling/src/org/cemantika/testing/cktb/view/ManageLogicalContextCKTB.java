@@ -113,7 +113,7 @@ public class ManageLogicalContextCKTB extends Dialog {
         lblDefault.setText("Logical Contexts:");
 
         List list = new List(logicalContextsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(450, 380);
+		GridData myGrid = new GridData(420, 380);
 		list.setLayoutData(myGrid);
 		
 		SortedSet<String> orderedLogicalContexts = new TreeSet<String>(logicalContexts.keySet());
@@ -156,7 +156,7 @@ public class ManageLogicalContextCKTB extends Dialog {
     
     public Group createSensorGroup(final Composite composite_2, String name) {
 		grpSensor = new Group(composite_2, SWT.SHADOW_OUT);
-		grpSensor.setLayoutData( new GridData(450, 160));
+		grpSensor.setLayoutData( new GridData(420, 160));
 		grpSensor.setLayout( new GridLayout( 1, true ) );
 		grpSensor.setText(name);
 		return grpSensor;

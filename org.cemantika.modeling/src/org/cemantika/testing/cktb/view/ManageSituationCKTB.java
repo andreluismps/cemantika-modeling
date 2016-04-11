@@ -25,11 +25,14 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import com.google.gson.Gson;
@@ -40,6 +43,18 @@ public class ManageSituationCKTB extends Dialog {
 	private PluginManager manager;
 	private Map<String, Situation> situations;
 	private Group grpSensor;
+	
+	private Button apply;
+	private Button revert;
+	
+	private Situation selectedSituation;
+	private String selectedSituationKey;
+	
+	private List list;
+	private Composite composite;
+	private Composite situationDetailComposite;
+	private ScrolledComposite scrolledComposite;
+	
 
     public ManageSituationCKTB(final Shell parent, PluginManager manager, Map<String, Situation> logicalContexts, IFile contextualGraph, IFile file) 
     {
@@ -57,13 +72,13 @@ public class ManageSituationCKTB extends Dialog {
         final Composite container = (Composite) super.createDialogArea(parent);
         container.setLayout(new FillLayout());
 
-        ScrolledComposite scrolledComposite = createMainComposite(container);
+        scrolledComposite = createMainComposite(container);
 
-        Composite composite = createSplittedComposite(scrolledComposite);
+        composite = createSplittedComposite(scrolledComposite);
 
-        List list = createSituationsCompositeList(composite);
+        list = createSituationsCompositeList(composite);
 		
-        Composite situationDetailComposite = createSituationDetailComposite(composite);
+        situationDetailComposite = createSituationDetailComposite(composite);
         
         addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, situationDetailComposite);
 
@@ -78,18 +93,67 @@ public class ManageSituationCKTB extends Dialog {
 
 			public void widgetSelected(SelectionEvent event) {
 
-				Situation situation = situations.get(list.getItem(list.getSelectionIndex()));
+				selectedSituationKey = list.getItem(list.getSelectionIndex());
+				
+				selectedSituation = situations.get(selectedSituationKey);				
 				
 				disposeChildrenControls(situationDetailComposite);
 				
-				createSituationDetailGroup(situationDetailComposite, situation);
+				createSituationDetailGroup(situationDetailComposite, selectedSituation);
+				
+				Composite btnSituationComposite = createBtnSituationComposite(situationDetailComposite);
+				
+				revert = createSituationButton(btnSituationComposite, "Revert");
+				addRevertListener();
+				
+				apply = createSituationButton(btnSituationComposite, "Apply");
+				addApplyListener();
 				
 				scrolledComposite.layout(true, true);
                 scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				
 			}
 
+			private Button createSituationButton(Composite composite, String label) {
+				Button btn = new Button(composite, SWT.PUSH);
+				btn.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+				btn.setText(label);
+				return btn;
+			}
+
 			public void widgetDefaultSelected(SelectionEvent event) {}
+		});
+	}
+	
+	private void addApplyListener() {
+		apply.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					System.out.println("Button Apply pressed");
+					selectedSituation.getExpectedBehavior();
+					situations.remove(selectedSituationKey);
+					situations.put(selectedSituation.getName(), selectedSituation);
+					disposeChildrenControls(composite);
+					composite = createSplittedComposite(scrolledComposite);
+					list = createSituationsCompositeList(composite);					
+					situationDetailComposite = createSituationDetailComposite(composite);			        
+			        addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, situationDetailComposite);
+					break;
+				}
+			}
+		});
+	}
+	
+	private void addRevertListener() {
+		revert.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					System.out.println("Button Revert pressed");
+					break;
+				}
+			}
 		});
 	}
 
@@ -98,6 +162,13 @@ public class ManageSituationCKTB extends Dialog {
         situationDetailComposite.setLayout(new GridLayout(1, true));
         situationDetailComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true));
 		return situationDetailComposite;
+	}
+	
+	private Composite createBtnSituationComposite(Composite composite) {
+		Composite btnSaveComposite = new Composite(composite, SWT.NONE);
+		btnSaveComposite.setLayout(new GridLayout(2, true));
+		btnSaveComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 2));
+		return btnSaveComposite;
 	}
 
 	private List createSituationsCompositeList(Composite composite) {
@@ -110,7 +181,7 @@ public class ManageSituationCKTB extends Dialog {
         lblDefault.setText("Situations:");
 
         List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(450, 380);
+		GridData myGrid = new GridData(420, 380);
 		list.setLayoutData(myGrid);
 		
 		SortedSet<String> orderedSituations = new TreeSet<String>(situations.keySet());
@@ -138,7 +209,7 @@ public class ManageSituationCKTB extends Dialog {
     
     private void createSituationDetailGroup(final Composite composite_2, Situation situation) {
 		Group group = new Group(composite_2, SWT.SHADOW_OUT);
-		group.setLayoutData( new GridData(450, 380));
+		group.setLayoutData( new GridData(420, 350));
 		group.setLayout( new GridLayout( 1, true ) );
 		group.setText(situation.getName());
 		try {
@@ -146,6 +217,7 @@ public class ManageSituationCKTB extends Dialog {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	private void disposeChildrenControls(final Composite composite_2) {

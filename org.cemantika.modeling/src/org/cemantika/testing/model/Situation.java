@@ -52,10 +52,10 @@ public class Situation extends AbstractContext{
 	}
 	
 	public void createLogicalContextDetails(Group group) throws SecurityException, NoSuchFieldException{
-		//TODO turn constant width of this part
+		
 		createSituationDetailLabel(group, "Situation Name");
 		Text txtSituationName = createSituationDetailText(group, SWT.NONE, 1);
-        addFocusListener(txtSituationName, Situation.class.getDeclaredField("expectedBehavior"), this);
+        addFocusListener(txtSituationName, AbstractContext.class.getDeclaredField("name"), this);
         txtSituationName.setText((getName() != null) ? getName() : "");
 		
         createSituationDetailLabel(group, "");
