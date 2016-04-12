@@ -52,6 +52,7 @@ public class ManageSituationCKTB extends Dialog {
 	
 	private List list;
 	private Composite composite;
+	private Composite situationsComposite;
 	private Composite situationDetailComposite;
 	private ScrolledComposite scrolledComposite;
 	
@@ -62,7 +63,7 @@ public class ManageSituationCKTB extends Dialog {
         super(parent);
         this.manager = manager;
         this.situations = loadCKTB(contextualGraph, file);
-        //this.setShellStyle(getShellStyle() | SWT.RESIZE);
+        this.setShellStyle(getShellStyle() | SWT.RESIZE);
 		
     }
     
@@ -75,8 +76,12 @@ public class ManageSituationCKTB extends Dialog {
         scrolledComposite = createMainComposite(container);
 
         composite = createSplittedComposite(scrolledComposite);
+        
+        situationsComposite = createSituationsCompositeList(composite);
+        
+        createSituationsLabel(situationsComposite);
 
-        list = createSituationsCompositeList(composite);
+        list = createSituationsList(situationsComposite);
 		
         situationDetailComposite = createSituationDetailComposite(composite);
         
@@ -130,15 +135,16 @@ public class ManageSituationCKTB extends Dialog {
 			public void handleEvent(Event e) {
 				switch (e.type) {
 				case SWT.Selection:
+					//TODO losefocus on texts before save 
 					System.out.println("Button Apply pressed");
 					selectedSituation.getExpectedBehavior();
 					situations.remove(selectedSituationKey);
 					situations.put(selectedSituation.getName(), selectedSituation);
-					disposeChildrenControls(composite);
-					composite = createSplittedComposite(scrolledComposite);
-					list = createSituationsCompositeList(composite);					
-					situationDetailComposite = createSituationDetailComposite(composite);			        
-			        addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, situationDetailComposite);
+					disposeChildrenControls(situationsComposite);
+					createSituationsLabel(situationsComposite);
+					list = createSituationsList(situationsComposite);
+					situationsComposite.layout();
+					addListenersToLogicalContextsCompositeList(scrolledComposite, composite, list, situationDetailComposite);
 					break;
 				}
 			}
@@ -150,6 +156,7 @@ public class ManageSituationCKTB extends Dialog {
 			public void handleEvent(Event e) {
 				switch (e.type) {
 				case SWT.Selection:
+					//TODO revert
 					System.out.println("Button Revert pressed");
 					break;
 				}
@@ -171,16 +178,24 @@ public class ManageSituationCKTB extends Dialog {
 		return btnSaveComposite;
 	}
 
-	private List createSituationsCompositeList(Composite composite) {
+	private Composite createSituationsCompositeList(Composite composite) {
 		Composite situationsComposite = new Composite(composite, SWT.NONE);
         situationsComposite.setLayout(new GridLayout(1, false));
         situationsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-        Label lblDefault = new Label(situationsComposite, SWT.NONE);
+        
+
+        return situationsComposite;
+	}
+
+	private void createSituationsLabel(Composite situationsComposite) {
+		Label lblDefault = new Label(situationsComposite, SWT.NONE);
         lblDefault.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lblDefault.setText("Situations:");
+	}
 
-        List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+	private List createSituationsList(Composite situationsComposite) {
+		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 		GridData myGrid = new GridData(420, 380);
 		list.setLayoutData(myGrid);
 		
