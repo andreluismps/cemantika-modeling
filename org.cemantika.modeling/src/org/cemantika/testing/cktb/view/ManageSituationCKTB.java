@@ -49,6 +49,8 @@ public class ManageSituationCKTB extends Dialog {
 	
 	private Situation selectedSituation;
 	private String selectedSituationKey;
+	private String selectedSituationName;
+	private String selectedSituationExpectedBehavior;
 	
 	private List list;
 	private Composite composite;
@@ -100,34 +102,45 @@ public class ManageSituationCKTB extends Dialog {
 
 				selectedSituationKey = list.getItem(list.getSelectionIndex());
 				
-				selectedSituation = situations.get(selectedSituationKey);				
+				selectedSituation = situations.get(selectedSituationKey);
+
+				selectedSituationName = selectedSituation.getName();
+				selectedSituationExpectedBehavior = selectedSituation.getExpectedBehavior();				
 				
-				disposeChildrenControls(situationDetailComposite);
-				
-				createSituationDetailGroup(situationDetailComposite, selectedSituation);
-				
-				Composite btnSituationComposite = createBtnSituationComposite(situationDetailComposite);
-				
-				revert = createSituationButton(btnSituationComposite, "Revert");
-				addRevertListener();
-				
-				apply = createSituationButton(btnSituationComposite, "Apply");
-				addApplyListener();
+				resetSituationDetailComposite(situationDetailComposite);
 				
 				scrolledComposite.layout(true, true);
                 scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				
 			}
 
-			private Button createSituationButton(Composite composite, String label) {
-				Button btn = new Button(composite, SWT.PUSH);
-				btn.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-				btn.setText(label);
-				return btn;
-			}
+			
+
+			
 
 			public void widgetDefaultSelected(SelectionEvent event) {}
 		});
+	}
+	
+	private void resetSituationDetailComposite(final Composite situationDetailComposite) {
+		disposeChildrenControls(situationDetailComposite);
+		
+		createSituationDetailGroup(situationDetailComposite, selectedSituation);
+		
+		Composite btnSituationComposite = createBtnSituationComposite(situationDetailComposite);
+		
+		revert = createSituationButton(btnSituationComposite, "Revert");
+		addRevertListener();
+		
+		apply = createSituationButton(btnSituationComposite, "Apply");
+		addApplyListener();
+	}
+	
+	private Button createSituationButton(Composite composite, String label) {
+		Button btn = new Button(composite, SWT.PUSH);
+		btn.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		btn.setText(label);
+		return btn;
 	}
 	
 	private void addApplyListener() {
@@ -135,11 +148,13 @@ public class ManageSituationCKTB extends Dialog {
 			public void handleEvent(Event e) {
 				switch (e.type) {
 				case SWT.Selection:
-					//TODO losefocus on texts before save 
-					System.out.println("Button Apply pressed");
-					selectedSituation.getExpectedBehavior();
+					//Needed because last text field don not lose focus				
+					situationDetailComposite.setEnabled(false);
+					situationDetailComposite.setEnabled(true);
+					
 					situations.remove(selectedSituationKey);
 					situations.put(selectedSituation.getName(), selectedSituation);
+					
 					disposeChildrenControls(situationsComposite);
 					createSituationsLabel(situationsComposite);
 					list = createSituationsList(situationsComposite);
@@ -156,8 +171,12 @@ public class ManageSituationCKTB extends Dialog {
 			public void handleEvent(Event e) {
 				switch (e.type) {
 				case SWT.Selection:
-					//TODO revert
-					System.out.println("Button Revert pressed");
+					
+					selectedSituation.setName(selectedSituationName);
+					selectedSituation.setExpectedBehavior(selectedSituationExpectedBehavior);
+					
+					resetSituationDetailComposite(situationDetailComposite);
+					situationDetailComposite.layout();
 					break;
 				}
 			}
