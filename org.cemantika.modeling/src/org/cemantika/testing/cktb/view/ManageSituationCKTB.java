@@ -1,19 +1,14 @@
 package org.cemantika.testing.cktb.view;
 
-import java.lang.reflect.Type;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
-import org.cemantika.testing.cktb.db.DataBase;
-import org.cemantika.testing.model.LogicalContext;
+import org.cemantika.testing.cktb.dao.SituationCKTBDAO;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.util.CxGUtils;
-import org.cemantika.testing.util.GsonUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -35,14 +30,10 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 public class ManageSituationCKTB extends Dialog {
 	
 	private PluginManager manager;
 	private Map<String, Situation> situations;
-	private Group grpSensor;
 	
 	private Button apply;
 	private Button revert;
@@ -278,8 +269,6 @@ public class ManageSituationCKTB extends Dialog {
     
 	@Override
 	protected void okPressed() {
-		//Needed because last text field don not lose focus 
-		grpSensor.setEnabled(false);
 		persistCKTB();
 		super.okPressed();
 	}
@@ -299,52 +288,28 @@ public class ManageSituationCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-		
+		new SituationCKTBDAO(getCKTBPath()+".db").Save(situations);
 	}
 	
 	private Map<String, Situation> loadCKTB(IFile contextualGraph, IFile conceptualModel){
     	
     	//read from CxG
     	Map<String, Situation> situationCxG = CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db");
-    	/*
-    	//TODO add situations with sensor defects
-    	situationCxG = CxGUtils.getFaultySituations(situationCxG);
     	
-    	//TODO read from db
-    	Map<String, Situation> logicalContextsResult = readCKTBFromFile();
     	
-    	for (Entry<String, LogicalContext> logicalContextEntry : situationCxG.entrySet()) {
-			if (!logicalContextsResult.containsValue(logicalContextEntry.getValue()))
-				logicalContextsResult.put(logicalContextEntry.getKey(), logicalContextEntry.getValue());
+    	Map<String, Situation> situationsResult = readCKTBFromFile();
+    	
+    	for (Entry<String, Situation> situationEntry : situationCxG.entrySet()) {
+			if (!situationsResult.containsValue(situationEntry.getValue()))
+				situationsResult.put(situationEntry.getKey(), situationEntry.getValue());
 		}
 
-    	return logicalContextsResult;
-    	*/
+    	return situationsResult;
     	
-    	return situationCxG;
+    	//return situationCxG;
     }
 	
-	public Map<String, LogicalContext> readCKTBFromFile() {
-
-		Map<String, LogicalContext> logicalCKTB = new HashMap<String, LogicalContext>();
-		
-		String logicalQuery = "SELECT * FROM logicalContext";
-		
-		LogicalContext logicalContext = null;
-		ResultSet logicalRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(getCKTBPath()+".db"));
-		Type type = new TypeToken<LogicalContext>() {}.getType();
-		Gson gson = GsonUtils.getGson();
-		try {
-			while (logicalRs.next()) {
-				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				logicalContext.setId(logicalRs.getInt("id"));
-				logicalCKTB.put(logicalContext.getName(), logicalContext);
-				
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return logicalCKTB;
+	public Map<String, Situation> readCKTBFromFile() {
+		return new SituationCKTBDAO(getCKTBPath()+".db").getAll();
 	}
 }

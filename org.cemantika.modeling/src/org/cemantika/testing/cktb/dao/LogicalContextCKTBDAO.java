@@ -5,11 +5,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.cemantika.testing.cktb.db.DataBase;
+import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
+import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.util.GsonUtils;
 
 import com.google.gson.Gson;
@@ -69,4 +72,28 @@ public class LogicalContextCKTBDAO {
 		
 		DataBase.executeUpdate(commands, DataBase.getConnection(CKTBPath));
 	}
+	
+	public List<AbstractContext> getBySituation(Situation situation){
+		List<AbstractContext> logicalContexts = new ArrayList<AbstractContext>();
+		
+		String logicalQuery = "SELECT l.* FROM logicalContext l INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical WHERE sl.idSituation = " + situation.getId();
+		
+		LogicalContext logicalContext = null;
+		ResultSet logicalRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(CKTBPath));
+		Type type = new TypeToken<LogicalContext>() {}.getType();
+		Gson gson = GsonUtils.getGson();
+		try {
+			while (logicalRs.next()) {
+				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
+				logicalContext.setId(logicalRs.getInt("id"));
+				logicalContexts.add(logicalContext);
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return logicalContexts;
+	}
+	
 }

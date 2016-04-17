@@ -1,20 +1,17 @@
 package org.cemantika.testing.cktb.dao;
 
-import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.cemantika.testing.cktb.db.DataBase;
+import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Situation;
-import org.cemantika.testing.util.GsonUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 public class SituationCKTBDAO {
 	
@@ -29,45 +26,66 @@ public class SituationCKTBDAO {
 	}
 	
 	public Map<String, Situation> getAll() {
+		
+		LogicalContextCKTBDAO logicalDAO = new LogicalContextCKTBDAO(CKTBPath);
 
-		Map<String, LogicalContext> logicalCKTB = new HashMap<String, LogicalContext>();
+		Map<String, Situation> situationCKTB = new HashMap<String, Situation>();
 		
 		String logicalQuery = "SELECT * FROM situation";
 		
-		LogicalContext logicalContext = null;
-		ResultSet logicalRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(CKTBPath));
-		Type type = new TypeToken<LogicalContext>() {}.getType();
-		Gson gson = GsonUtils.getGson();
+		Situation situation = null;
+		ResultSet situationRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(CKTBPath));
 		try {
-			while (logicalRs.next()) {
-				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				logicalContext.setId(logicalRs.getInt("id"));
-				logicalCKTB.put(logicalContext.getName(), logicalContext);
+			while (situationRs.next()) {
+				situation = new Situation(situationRs.getString("name"));
+
+				situation.setId(situationRs.getInt("id"));
+				situation.setExpectedBehavior(situationRs.getString("expectedBehavior"));
+				
+				situation.setContextList(logicalDAO.getBySituation(situation));
+				
+				situationCKTB.put(situation.getName(), situation);
 				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return situationCKTB;
 	}
 	
-	public void Save(Map<String, LogicalContext> logicalContexts){
-		Gson gson = GsonUtils.getGson();
+	public void Save(Map<String, Situation> situations){
 				
 		Integer id = null;		
-		java.util.List<String> commands = new ArrayList<String>();
+		List<String> commands = new ArrayList<String>();
 		
-		for (Entry<String, LogicalContext> logicalContextEntry : logicalContexts.entrySet()) {
-			String name = logicalContextEntry.getKey();
-			String jsonValue = gson.toJson(logicalContextEntry.getValue());
-			id = logicalContextEntry.getValue().getId();
-			if (id == null)
-				commands.add("INSERT INTO logicalContext (name, jsonValue) values ('" + name + "', '"+ jsonValue + "')");
-			else
-				commands.add("UPDATE logicalContext SET name = '"  + name + "', jsonValue = '" + jsonValue + "' where id = " + id);
+		for (Entry<String, Situation> situationEntry : situations.entrySet()) {
+			Situation situation = situationEntry.getValue();
+			String name = situationEntry.getKey();
+			String expectedBehavior = situation.getExpectedBehavior();
+			int i = 1;
+			id = situation.getId();
+			
+			if (id == null){
+				commands.add("INSERT INTO situation (name, expectedBehavior) values ('" + name + "', '"+ expectedBehavior + "')");
+				generateSituationLogicalContextInserts("last_insert_rowid()", commands, situation);
+			}
+			else{
+				commands.add("UPDATE situation SET name = '"  + name + "', expectedBehavior = '" + expectedBehavior + "' where id = " + id);
+				commands.add("DELETE FROM situationLogicalContext WHERE idSituation = " + id);
+				generateSituationLogicalContextInserts(""+id, commands, situation);
+			}
 		}
 		
 		DataBase.executeUpdate(commands, DataBase.getConnection(CKTBPath));
+	}
+
+	private void generateSituationLogicalContextInserts(String id, List<String> commands, Situation situation) {
+		for (AbstractContext abstractContext : situation.getContextList()) {
+			if (abstractContext instanceof LogicalContext){
+				LogicalContext logicalContext = (LogicalContext) abstractContext;
+				commands.add("INSERT INTO situationLogicalContext (idSituation, idLogical) values ("+ id +", " + logicalContext.getId() + ")");
+			}
+		}
 	}
 }
