@@ -2,6 +2,7 @@ package org.cemantika.testing.util;
 
 import java.beans.Introspector;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -607,6 +608,7 @@ public class CxGUtils {
             	actions.append(actionNode.getName()).append("; ");
 		}
 		situation.setExpectedBehavior(actions.toString());
+		Collections.sort(situation.getContextList());
 		return situation;
 	}
 	

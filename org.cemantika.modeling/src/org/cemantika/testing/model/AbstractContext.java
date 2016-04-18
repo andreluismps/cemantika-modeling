@@ -44,6 +44,7 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 	private static final HashSet<Class<?>> registeredClasses = new HashSet<Class<?>>();
 
 	static {
+		//TODO register for first activation of situation tab
 		GsonUtils.registerType(adapter);
 		Reflections reflections = new Reflections("org.cemantika.testing.contextSource");
 		

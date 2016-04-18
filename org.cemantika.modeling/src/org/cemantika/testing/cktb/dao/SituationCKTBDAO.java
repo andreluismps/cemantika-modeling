@@ -3,6 +3,7 @@ package org.cemantika.testing.cktb.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,8 @@ public class SituationCKTBDAO {
 				
 				situation.setContextList(logicalDAO.getBySituation(situation));
 				
+				Collections.sort(situation.getContextList());
+				
 				situationCKTB.put(situation.getName(), situation);
 				
 			}
@@ -63,12 +66,12 @@ public class SituationCKTBDAO {
 			Situation situation = situationEntry.getValue();
 			String name = situationEntry.getKey();
 			String expectedBehavior = situation.getExpectedBehavior();
-			int i = 1;
+			Collections.sort(situation.getContextList());
 			id = situation.getId();
 			
 			if (id == null){
 				commands.add("INSERT INTO situation (name, expectedBehavior) values ('" + name + "', '"+ expectedBehavior + "')");
-				generateSituationLogicalContextInserts("last_insert_rowid()", commands, situation);
+				generateSituationLogicalContextInserts("(select max(id) from situation)", commands, situation);
 			}
 			else{
 				commands.add("UPDATE situation SET name = '"  + name + "', expectedBehavior = '" + expectedBehavior + "' where id = " + id);

@@ -6,6 +6,7 @@ package org.cemantika.testing.model;
 
 import java.util.ArrayList;
 
+import org.cemantika.uml.model.HashCodeUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Group;
@@ -49,6 +50,24 @@ public class Situation extends AbstractContext{
 		Situation newInstance = new Situation(context.getName());
 		newInstance.setContextList(new ArrayList<AbstractContext>(context.getContextList()));
 		return newInstance;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = HashCodeUtil.SEED;
+		result = HashCodeUtil.hash(result, this.getContextList());
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof AbstractContext))
+            return false;
+        if (obj == this)
+            return true;
+
+        AbstractContext rhs = (AbstractContext) obj;
+        return this.getContextList().containsAll(rhs.getContextList()) && rhs.getContextList().containsAll(this.getContextList());
 	}
 	
 	public void createLogicalContextDetails(Group group) throws SecurityException, NoSuchFieldException{
