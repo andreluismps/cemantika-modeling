@@ -15,6 +15,7 @@ import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.modeling.listener.overview.CreateContextKnowledgeTestBase;
 import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
 import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
+import org.cemantika.testing.cktb.view.ManageBaseScenarioCKTB;
 import org.cemantika.testing.cktb.view.ManageSituationCKTB;
 import org.cemantika.testing.generator.TestCaseGenerator;
 import org.cemantika.testing.model.AbstractContext;
@@ -59,7 +60,7 @@ import com.google.gson.Gson;
 public class ContextTesting extends FormPage {
 	
 	private enum Tab {
-		IDENTIFY_LOGICAL_CONTEXTS_TAB, TEST_CASE_GENERATION_TAB, IDENTIFY_SITUATIONS_TAB;
+		IDENTIFY_LOGICAL_CONTEXTS_TAB, TEST_CASE_GENERATION_TAB, IDENTIFY_SITUATIONS_TAB, GENERATE_BASE_SCENARIOS_TAB;
     }
 	
 	private FormToolkit toolkit;
@@ -86,6 +87,11 @@ public class ContextTesting extends FormPage {
 		  "The objective of this task is to identify situations in Context Behavior model and add them to CKTB.\n" +
 		  "The inputs to this task are: Context Conceptual Model, the Context Behavior Model and previously identified logical contexts.\n" +
 		  "Identify Situations and its expected behavior in Behavior Model constructed based on identified focus below:";
+	
+	private static final String GENERATE_BASE_SCENARIOS = 
+		  "The objective of this task is to generate base scenarios based in Context Behavior model and add them to CKTB.\n" +
+		  "The inputs to this task are: Context Conceptual Model, the Context Behavior Model and previously identified situations.\n" +
+		  "Generate base scenarios and its time sequences based on identified focus below:";
 	
 	private static final String TEST_CASE_GENERATION = 
 		  "The objective of this task is to generate test cases for context simulators test execution.\n" +
@@ -114,6 +120,8 @@ public class ContextTesting extends FormPage {
         addIdentifyLogicalContextsInBehaviorModel();
         
         addIdentifySituationsInBehaviorModel();
+        
+        addGenerateBaseScenarioInBehaviorModel();
         
         addTestCaseGeneration();		
 	}
@@ -165,8 +173,7 @@ public class ContextTesting extends FormPage {
 		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
 		importCKTB.setLayoutData(td);
 
-		Composite sectionClient = toolkit
-				.createComposite(importCKTB);
+		Composite sectionClient = toolkit.createComposite(importCKTB);
 		sectionClient.setLayout(new TableWrapLayout());
 		
 		this.behaviorModel = toolkit.createFormText(sectionClient, true);
@@ -174,8 +181,7 @@ public class ContextTesting extends FormPage {
 		td = new TableWrapData(TableWrapData.FILL_GRAB);
 		behaviorModel.setLayoutData(td);
 		StringBuffer html = behaviorModels();
-		behaviorModel.setImage("artifact", Activator.getDefault()
-				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
+		behaviorModel.setImage("artifact", Activator.getDefault().getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
 
 		behaviorModel.setText(html.toString(), true, true);
 		behaviorModel.addHyperlinkListener(new BehaviorModelListener(Tab.IDENTIFY_LOGICAL_CONTEXTS_TAB));
@@ -194,8 +200,7 @@ public class ContextTesting extends FormPage {
 		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
 		importSituationsCKTB.setLayoutData(td);
 
-		Composite sectionClient = toolkit
-				.createComposite(importSituationsCKTB);
+		Composite sectionClient = toolkit.createComposite(importSituationsCKTB);
 		sectionClient.setLayout(new TableWrapLayout());
 		
 		this.behaviorModel = toolkit.createFormText(sectionClient, true);
@@ -203,14 +208,39 @@ public class ContextTesting extends FormPage {
 		td = new TableWrapData(TableWrapData.FILL_GRAB);
 		behaviorModel.setLayoutData(td);
 		StringBuffer html = behaviorModels();
-		behaviorModel.setImage("artifact", Activator.getDefault()
-				.getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
+		behaviorModel.setImage("artifact", Activator.getDefault().getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
 
 		behaviorModel.setText(html.toString(), true, true);
 		behaviorModel.addHyperlinkListener(new BehaviorModelListener(Tab.IDENTIFY_SITUATIONS_TAB));
 
 		importSituationsCKTB.setClient(sectionClient);
 
+	}
+	
+	private void addGenerateBaseScenarioInBehaviorModel(){
+		Section importBaseScenariosCKTB = CemantikaForm.createSection(
+				toolkit, scrolledForm, Section.DESCRIPTION | Section.TITLE_BAR
+						| Section.TWISTIE | Section.EXPANDED,
+				"Generate Base Scenarios",
+				GENERATE_BASE_SCENARIOS);
+
+		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
+		importBaseScenariosCKTB.setLayoutData(td);
+
+		Composite sectionClient = toolkit.createComposite(importBaseScenariosCKTB);
+		sectionClient.setLayout(new TableWrapLayout());
+		
+		this.behaviorModel = toolkit.createFormText(sectionClient, true);
+
+		td = new TableWrapData(TableWrapData.FILL_GRAB);
+		behaviorModel.setLayoutData(td);
+		StringBuffer html = behaviorModels();
+		behaviorModel.setImage("artifact", Activator.getDefault().getImageRegistry().get(Activator.CEMANTIKA_ARTIFACT));
+
+		behaviorModel.setText(html.toString(), true, true);
+		behaviorModel.addHyperlinkListener(new BehaviorModelListener(Tab.GENERATE_BASE_SCENARIOS_TAB));
+
+		importBaseScenariosCKTB.setClient(sectionClient);
 	}
 	
 	private void addTestCaseGeneration() {
@@ -311,6 +341,7 @@ public class ContextTesting extends FormPage {
 		private Tab tab;
 		private Map<String, LogicalContext> logicalContexts;
 		private Map<String, Situation> situations;
+		private Map<String, Scenario> scenarios;
 
 		public BehaviorModelListener(Tab tab) {
 			this.tab = tab;
@@ -343,7 +374,10 @@ public class ContextTesting extends FormPage {
 				
 			case IDENTIFY_SITUATIONS_TAB:
 				identifySituations(contextualGraph);
-				break;	
+				break;
+			case GENERATE_BASE_SCENARIOS_TAB:
+				generateBaseScenarios(contextualGraph);
+				break;
 			case TEST_CASE_GENERATION_TAB:
 				generateTestSuit(contextualGraph);
 				break;
@@ -381,6 +415,12 @@ public class ContextTesting extends FormPage {
 		private void identifySituations(IFile contextualGraph) {
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			Dialog dialog = new ManageSituationCKTB(shell, manager, situations, contextualGraph, file);
+			dialog.open();
+		}
+		
+		private void generateBaseScenarios(IFile contextualGraph) {
+			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+			Dialog dialog = new ManageBaseScenarioCKTB(shell, manager, scenarios, contextualGraph, file);
 			dialog.open();
 		}
 

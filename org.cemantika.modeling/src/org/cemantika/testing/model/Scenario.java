@@ -5,6 +5,21 @@
 package org.cemantika.testing.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Text;
 
 
 /**
@@ -90,7 +105,151 @@ public class Scenario extends AbstractContext{
         this.currentTransmissionIndex = currentTransmissionIndex;
     }
     
+    public void createScenarioDetails(Group group, Map<String, Situation> eligibleSituations) throws SecurityException, NoSuchFieldException{
+		
+		createSituationDetailLabel(group, "Name");
+		Text txtSituationName = createSituationDetailText(group, SWT.NONE, 1);
+        addFocusListener(txtSituationName, AbstractContext.class.getDeclaredField("name"), this);
+        txtSituationName.setText((getName() != null) ? getName() : "");
+		
+        createSeparatorLine(group);
+        
+        //TODO create a 3 column spplited item.
+        
+        Composite composite = createSplittedComposite(group);
+        
+        Composite situationsComposite = createCompositeToList(composite);
+        
+        createSituationDetailLabel(situationsComposite, "Elegible situations from CKTB");
+        
+        List situationsList = createSituationsList(situationsComposite, eligibleSituations);
+        
+        Composite actionButtonsComposite = createButtonsComposite(composite);
+        
+        Composite timeSlotsComposite = createCompositeToList(composite);
+        
+        createSituationDetailLabel(timeSlotsComposite, "Scenario timeslots");
+        
+        List timeSlotsList = createTimeSlotsCompositeList(timeSlotsComposite);
+        
+        /*
+		for (AbstractContext abstractContext : this.getContextList()) {
+			if (abstractContext instanceof TimeSlot){
+				TimeSlot timeSlot = (TimeSlot)abstractContext;
+				for(AbstractContext abstractContext2 : timeSlot.getContextList())
+					createSituationDetailLabel(group, "Time " + timeSlot.getId() + ": " + abstractContext2.getName());
+			}
+		}
+		
+		//createSituationDetailLabel(group, "");
+		createSeparatorLine(group);
+		createSituationDetailLabel(group, "");
+		*/
+		//createSituationDetailLabel(group, "Expected Behavior");
+		//Text txtExpectedBehavior = createSituationDetailText(group, SWT.MULTI| SWT.WRAP | SWT.V_SCROLL, 5);
+        //addFocusListener(txtExpectedBehavior, Situation.class.getDeclaredField("expectedBehavior"), this);
+        //txtExpectedBehavior.setText((expectedBehavior != null) ? expectedBehavior : "");
+		
+	}
+
+	private final int LIST_WIDTH = 220;
+	private final int LIST_HEIGHT = 220;
+
+	private List createTimeSlotsCompositeList(Composite composite) {
+		List list = new List(composite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(LIST_WIDTH, LIST_HEIGHT);
+		list.setLayoutData(myGrid);
+		
+		java.util.List<String> timeSlots = new ArrayList<String>();
+		for (AbstractContext abstractContext : this.getContextList()) {
+			if (abstractContext instanceof TimeSlot){
+				TimeSlot timeSlot = (TimeSlot)abstractContext;
+				for(AbstractContext abstractContext2 : timeSlot.getContextList())
+					timeSlots.add("Time " + timeSlot.getId() + ": " + abstractContext2.getName());
+			}
+		}
+			
+		Collections.sort(timeSlots);
+		
+
+		for (String timeSlotName : timeSlots) {
+			list.add(timeSlotName);
+		}
+		return list;
+	
+	}
+	
+	private Button createSituationButton(Composite composite, String label) {
+		Button btn = new Button(composite, SWT.PUSH);
+		btn.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		btn.setText(label);
+		return btn;
+	}
+
+	private Composite createButtonsComposite(Composite composite) {
+		Composite btnComposite = new Composite(composite, SWT.NONE);
+		btnComposite.setLayout(new GridLayout(1, true));
+		btnComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 2));
+		
+		createSituationButton(btnComposite, "Add");
+		createSituationButton(btnComposite, "Remove");
+		
+		createSituationDetailLabel(btnComposite, "");
+		createSituationDetailLabel(btnComposite, "");
+		
+		createSituationButton(btnComposite, "Move Up");
+		createSituationButton(btnComposite, "Move Down");
+		
+		return btnComposite;
+	}
+
+	private void createSeparatorLine(Group group) {
+		Label separator = new Label(group, SWT.HORIZONTAL | SWT.SEPARATOR);
+	    separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	}
     
+	protected void createSituationDetailLabel(Composite composite, String labelText) {
+		Label label = new Label(composite, SWT.NONE | SWT.WRAP);
+        label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        label.setText(labelText);
+	}
+	
+	protected Text createSituationDetailText(Group group, int style, int lines) {
+		final Text text = new Text(group, style);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gridData.heightHint = lines * text.getLineHeight();
+        text.setLayoutData(gridData);
+		return text;
+	}
+	
+	private Composite createSplittedComposite(Group group) {
+		Composite composite = new Composite(group, SWT.NONE);
+        composite.setLayout(new GridLayout(3, false));
+        //group.setContent(composite);
+        group.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		return composite;
+	}
+	
+	private Composite createCompositeToList(Composite composite) {
+		Composite situationsComposite = new Composite(composite, SWT.NONE);
+        situationsComposite.setLayout(new GridLayout(1, false));
+        situationsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
+        return situationsComposite;
+	}
+	
+	private List createSituationsList(Composite situationsComposite, Map<String, Situation> eligibleSituations) {
+		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(LIST_WIDTH, LIST_HEIGHT);
+		list.setLayoutData(myGrid);
+		
+		SortedSet<String> orderedSituations = new TreeSet<String>(eligibleSituations.keySet());
+
+		for (String situationName : orderedSituations) {
+			list.add(situationName);
+		}
+		return list;
+	}
 
 
 }

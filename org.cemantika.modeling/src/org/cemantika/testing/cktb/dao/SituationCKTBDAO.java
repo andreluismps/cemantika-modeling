@@ -23,7 +23,7 @@ public class SituationCKTBDAO {
 	}
 	
 	public SituationCKTBDAO(){
-		throw new IllegalArgumentException("Please use LogicalContextCKTBDAO(String CKTBPath) constructor");
+		throw new IllegalArgumentException("Please use SituationCKTBDAO(String CKTBPath) constructor");
 	}
 	
 	public Map<String, Situation> getAll() {
@@ -40,7 +40,7 @@ public class SituationCKTBDAO {
 			while (situationRs.next()) {
 				situation = new Situation(situationRs.getString("name"));
 
-				situation.setId(situationRs.getInt("id"));
+				situation.setIdentity(situationRs.getInt("id"));
 				situation.setExpectedBehavior(situationRs.getString("expectedBehavior"));
 				
 				situation.setContextList(logicalDAO.getBySituation(situation));
@@ -67,7 +67,7 @@ public class SituationCKTBDAO {
 			String name = situationEntry.getKey();
 			String expectedBehavior = situation.getExpectedBehavior();
 			Collections.sort(situation.getContextList());
-			id = situation.getId();
+			id = situation.getIdentity();
 			
 			if (id == null){
 				commands.add("INSERT INTO situation (name, expectedBehavior) values ('" + name + "', '"+ expectedBehavior + "')");
@@ -87,7 +87,7 @@ public class SituationCKTBDAO {
 		for (AbstractContext abstractContext : situation.getContextList()) {
 			if (abstractContext instanceof LogicalContext){
 				LogicalContext logicalContext = (LogicalContext) abstractContext;
-				commands.add("INSERT INTO situationLogicalContext (idSituation, idLogical) values ("+ id +", " + logicalContext.getId() + ")");
+				commands.add("INSERT INTO situationLogicalContext (idSituation, idLogical) values ("+ id +", " + logicalContext.getIdentity() + ")");
 			}
 		}
 	}

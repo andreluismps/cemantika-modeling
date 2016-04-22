@@ -33,7 +33,7 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 	private static final long serialVersionUID = 2703014888130627743L;
 	
 	
-	private transient Integer id;
+	private transient Integer identity;
 
 	private List<AbstractContext> lstContext = new ArrayList<AbstractContext>();
     
@@ -141,12 +141,12 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 		return this.name.compareTo(abstractContext.name);
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setIdentity(Integer id) {
+		this.identity = id;
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getIdentity() {
+		return identity;
 	}
 	
 	protected void addFocusListener(final Text textField, final Field classField, final Object instance){

@@ -1,14 +1,17 @@
 package org.cemantika.testing.cktb.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
+import org.cemantika.testing.cktb.dao.BaseScenarioCKTBDAO;
 import org.cemantika.testing.cktb.dao.SituationCKTBDAO;
+import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
+import org.cemantika.testing.model.TimeSlot;
 import org.cemantika.testing.util.CxGUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
@@ -31,32 +34,33 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-public class ManageSituationCKTB extends Dialog {
+public class ManageBaseScenarioCKTB extends Dialog {
 	
 	private PluginManager manager;
-	private Map<String, Situation> situations;
+	private Map<String, Scenario> scenarios;
+	private Map<String, Situation> eligibleSituations;
 	
 	private Button apply;
 	private Button revert;
 	
-	private Situation selectedSituation;
-	private String selectedSituationKey;
-	private String selectedSituationName;
-	private String selectedSituationExpectedBehavior;
+	private Scenario selectedScenario;
+	private String selectedScenarioKey;
+	private String selectedScenarioName;
+	
 	
 	private List list;
 	private Composite composite;
-	private Composite situationsComposite;
-	private Composite situationDetailComposite;
+	private Composite scenariosComposite;
+	private Composite scenarioDetailComposite;
 	private ScrolledComposite scrolledComposite;
 	
 
-    public ManageSituationCKTB(final Shell parent, PluginManager manager, Map<String, Situation> logicalContexts, IFile contextualGraph, IFile file) 
+    public ManageBaseScenarioCKTB(final Shell parent, PluginManager manager, Map<String, Scenario> scenarios, IFile contextualGraph, IFile file) 
     {
     	
         super(parent);
         this.manager = manager;
-        this.situations = loadCKTB(contextualGraph, file);
+        this.scenarios = loadCKTB(contextualGraph, file);
         this.setShellStyle(getShellStyle() | SWT.RESIZE);
 		
     }
@@ -71,35 +75,34 @@ public class ManageSituationCKTB extends Dialog {
 
         composite = createSplittedComposite(scrolledComposite);
         
-        situationsComposite = createSituationsCompositeList(composite);
+        scenariosComposite = createScenariosCompositeList(composite);
         
-        createSituationsLabel(situationsComposite);
+        createLabel(scenariosComposite, "Scenarios:");
 
-        list = createSituationsList(situationsComposite);
+        list = createScenariosList(scenariosComposite);
 		
-        situationDetailComposite = createSituationDetailComposite(composite);
+        scenarioDetailComposite = createScenarioDetailComposite(composite);
         
-        addListenersToSituationsCompositeList(scrolledComposite, composite, list, situationDetailComposite);
+        addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
 
         return container;
     }
 
-	private void addListenersToSituationsCompositeList(
+	private void addListenersToScenariosCompositeList(
 			final ScrolledComposite scrolledComposite,
 			final Composite composite, final List list,
-			final Composite situationDetailComposite) {
+			final Composite scenarioDetailComposite) {
 		list.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent event) {
 
-				selectedSituationKey = list.getItem(list.getSelectionIndex());
+				selectedScenarioKey = list.getItem(list.getSelectionIndex());
 				
-				selectedSituation = situations.get(selectedSituationKey);
+				selectedScenario = scenarios.get(selectedScenarioKey);
 
-				selectedSituationName = selectedSituation.getName();
-				selectedSituationExpectedBehavior = selectedSituation.getExpectedBehavior();				
+				selectedScenarioName = selectedScenario.getName();
 				
-				resetSituationDetailComposite(situationDetailComposite);
+				resetScenarioDetailComposite(scenarioDetailComposite);
 				
 				scrolledComposite.layout(true, true);
                 scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -114,10 +117,10 @@ public class ManageSituationCKTB extends Dialog {
 		});
 	}
 	
-	private void resetSituationDetailComposite(final Composite situationDetailComposite) {
+	private void resetScenarioDetailComposite(final Composite situationDetailComposite) {
 		disposeChildrenControls(situationDetailComposite);
 		
-		createSituationDetailGroup(situationDetailComposite, selectedSituation);
+		createScenarioDetailGroup(situationDetailComposite, selectedScenario);
 		
 		Composite btnSituationComposite = createBtnSituationComposite(situationDetailComposite);
 		
@@ -141,17 +144,17 @@ public class ManageSituationCKTB extends Dialog {
 				switch (e.type) {
 				case SWT.Selection:
 					//Needed because last text field don not lose focus				
-					situationDetailComposite.setEnabled(false);
-					situationDetailComposite.setEnabled(true);
+					scenarioDetailComposite.setEnabled(false);
+					scenarioDetailComposite.setEnabled(true);
 					
-					situations.remove(selectedSituationKey);
-					situations.put(selectedSituation.getName(), selectedSituation);
+					scenarios.remove(selectedScenarioKey);
+					scenarios.put(selectedScenario.getName(), selectedScenario);
 					
-					disposeChildrenControls(situationsComposite);
-					createSituationsLabel(situationsComposite);
-					list = createSituationsList(situationsComposite);
-					situationsComposite.layout();
-					addListenersToSituationsCompositeList(scrolledComposite, composite, list, situationDetailComposite);
+					disposeChildrenControls(scenariosComposite);
+					createLabel(scenariosComposite, "Scenarios:");
+					list = createScenariosList(scenariosComposite);
+					scenariosComposite.layout();
+					addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
 					break;
 				}
 			}
@@ -164,18 +167,18 @@ public class ManageSituationCKTB extends Dialog {
 				switch (e.type) {
 				case SWT.Selection:
 					
-					selectedSituation.setName(selectedSituationName);
-					selectedSituation.setExpectedBehavior(selectedSituationExpectedBehavior);
+					selectedScenario.setName(selectedScenarioName);
+					//selectedScenario.setExpectedBehavior(selectedSituationExpectedBehavior);
 					
-					resetSituationDetailComposite(situationDetailComposite);
-					situationDetailComposite.layout();
+					resetScenarioDetailComposite(scenarioDetailComposite);
+					scenarioDetailComposite.layout();
 					break;
 				}
 			}
 		});
 	}
 
-	private Composite createSituationDetailComposite(Composite composite) {
+	private Composite createScenarioDetailComposite(Composite composite) {
 		Composite situationDetailComposite = new Composite(composite, SWT.NONE);
         situationDetailComposite.setLayout(new GridLayout(1, true));
         situationDetailComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true));
@@ -189,31 +192,31 @@ public class ManageSituationCKTB extends Dialog {
 		return btnSaveComposite;
 	}
 
-	private Composite createSituationsCompositeList(Composite composite) {
-		Composite situationsComposite = new Composite(composite, SWT.NONE);
-        situationsComposite.setLayout(new GridLayout(1, false));
-        situationsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+	private Composite createScenariosCompositeList(Composite composite) {
+		Composite scenariossComposite = new Composite(composite, SWT.NONE);
+        scenariossComposite.setLayout(new GridLayout(1, false));
+        scenariossComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
         
 
-        return situationsComposite;
+        return scenariossComposite;
 	}
 
-	private void createSituationsLabel(Composite situationsComposite) {
-		Label lblDefault = new Label(situationsComposite, SWT.NONE);
+	private void createLabel(Composite composite, String textLabel) {
+		Label lblDefault = new Label(composite, SWT.NONE);
         lblDefault.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-        lblDefault.setText("Situations:");
+        lblDefault.setText(textLabel);
 	}
 
-	private List createSituationsList(Composite situationsComposite) {
-		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(420, 380);
+	private List createScenariosList(Composite scenarioComposite) {
+		List list = new List(scenarioComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(220, 380);
 		list.setLayoutData(myGrid);
 		
-		SortedSet<String> orderedSituations = new TreeSet<String>(situations.keySet());
+		SortedSet<String> orderedScenarios = new TreeSet<String>(scenarios.keySet());
 
-		for (String situationName : orderedSituations) {
-			list.add(situationName);
+		for (String scenarioName : orderedScenarios) {
+			list.add(scenarioName);
 		}
 		return list;
 	}
@@ -233,13 +236,13 @@ public class ManageSituationCKTB extends Dialog {
 		return scrolledComposite;
 	}
     
-    private void createSituationDetailGroup(final Composite composite_2, Situation situation) {
+    private void createScenarioDetailGroup(final Composite composite_2, Scenario scenario) {
 		Group group = new Group(composite_2, SWT.SHADOW_OUT);
-		group.setLayoutData( new GridData(420, 350));
+		group.setLayoutData( new GridData(620, 350));
 		group.setLayout( new GridLayout( 1, true ) );
-		group.setText(situation.getName());
+		group.setText("Selected scenario");
 		try {
-			situation.createLogicalContextDetails(group);
+			scenario.createScenarioDetails(group, eligibleSituations);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -289,32 +292,61 @@ public class ManageSituationCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-		new SituationCKTBDAO(getCKTBPath()+".db").Save(situations);
+		new BaseScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
 	}
 	
-	private Map<String, Situation> loadCKTB(IFile contextualGraph, IFile conceptualModel){
+	private Map<String, Scenario> loadCKTB(IFile contextualGraph, IFile conceptualModel){
+    	
+		
+		
+		//Generate base scenario
+    	Scenario baseScenario = generateBaseScenario(contextualGraph);
+    	
+    	Map<String, Scenario> scenariosCxG = new HashMap<String, Scenario>();
+    	scenariosCxG.put(baseScenario.getName(), baseScenario);
     	
     	//read from CxG
-    	Map<String, Situation> situationCxG = CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db");
+    	//Map<String, Scenario> scenariosCxG = CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db");
     	
-    	Map<String, Situation> allSituationsCKTB = readCKTBFromFile();
     	
-    	Map<String, Situation> situationsResult = new HashMap<String, Situation>();
-    	
-    	//Only relevant situations are appended into result map
-    	for (Entry<String, Situation> situationEntry : situationCxG.entrySet()) {
-			if (!allSituationsCKTB.containsValue(situationEntry.getValue()))
-				situationsResult.put(situationEntry.getKey(), situationEntry.getValue());
+    	//Map<String, Scenario> scenariosResult = readCKTBFromFile();
+    	/*
+    	for (Entry<String, Situation> situationEntry : scenariosCxG.entrySet()) {
+			if (!scenariosResult.containsValue(situationEntry.getValue()))
+				scenariosResult.put(situationEntry.getKey(), situationEntry.getValue());
 		}
-    	
-    	for (Entry<String, Situation> situationEntry : allSituationsCKTB.entrySet()) {
-			if (situationCxG.containsValue(situationEntry.getValue()))
-				situationsResult.put(situationEntry.getKey(), situationEntry.getValue());
-		}
+		*/
 
-    	return situationsResult;
+    	//return scenariosResult;
     	
+    	return scenariosCxG;
     }
+	
+	private java.util.List<Situation> getSituationsFromModel(IFile contextualGraph) {
+		java.util.List<Situation> situationCxG = new ArrayList<Situation>(CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db").values());
+		java.util.List<Situation> situationBase = new ArrayList<Situation>(new SituationCKTBDAO(getCKTBPath()+".db").getAll().values());
+		
+		situationBase.retainAll(situationCxG);
+		
+		return situationBase;
+	}
+
+	private Scenario generateBaseScenario(IFile contextualGraph){
+		//Read situations from CxG
+		java.util.List<Situation> situationCxG = getSituationsFromModel(contextualGraph);
+		
+		Scenario baseScenario = new Scenario("CxG based Scenario");
+		this.eligibleSituations = new HashMap<String, Situation>();
+		int i = 0;
+		for (Situation situation : situationCxG) {
+			TimeSlot timeSlot = new TimeSlot(i++);
+			timeSlot.addChildContext(situation);
+			baseScenario.addChildContext(timeSlot);
+			//Fill eligible situations map
+			eligibleSituations.put(situation.getName(), situation);
+		}
+		return baseScenario;
+	}
 	
 	public Map<String, Situation> readCKTBFromFile() {
 		return new SituationCKTBDAO(getCKTBPath()+".db").getAll();

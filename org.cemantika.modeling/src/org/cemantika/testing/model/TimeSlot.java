@@ -78,5 +78,9 @@ public class TimeSlot extends AbstractContext{
           getContextList().add(context);  
         }    
     }
+
+	public int getId() {
+		return id;
+	}
     
 }

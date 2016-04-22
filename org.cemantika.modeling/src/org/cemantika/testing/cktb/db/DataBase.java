@@ -15,13 +15,15 @@ public class DataBase {
 	
 	public static void createDb(Connection conn){
 		List<String> tablesDDL = new ArrayList<String>();
-		tablesDDL.add("CREATE TABLE scenario (id numeric, name text)");
+		tablesDDL.add("CREATE TABLE scenario (id INTEGER PRIMARY KEY AUTOINCREMENT, name text)");
+		
 		tablesDDL.add("CREATE TABLE situation (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, expectedBehavior text)");
 		tablesDDL.add("CREATE TABLE logicalContext (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, jsonValue text)");
 		//tablesDDL.add("CREATE TABLE physicalContext (id numeric, jsonValues text)");
 		//tablesDDL.add("CREATE TABLE logicalPhysicalContext (idLogical numeric, idPhysical numeric)");
+		//tablesDDL.add("CREATE TABLE scenarioSituationContext (idScenario numeric, idSituation numeric)");
 		tablesDDL.add("CREATE TABLE situationLogicalContext (idSituation numeric, idLogical numeric)");
-		tablesDDL.add("CREATE TABLE scenarioSituationContext (idScenario numeric, idSituation numeric)");
+		tablesDDL.add("CREATE TABLE timeSlot (idScenario numeric, idSituation numeric, timeStamp numeric)");
 		
 		DataBase.executeUpdate(tablesDDL, conn);
 		

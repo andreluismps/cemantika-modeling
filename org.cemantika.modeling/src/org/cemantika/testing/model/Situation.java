@@ -109,8 +109,6 @@ public class Situation extends AbstractContext{
         label.setText(labelText);
 	}
 	
-	
-	
 	protected Text createSituationDetailText(Group group, int style, int lines) {
 		final Text text = new Text(group, style);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);

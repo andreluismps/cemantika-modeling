@@ -43,7 +43,7 @@ public class LogicalContextCKTBDAO {
 		try {
 			while (logicalRs.next()) {
 				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				logicalContext.setId(logicalRs.getInt("id"));
+				logicalContext.setIdentity(logicalRs.getInt("id"));
 				logicalCKTB.put(logicalContext.getName(), logicalContext);
 				
 			}
@@ -63,7 +63,7 @@ public class LogicalContextCKTBDAO {
 		for (Entry<String, LogicalContext> logicalContextEntry : logicalContexts.entrySet()) {
 			String name = logicalContextEntry.getKey();
 			String jsonValue = gson.toJson(logicalContextEntry.getValue());
-			id = logicalContextEntry.getValue().getId();
+			id = logicalContextEntry.getValue().getIdentity();
 			if (id == null)
 				commands.add("INSERT INTO logicalContext (name, jsonValue) values ('" + name + "', '"+ jsonValue + "')");
 			else
@@ -76,7 +76,7 @@ public class LogicalContextCKTBDAO {
 	public List<AbstractContext> getBySituation(Situation situation){
 		List<AbstractContext> logicalContexts = new ArrayList<AbstractContext>();
 		
-		String logicalQuery = "SELECT l.* FROM logicalContext l INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical WHERE sl.idSituation = " + situation.getId();
+		String logicalQuery = "SELECT l.* FROM logicalContext l INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical WHERE sl.idSituation = " + situation.getIdentity();
 		
 		LogicalContext logicalContext = null;
 		ResultSet logicalRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(CKTBPath));
@@ -85,7 +85,7 @@ public class LogicalContextCKTBDAO {
 		try {
 			while (logicalRs.next()) {
 				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				logicalContext.setId(logicalRs.getInt("id"));
+				logicalContext.setIdentity(logicalRs.getInt("id"));
 				logicalContexts.add(logicalContext);
 				
 			}
