@@ -66,6 +66,8 @@ public class ManageSituationCKTB extends Dialog {
     {
         final Composite container = (Composite) super.createDialogArea(parent);
         container.setLayout(new FillLayout());
+        
+        getShell().setText("Manage Situations");
 
         scrolledComposite = createMainComposite(container);
 

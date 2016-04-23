@@ -6,6 +6,7 @@ package org.cemantika.testing.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -107,20 +108,18 @@ public class Scenario extends AbstractContext{
     
     public void createScenarioDetails(Group group, Map<String, Situation> eligibleSituations) throws SecurityException, NoSuchFieldException{
 		
-		createSituationDetailLabel(group, "Name");
+		createDetailLabel(group, "Name");
 		Text txtSituationName = createSituationDetailText(group, SWT.NONE, 1);
         addFocusListener(txtSituationName, AbstractContext.class.getDeclaredField("name"), this);
         txtSituationName.setText((getName() != null) ? getName() : "");
 		
         createSeparatorLine(group);
-        
-        //TODO create a 3 column spplited item.
-        
+                
         Composite composite = createSplittedComposite(group);
         
         Composite situationsComposite = createCompositeToList(composite);
         
-        createSituationDetailLabel(situationsComposite, "Elegible situations from CKTB");
+        createDetailLabel(situationsComposite, "Elegible situations from CKTB");
         
         List situationsList = createSituationsList(situationsComposite, eligibleSituations);
         
@@ -128,7 +127,7 @@ public class Scenario extends AbstractContext{
         
         Composite timeSlotsComposite = createCompositeToList(composite);
         
-        createSituationDetailLabel(timeSlotsComposite, "Scenario timeslots");
+        createDetailLabel(timeSlotsComposite, "Scenario timeslots");
         
         List timeSlotsList = createTimeSlotsCompositeList(timeSlotsComposite);
         
@@ -179,6 +178,17 @@ public class Scenario extends AbstractContext{
 	
 	}
 	
+	private List createSelectedSensorDefectCompositeList(Composite composite) {
+		List list = new List(composite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(330, 286);
+		list.setLayoutData(myGrid);
+		
+		//TODO Add data
+		
+		return list;
+	
+	}
+	
 	private Button createSituationButton(Composite composite, String label) {
 		Button btn = new Button(composite, SWT.PUSH);
 		btn.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -194,11 +204,22 @@ public class Scenario extends AbstractContext{
 		createSituationButton(btnComposite, "Add");
 		createSituationButton(btnComposite, "Remove");
 		
-		createSituationDetailLabel(btnComposite, "");
-		createSituationDetailLabel(btnComposite, "");
+		createDetailLabel(btnComposite, "");
+		createDetailLabel(btnComposite, "");
 		
 		createSituationButton(btnComposite, "Move Up");
 		createSituationButton(btnComposite, "Move Down");
+		
+		return btnComposite;
+	}
+	
+	private Composite createDefectButtonsComposite(Composite composite) {
+		Composite btnComposite = new Composite(composite, SWT.NONE);
+		btnComposite.setLayout(new GridLayout(1, true));
+		btnComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 2));
+		
+		createSituationButton(btnComposite, "Add");
+		createSituationButton(btnComposite, "Remove");
 		
 		return btnComposite;
 	}
@@ -208,7 +229,7 @@ public class Scenario extends AbstractContext{
 	    separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
     
-	protected void createSituationDetailLabel(Composite composite, String labelText) {
+	protected void createDetailLabel(Composite composite, String labelText) {
 		Label label = new Label(composite, SWT.NONE | SWT.WRAP);
         label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         label.setText(labelText);
@@ -249,6 +270,56 @@ public class Scenario extends AbstractContext{
 			list.add(situationName);
 		}
 		return list;
+	}
+	
+	private List createSensorList(Composite situationsComposite, Map<String, Situation> eligibleSituations) {
+		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(330, 130);
+		list.setLayoutData(myGrid);
+		
+		SortedSet<String> orderedSituations = new TreeSet<String>(eligibleSituations.keySet());
+
+		for (String situationName : orderedSituations) {
+			list.add(situationName);
+		}
+		return list;
+	}
+	
+	private List createDefectList(Composite situationsComposite, Map<String, Situation> eligibleSituations) {
+		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(330, 130);
+		list.setLayoutData(myGrid);
+		
+		SortedSet<String> orderedSituations = new TreeSet<String>(eligibleSituations.keySet());
+
+		for (String situationName : orderedSituations) {
+			list.add(situationName);
+		}
+		return list;
+	}
+
+	public void createTestCaseDetails(Group group) throws SecurityException, NoSuchFieldException{
+		        
+        Composite composite = createSplittedComposite(group);
+        
+        Composite selectionComposite = createCompositeToList(composite);
+        
+        createDetailLabel(selectionComposite, "Identified Sensors in Scenario");
+        
+        List sensorsList = createSensorList(selectionComposite, new HashMap<String, Situation>());
+        
+        createDetailLabel(selectionComposite, "Sensor related defects"); 
+        
+        List defectsList = createDefectList(selectionComposite, new HashMap<String, Situation>());
+        
+        Composite actionButtonsComposite = createDefectButtonsComposite(composite);
+        
+        Composite selectedSensorDefectComposite = createCompositeToList(composite);
+        
+        createDetailLabel(selectedSensorDefectComposite, "Selected sensor related defects for test case generation");
+        
+        List timeSlotsList = createSelectedSensorDefectCompositeList(selectedSensorDefectComposite);
+		
 	}
 
 

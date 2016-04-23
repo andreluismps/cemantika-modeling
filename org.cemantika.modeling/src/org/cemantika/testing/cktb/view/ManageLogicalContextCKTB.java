@@ -57,6 +57,8 @@ public class ManageLogicalContextCKTB extends Dialog {
     {
         final Composite container = (Composite) super.createDialogArea(parent);
         container.setLayout(new FillLayout());
+        
+        getShell().setText("Manage Logical Contexts");
 
         ScrolledComposite scrolledComposite = createMainComposite(container);
 

@@ -18,6 +18,7 @@ import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
 import org.cemantika.testing.cktb.view.ManageBaseScenarioCKTB;
 import org.cemantika.testing.cktb.view.ManageSituationCKTB;
 import org.cemantika.testing.generator.TestCaseGenerator;
+import org.cemantika.testing.generator.view.GenerateTestSuit;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
@@ -429,7 +430,10 @@ public class ContextTesting extends FormPage {
 			
 			//TODO Show predef options (can be CKTB items in absence within CxG)
 			
-			
+			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+			Dialog dialog = new GenerateTestSuit(shell, manager, scenarios, contextualGraph, file);
+			dialog.open();
+			/*
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			
 			//TODO refactor readCKTB to read file through "util"
@@ -470,6 +474,7 @@ public class ContextTesting extends FormPage {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			*/
 	    }
 	}
 	
