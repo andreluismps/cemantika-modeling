@@ -80,24 +80,20 @@ public class ContextTesting extends FormPage {
 		"Import Context Knowledge Test Base (CKTB) for context data reuse for this project.";
 	
 	private static final String IDENTIFY_LOGICAL_CONTEXTS = 
-		  "The objective of this task is to identify logical contexts and its expected behavior in Context Behavior model and add them to CKTB.\n" +
-		  "The inputs to this task are: Context Conceptual Model, the Context Behavior Model and sensor related defects pattern.\n" +
-		  "Identify Logical Contexts in Behavior Model constructed based on identified focus below:";
+		  "The objective of this task is to identify logical contexts in Context Behavior model and add them to CKTB.\n" +
+		  "Identify Logical Contexts for each identified focus below:";
 	
 	private static final String IDENTIFY_SITUATIONS = 
 		  "The objective of this task is to identify situations in Context Behavior model and add them to CKTB.\n" +
-		  "The inputs to this task are: Context Conceptual Model, the Context Behavior Model and previously identified logical contexts.\n" +
-		  "Identify Situations and its expected behavior in Behavior Model constructed based on identified focus below:";
+		  "Identify Situations and its expected behavior for each identified focus below:";
 	
 	private static final String GENERATE_BASE_SCENARIOS = 
 		  "The objective of this task is to generate base scenarios based in Context Behavior model and add them to CKTB.\n" +
-		  "The inputs to this task are: Context Conceptual Model, the Context Behavior Model and previously identified situations.\n" +
-		  "Generate base scenarios and its time sequences based on identified focus below:";
+		  "Generate base scenarios and its time sequences for each identified focus below:";
 	
 	private static final String TEST_CASE_GENERATION = 
 		  "The objective of this task is to generate test cases for context simulators test execution.\n" +
-		  "The inputs to this task are: Context Knowledge Test Base, Context Conceptual Model, and a Context Behavior Model.\n" +
-		  "Generate a test suit for each Context Behavior Model constructed based on identified focus below:";
+		  "Generate a test suit for each identified focus below:";
 	
 	public ContextTesting(FormEditor editor) {
 		super(editor, ID, TITLE);

@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.cktb.dao.BaseScenarioCKTBDAO;
 import org.cemantika.testing.cktb.dao.SituationCKTBDAO;
+import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TimeSlot;
@@ -43,16 +44,23 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	private Button apply;
 	private Button revert;
 	
+	private Button newScenario;
+	private Button deleteScenario;
+	
 	private Scenario selectedScenario;
+	
 	private String selectedScenarioKey;
 	private String selectedScenarioName;
-	
+	private java.util.List<AbstractContext> selectedScenarioTimeSlots;
 	
 	private List list;
 	private Composite composite;
 	private Composite scenariosComposite;
 	private Composite scenarioDetailComposite;
+	private Composite buttonsComposite;
 	private ScrolledComposite scrolledComposite;
+	private final String NEW_SCENARIO_NAME = "New Scenario #";
+	private int newScenarioCount = 1; 
 	
 
     public ManageBaseScenarioCKTB(final Shell parent, PluginManager manager, Map<String, Scenario> scenarios, IFile contextualGraph, IFile file) 
@@ -79,15 +87,9 @@ public class ManageBaseScenarioCKTB extends Dialog {
         
         scenariosComposite = createScenariosCompositeList(composite);
         
-        createLabel(scenariosComposite, "Scenarios:");
-
         list = createScenariosList(scenariosComposite);
         
-        Composite buttonsComposite = createTwoColumnsComposite(scenariosComposite);
-        
-        createButton(buttonsComposite, "New");
-        
-        createButton(buttonsComposite, "Delete");
+        createScenariosListButtonsComposite();
 		
         scenarioDetailComposite = createScenarioDetailComposite(composite);
         
@@ -110,7 +112,9 @@ public class ManageBaseScenarioCKTB extends Dialog {
 
 				selectedScenarioName = selectedScenario.getName();
 				
-				resetScenarioDetailComposite(scenarioDetailComposite);
+				selectedScenarioTimeSlots = new ArrayList<AbstractContext>(selectedScenario.getContextList());
+				
+				resetScenarioDetailComposite();
 				
 				scrolledComposite.layout(true, true);
                 scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -121,12 +125,12 @@ public class ManageBaseScenarioCKTB extends Dialog {
 		});
 	}
 	
-	private void resetScenarioDetailComposite(final Composite situationDetailComposite) {
-		disposeChildrenControls(situationDetailComposite);
+	private void resetScenarioDetailComposite() {
+		disposeChildrenControls(scenarioDetailComposite);
 		
-		createScenarioDetailGroup(situationDetailComposite, selectedScenario);
+		createScenarioDetailGroup(scenarioDetailComposite, selectedScenario);
 		
-		Composite btnSituationComposite = createBtnSituationComposite(situationDetailComposite);
+		Composite btnSituationComposite = createBtnSituationComposite(scenarioDetailComposite);
 		
 		revert = createButton(btnSituationComposite, "Revert");
 		addRevertListener();
@@ -142,6 +146,62 @@ public class ManageBaseScenarioCKTB extends Dialog {
 		return btn;
 	}
 	
+	private void addNewListener() {
+		newScenario.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					//Needed because last text field don not lose focus				
+					scenarioDetailComposite.setEnabled(false);
+					scenarioDetailComposite.setEnabled(true);
+					
+					Scenario newScenarioInstance = new Scenario(NEW_SCENARIO_NAME + newScenarioCount++);
+					newScenarioInstance.setContextList(new ArrayList<AbstractContext>());
+					
+					scenarios.put(newScenarioInstance.getName(), newScenarioInstance);
+					
+					disposeChildrenControls(scenariosComposite);
+
+					list = createScenariosList(scenariosComposite);
+					
+					createScenariosListButtonsComposite();
+
+					scenariosComposite.layout();
+					addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
+					break;
+				}
+			}
+		});
+	}
+	
+	private void addDeleteListener() {
+		deleteScenario.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					//Needed because last text field don not lose focus				
+					scenarioDetailComposite.setEnabled(false);
+					scenarioDetailComposite.setEnabled(true);
+					
+					scenarios.remove(selectedScenarioKey);
+					
+					disposeChildrenControls(scenariosComposite);
+
+					list = createScenariosList(scenariosComposite);
+					
+					createScenariosListButtonsComposite();
+			        
+			        resetScenarioDetailComposite();
+					
+					scenariosComposite.layout();
+					addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
+					break;
+				}
+			}
+			
+		});
+	}
+	
 	private void addApplyListener() {
 		apply.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
@@ -151,12 +211,19 @@ public class ManageBaseScenarioCKTB extends Dialog {
 					scenarioDetailComposite.setEnabled(false);
 					scenarioDetailComposite.setEnabled(true);
 					
+					for(int i =0; i<= newScenarioCount; i++)
+						if (selectedScenario.getName().equals(NEW_SCENARIO_NAME + i))
+							return;
+					
 					scenarios.remove(selectedScenarioKey);
 					scenarios.put(selectedScenario.getName(), selectedScenario);
 					
 					disposeChildrenControls(scenariosComposite);
-					createLabel(scenariosComposite, "Scenarios:");
+
 					list = createScenariosList(scenariosComposite);
+					
+					createScenariosListButtonsComposite();
+					
 					scenariosComposite.layout();
 					addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
 					break;
@@ -170,16 +237,32 @@ public class ManageBaseScenarioCKTB extends Dialog {
 			public void handleEvent(Event e) {
 				switch (e.type) {
 				case SWT.Selection:
+					//TODO solve the disapear bug.
+					
+					scenarioDetailComposite.setEnabled(false);
+					scenarioDetailComposite.setEnabled(true);
 					
 					selectedScenario.setName(selectedScenarioName);
+					selectedScenario.setContextList(selectedScenarioTimeSlots);
 					//selectedScenario.setExpectedBehavior(selectedSituationExpectedBehavior);
 					
-					resetScenarioDetailComposite(scenarioDetailComposite);
+					resetScenarioDetailComposite();
 					scenarioDetailComposite.layout();
+					addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
 					break;
 				}
 			}
 		});
+	}
+	
+	private void createScenariosListButtonsComposite() {
+		buttonsComposite = createTwoColumnsComposite(scenariosComposite);
+		
+		newScenario = createButton(buttonsComposite, "New");
+		addNewListener();
+		
+		deleteScenario = createButton(buttonsComposite, "Delete");
+		addDeleteListener();
 	}
 
 	private Composite createScenarioDetailComposite(Composite composite) {
@@ -220,6 +303,8 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	}
 
 	private List createScenariosList(Composite scenarioComposite) {
+		
+		createLabel(scenariosComposite, "Scenarios:");
 		List list = new List(scenarioComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 		GridData myGrid = new GridData(220, 380);
 		list.setLayoutData(myGrid);
