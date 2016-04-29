@@ -19,6 +19,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -122,6 +124,19 @@ public class ManageBaseScenarioCKTB extends Dialog {
 			}
 
 			public void widgetDefaultSelected(SelectionEvent event) {}
+		});
+		
+		list.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				deleteScenario.setEnabled(false);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				deleteScenario.setEnabled(true);
+			}
 		});
 	}
 	
@@ -263,6 +278,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 		
 		deleteScenario = createButton(buttonsComposite, "Delete");
 		addDeleteListener();
+		deleteScenario.setEnabled(false);
 	}
 
 	private Composite createScenarioDetailComposite(Composite composite) {

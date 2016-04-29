@@ -12,7 +12,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -106,6 +109,11 @@ public class Scenario extends AbstractContext{
         this.currentTransmissionIndex = currentTransmissionIndex;
     }
     
+    private transient Button addSituationBtn;
+    private transient Button removeSituationBtn;
+    private transient Button moveUpTimeSlotBtn;
+    private transient Button moveDownTimeSlotBtn;
+    
     public void createScenarioDetails(Group group, Map<String, Situation> eligibleSituations) throws SecurityException, NoSuchFieldException{
 		
 		createDetailLabel(group, "Name");
@@ -122,6 +130,7 @@ public class Scenario extends AbstractContext{
         createDetailLabel(situationsComposite, "Elegible situations from CKTB");
         
         List situationsList = createSituationsList(situationsComposite, eligibleSituations);
+        addListenersToSituationList(situationsList);
         
         Composite actionButtonsComposite = createButtonsComposite(composite);
         
@@ -130,6 +139,8 @@ public class Scenario extends AbstractContext{
         createDetailLabel(timeSlotsComposite, "Scenario timeslots");
         
         List timeSlotsList = createTimeSlotsCompositeList(timeSlotsComposite);
+        addListenersToTimeSlotsList(timeSlotsList);
+        
         
         /*
 		for (AbstractContext abstractContext : this.getContextList()) {
@@ -149,6 +160,58 @@ public class Scenario extends AbstractContext{
         //addFocusListener(txtExpectedBehavior, Situation.class.getDeclaredField("expectedBehavior"), this);
         //txtExpectedBehavior.setText((expectedBehavior != null) ? expectedBehavior : "");
 		
+	}
+    
+	private void addListenersToSituationList(List situationsList){
+    	situationsList.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+    	
+    	situationsList.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				addSituationBtn.setEnabled(false);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				addSituationBtn.setEnabled(true);
+			}
+		});
+    }
+	
+	private void addListenersToTimeSlotsList(List timeSlotsList) {
+		timeSlotsList.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+    	
+		timeSlotsList.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				removeSituationBtn.setEnabled(false);
+				moveUpTimeSlotBtn.setEnabled(false);
+				moveDownTimeSlotBtn.setEnabled(false);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				removeSituationBtn.setEnabled(true);
+				moveUpTimeSlotBtn.setEnabled(true);
+				moveDownTimeSlotBtn.setEnabled(true);
+			}
+		});
 	}
 
 	private final int LIST_WIDTH = 220;
@@ -201,14 +264,19 @@ public class Scenario extends AbstractContext{
 		btnComposite.setLayout(new GridLayout(1, true));
 		btnComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 2));
 		
-		createSituationButton(btnComposite, "Add");
-		createSituationButton(btnComposite, "Remove");
+	    addSituationBtn = createSituationButton(btnComposite, "Add");
+	    removeSituationBtn = createSituationButton(btnComposite, "Remove");
 		
 		createDetailLabel(btnComposite, "");
 		createDetailLabel(btnComposite, "");
 		
-		createSituationButton(btnComposite, "Move Up");
-		createSituationButton(btnComposite, "Move Down");
+		moveUpTimeSlotBtn = createSituationButton(btnComposite, "Move Up");
+		moveDownTimeSlotBtn = createSituationButton(btnComposite, "Move Down");
+		
+		addSituationBtn.setEnabled(false);
+		removeSituationBtn.setEnabled(false);
+		moveUpTimeSlotBtn.setEnabled(false);
+		moveDownTimeSlotBtn.setEnabled(false);
 		
 		return btnComposite;
 	}
