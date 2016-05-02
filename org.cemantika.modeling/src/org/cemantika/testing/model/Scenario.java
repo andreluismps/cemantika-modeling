@@ -20,9 +20,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 
@@ -110,9 +113,15 @@ public class Scenario extends AbstractContext{
     }
     
     private transient Button addSituationBtn;
-    private transient Button removeSituationBtn;
+    private transient Button removeTimeSlotBtn;
     private transient Button moveUpTimeSlotBtn;
     private transient Button moveDownTimeSlotBtn;
+    private transient String selectedSituationKey;
+    private transient Situation selectedSituation;
+    private transient Map<String, Situation> eligibleSituations;
+    private transient List situationsList; 
+    private transient List timeSlotsList;
+    private transient Composite timeSlotsComposite;
     
     public void createScenarioDetails(Group group, Map<String, Situation> eligibleSituations) throws SecurityException, NoSuchFieldException{
 		
@@ -129,17 +138,16 @@ public class Scenario extends AbstractContext{
         
         createDetailLabel(situationsComposite, "Elegible situations from CKTB");
         
-        List situationsList = createSituationsList(situationsComposite, eligibleSituations);
+        this.eligibleSituations = eligibleSituations;
+        
+        situationsList = createSituationsList(situationsComposite, this.eligibleSituations);
         addListenersToSituationList(situationsList);
         
         Composite actionButtonsComposite = createButtonsComposite(composite);
         
-        Composite timeSlotsComposite = createCompositeToList(composite);
+        timeSlotsComposite = createCompositeToList(composite);
         
-        createDetailLabel(timeSlotsComposite, "Scenario timeslots");
-        
-        List timeSlotsList = createTimeSlotsCompositeList(timeSlotsComposite);
-        addListenersToTimeSlotsList(timeSlotsList);
+        fillTimeSlotsComposite();
         
         
         /*
@@ -161,12 +169,27 @@ public class Scenario extends AbstractContext{
         //txtExpectedBehavior.setText((expectedBehavior != null) ? expectedBehavior : "");
 		
 	}
+
+	private void fillTimeSlotsComposite() {
+		disposeChildrenControls(timeSlotsComposite);
+		
+		createDetailLabel(timeSlotsComposite, "Scenario timeslots");
+        
+        timeSlotsList = createTimeSlotsCompositeList(timeSlotsComposite);
+        addListenersToTimeSlotsList(timeSlotsList);
+        
+        timeSlotsComposite.layout();
+	}
     
-	private void addListenersToSituationList(List situationsList){
+	private void addListenersToSituationList(final List situationsList){
     	situationsList.addSelectionListener(new SelectionListener() {
 			
 			@Override
-			public void widgetSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				selectedSituationKey = situationsList.getItem(situationsList.getSelectionIndex());
+				
+				selectedSituation = eligibleSituations.get(selectedSituationKey);
+			}
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -200,14 +223,14 @@ public class Scenario extends AbstractContext{
 			
 			@Override
 			public void focusLost(FocusEvent e) {
-				removeSituationBtn.setEnabled(false);
+				removeTimeSlotBtn.setEnabled(false);
 				moveUpTimeSlotBtn.setEnabled(false);
 				moveDownTimeSlotBtn.setEnabled(false);
 			}
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-				removeSituationBtn.setEnabled(true);
+				removeTimeSlotBtn.setEnabled(true);
 				moveUpTimeSlotBtn.setEnabled(true);
 				moveDownTimeSlotBtn.setEnabled(true);
 			}
@@ -218,6 +241,7 @@ public class Scenario extends AbstractContext{
 	private final int LIST_HEIGHT = 220;
 
 	private List createTimeSlotsCompositeList(Composite composite) {
+		//composite.dispose();
 		List list = new List(composite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 		GridData myGrid = new GridData(LIST_WIDTH, LIST_HEIGHT);
 		list.setLayoutData(myGrid);
@@ -227,7 +251,7 @@ public class Scenario extends AbstractContext{
 			if (abstractContext instanceof TimeSlot){
 				TimeSlot timeSlot = (TimeSlot)abstractContext;
 				for(AbstractContext abstractContext2 : timeSlot.getContextList())
-					timeSlots.add("Time " + timeSlot.getId() + ": " + abstractContext2.getName());
+					timeSlots.add("Time " + String.format("%03d", timeSlot.getId()) + ": " + abstractContext2.getName());
 			}
 		}
 			
@@ -265,7 +289,9 @@ public class Scenario extends AbstractContext{
 		btnComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 2));
 		
 	    addSituationBtn = createSituationButton(btnComposite, "Add");
-	    removeSituationBtn = createSituationButton(btnComposite, "Remove");
+	    addAddSituationListener();
+	    removeTimeSlotBtn = createSituationButton(btnComposite, "Remove");
+	    addRemoveTimeSlotListener();
 		
 		createDetailLabel(btnComposite, "");
 		createDetailLabel(btnComposite, "");
@@ -274,7 +300,7 @@ public class Scenario extends AbstractContext{
 		moveDownTimeSlotBtn = createSituationButton(btnComposite, "Move Down");
 		
 		addSituationBtn.setEnabled(false);
-		removeSituationBtn.setEnabled(false);
+		removeTimeSlotBtn.setEnabled(false);
 		moveUpTimeSlotBtn.setEnabled(false);
 		moveDownTimeSlotBtn.setEnabled(false);
 		
@@ -291,7 +317,60 @@ public class Scenario extends AbstractContext{
 		
 		return btnComposite;
 	}
+	
+	private void addAddSituationListener(){
+		addSituationBtn.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					
+					if (situationsList.getSelectionIndex() < 0 ) return;
+					
+					int id = timeSlotsList.getItemCount();
+					
+					TimeSlot newTimeSlot = new TimeSlot(id);
+					newTimeSlot.addChildContext(selectedSituation);
+					
+					Scenario.this.addChildContext(newTimeSlot);
+					
+					fillTimeSlotsComposite();
+					
+					break;
+				}
+			}
+		});
+	}
+	
+	private void addRemoveTimeSlotListener(){
+		removeTimeSlotBtn.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					
+					int id = timeSlotsList.getSelectionIndex();
+					
+					if (id < 0 ) return;
+					
+					Scenario.this.getContextList().remove(id);
+					
+					for (AbstractContext abstractContext : Scenario.this.getContextList())
+						if (abstractContext instanceof TimeSlot)
+							//TODO realign timeslots ids after removal
+					
+					fillTimeSlotsComposite();
+					
+					break;
+				}
+			}
+		});
+	}
 
+	private void disposeChildrenControls(final Composite composite_2) {
+		for (Control control : composite_2.getChildren()) {
+	        control.dispose();
+	    }
+	}
+	
 	private void createSeparatorLine(Group group) {
 		Label separator = new Label(group, SWT.HORIZONTAL | SWT.SEPARATOR);
 	    separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
