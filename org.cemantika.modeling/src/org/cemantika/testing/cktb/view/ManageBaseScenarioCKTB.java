@@ -110,7 +110,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 
 				selectedScenarioKey = list.getItem(list.getSelectionIndex());
 				
-				selectedScenario = scenarios.get(selectedScenarioKey);
+				selectedScenario = Scenario.newInstance(scenarios.get(selectedScenarioKey));
 
 				selectedScenarioName = selectedScenario.getName();
 				
@@ -259,10 +259,10 @@ public class ManageBaseScenarioCKTB extends Dialog {
 					
 					selectedScenario.setName(selectedScenarioName);
 					selectedScenario.setContextList(selectedScenarioTimeSlots);
-					//selectedScenario.setExpectedBehavior(selectedSituationExpectedBehavior);
 					
 					resetScenarioDetailComposite();
 					scenarioDetailComposite.layout();
+					composite.layout();
 					addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
 					break;
 				}
@@ -409,8 +409,6 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	
 	private Map<String, Scenario> loadCKTB(IFile contextualGraph, IFile conceptualModel){
     	
-		
-		
 		//Generate base scenario
     	Scenario baseScenario = generateBaseScenario(contextualGraph);
     	

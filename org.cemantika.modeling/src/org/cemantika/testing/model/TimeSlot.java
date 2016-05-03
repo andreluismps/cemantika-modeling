@@ -20,7 +20,7 @@ public class TimeSlot extends AbstractContext{
 	 */
 	private static final long serialVersionUID = 4296345488077489429L;
 
-	private final int id;
+	private int id;
 
     private Map<String, PhysicalContext> mapPhysicalContext;
     
@@ -83,4 +83,7 @@ public class TimeSlot extends AbstractContext{
 		return id;
 	}
     
+	public void setId(int id) {
+		this.id = id;
+	}
 }

@@ -148,25 +148,6 @@ public class Scenario extends AbstractContext{
         timeSlotsComposite = createCompositeToList(composite);
         
         fillTimeSlotsComposite();
-        
-        
-        /*
-		for (AbstractContext abstractContext : this.getContextList()) {
-			if (abstractContext instanceof TimeSlot){
-				TimeSlot timeSlot = (TimeSlot)abstractContext;
-				for(AbstractContext abstractContext2 : timeSlot.getContextList())
-					createSituationDetailLabel(group, "Time " + timeSlot.getId() + ": " + abstractContext2.getName());
-			}
-		}
-		
-		//createSituationDetailLabel(group, "");
-		createSeparatorLine(group);
-		createSituationDetailLabel(group, "");
-		*/
-		//createSituationDetailLabel(group, "Expected Behavior");
-		//Text txtExpectedBehavior = createSituationDetailText(group, SWT.MULTI| SWT.WRAP | SWT.V_SCROLL, 5);
-        //addFocusListener(txtExpectedBehavior, Situation.class.getDeclaredField("expectedBehavior"), this);
-        //txtExpectedBehavior.setText((expectedBehavior != null) ? expectedBehavior : "");
 		
 	}
 
@@ -297,7 +278,9 @@ public class Scenario extends AbstractContext{
 		createDetailLabel(btnComposite, "");
 		
 		moveUpTimeSlotBtn = createSituationButton(btnComposite, "Move Up");
+		addMoveUpTimeSlotListener();
 		moveDownTimeSlotBtn = createSituationButton(btnComposite, "Move Down");
+		addMoveDownTimeSlotListener();
 		
 		addSituationBtn.setEnabled(false);
 		removeTimeSlotBtn.setEnabled(false);
@@ -353,11 +336,86 @@ public class Scenario extends AbstractContext{
 					
 					Scenario.this.getContextList().remove(id);
 					
-					for (AbstractContext abstractContext : Scenario.this.getContextList())
+					for (int i = id; i < Scenario.this.getContextList().size(); i++){
+						AbstractContext abstractContext = Scenario.this.getContextList().get(i);
 						if (abstractContext instanceof TimeSlot)
-							//TODO realign timeslots ids after removal
+							((TimeSlot)abstractContext).setId(i);
+					}
 					
 					fillTimeSlotsComposite();
+					
+					int selectPostition = 0;
+					if (id == Scenario.this.getContextList().size())
+						selectPostition = Scenario.this.getContextList().size() - 1;
+					else if (id != 0)
+						selectPostition = id;
+					
+					timeSlotsList.setSelection(selectPostition);
+					timeSlotsList.setFocus();
+					break;
+				}
+			}
+		});
+	}
+	
+	private void addMoveUpTimeSlotListener(){
+		moveUpTimeSlotBtn.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					
+					int id = timeSlotsList.getSelectionIndex();
+					
+					if (id < 0 ) return;
+					
+					Collections.swap(Scenario.this.getContextList(), id, id-1);
+					
+					for (int i = 0; i < Scenario.this.getContextList().size(); i++){
+						AbstractContext abstractContext = Scenario.this.getContextList().get(i);
+						if (abstractContext instanceof TimeSlot)
+							((TimeSlot)abstractContext).setId(i);
+					}
+					
+					fillTimeSlotsComposite();
+					
+					int selectPostition = 0;
+					if (id != 0)
+						selectPostition = id - 1;
+					
+					timeSlotsList.setSelection(selectPostition);
+					timeSlotsList.setFocus();
+					break;
+				}
+			}
+		});
+	}
+	
+	private void addMoveDownTimeSlotListener(){
+		moveDownTimeSlotBtn.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					
+					int id = timeSlotsList.getSelectionIndex();
+					
+					if (id < 0 ) return;
+					
+					Collections.swap(Scenario.this.getContextList(), id, id+1);
+					
+					for (int i = 0; i < Scenario.this.getContextList().size(); i++){
+						AbstractContext abstractContext = Scenario.this.getContextList().get(i);
+						if (abstractContext instanceof TimeSlot)
+							((TimeSlot)abstractContext).setId(i);
+					}
+					
+					fillTimeSlotsComposite();
+					
+					int selectPostition = Scenario.this.getContextList().size();
+					if (id != Scenario.this.getContextList().size())
+						selectPostition = id + 1;
+					
+					timeSlotsList.setSelection(selectPostition);
+					timeSlotsList.setFocus();
 					
 					break;
 				}
