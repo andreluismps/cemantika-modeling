@@ -486,7 +486,7 @@ public class CxGUtils {
 		return variables;
 	}
 	
-	private static Process extractProcessFromCxG(IFile contextualGraph)	throws FactoryConfigurationError {
+	public static Process extractProcessFromCxG(IFile contextualGraph)	throws FactoryConfigurationError {
 		XMLInputFactory xif = XMLInputFactory.newFactory();
         StreamSource xml = new StreamSource(contextualGraph.getRawLocation().makeAbsolute().toFile());
         XMLStreamReader xsr = null;

@@ -7,7 +7,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
-import org.cemantika.testing.cktb.dao.BaseScenarioCKTBDAO;
+import org.cemantika.testing.cktb.dao.ScenarioCKTBDAO;
 import org.cemantika.testing.cktb.dao.SituationCKTBDAO;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
@@ -314,7 +314,7 @@ public class GenerateTestSuit extends Dialog {
 	}
 
 	private void persistCKTB() {
-		new BaseScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
+		new ScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
 	}
 	
 	private Map<String, Scenario> loadCKTB(IFile contextualGraph, IFile conceptualModel){

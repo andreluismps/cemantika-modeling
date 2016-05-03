@@ -7,13 +7,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
-import org.cemantika.testing.cktb.dao.BaseScenarioCKTBDAO;
+import org.cemantika.testing.cktb.dao.ScenarioCKTBDAO;
 import org.cemantika.testing.cktb.dao.SituationCKTBDAO;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TimeSlot;
 import org.cemantika.testing.util.CxGUtils;
+import org.cemantika.testing.cxg.xsd.Process;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -54,6 +55,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	private String selectedScenarioKey;
 	private String selectedScenarioName;
 	private java.util.List<AbstractContext> selectedScenarioTimeSlots;
+	private String CxGFullName;
 	
 	private List list;
 	private Composite composite;
@@ -172,6 +174,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 					
 					Scenario newScenarioInstance = new Scenario(NEW_SCENARIO_NAME + newScenarioCount++);
 					newScenarioInstance.setContextList(new ArrayList<AbstractContext>());
+					newScenarioInstance.setCxGFullName(CxGFullName);
 					
 					scenarios.put(newScenarioInstance.getName(), newScenarioInstance);
 					
@@ -380,7 +383,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
     @Override
     protected Point getInitialSize() 
     {
-        return new Point(950, 520);
+        return new Point(950, 540);
     }
     
 	@Override
@@ -404,7 +407,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-		new BaseScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
+		new ScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
 	}
 	
 	private Map<String, Scenario> loadCKTB(IFile contextualGraph, IFile conceptualModel){
@@ -415,21 +418,13 @@ public class ManageBaseScenarioCKTB extends Dialog {
     	Map<String, Scenario> scenariosCxG = new HashMap<String, Scenario>();
     	scenariosCxG.put(baseScenario.getName(), baseScenario);
     	
-    	//read from CxG
-    	//Map<String, Scenario> scenariosCxG = CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db");
     	
+    	Map<String, Scenario> scenariosResult = readCKTBFromFile(baseScenario.getCxGFullName());
     	
-    	//Map<String, Scenario> scenariosResult = readCKTBFromFile();
-    	/*
-    	for (Entry<String, Situation> situationEntry : scenariosCxG.entrySet()) {
-			if (!scenariosResult.containsValue(situationEntry.getValue()))
-				scenariosResult.put(situationEntry.getKey(), situationEntry.getValue());
-		}
-		*/
+    	if (!scenariosResult.containsKey(baseScenario.getName()))
+    		scenariosResult.put(baseScenario.getName(), baseScenario);
 
-    	//return scenariosResult;
-    	
-    	return scenariosCxG;
+    	return scenariosResult;
     }
 	
 	private java.util.List<Situation> getSituationsFromModel(IFile contextualGraph) {
@@ -445,7 +440,14 @@ public class ManageBaseScenarioCKTB extends Dialog {
 		//Read situations from CxG
 		java.util.List<Situation> situationCxG = getSituationsFromModel(contextualGraph);
 		
-		Scenario baseScenario = new Scenario("CxG based Scenario");
+		Scenario baseScenario = new Scenario("CxG generated Scenario");
+		
+		Process cxg = CxGUtils.extractProcessFromCxG(contextualGraph);
+		
+		CxGFullName = cxg.getPackageName() + "." + cxg.getId();
+		
+		baseScenario.setCxGFullName(CxGFullName);
+		
 		this.eligibleSituations = new HashMap<String, Situation>();
 		int i = 0;
 		for (Situation situation : situationCxG) {
@@ -458,7 +460,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 		return baseScenario;
 	}
 	
-	public Map<String, Situation> readCKTBFromFile() {
-		return new SituationCKTBDAO(getCKTBPath()+".db").getAll();
+	public Map<String, Scenario> readCKTBFromFile(String CxGFullName) {
+		return new ScenarioCKTBDAO(getCKTBPath()+".db").getByCxG(CxGFullName);
 	}
 }

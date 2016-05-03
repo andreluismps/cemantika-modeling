@@ -2,7 +2,6 @@ package org.cemantika.testing.cktb.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class DataBase {
 	
 	public static void createDb(Connection conn){
 		List<String> tablesDDL = new ArrayList<String>();
-		tablesDDL.add("CREATE TABLE scenario (id INTEGER PRIMARY KEY AUTOINCREMENT, name text)");
+		tablesDDL.add("CREATE TABLE scenario (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, CxGFullName text)");
 		
 		tablesDDL.add("CREATE TABLE situation (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, expectedBehavior text)");
 		tablesDDL.add("CREATE TABLE logicalContext (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, jsonValue text)");
@@ -48,24 +47,6 @@ public class DataBase {
 		}
 		
 		return conn;
-	}
-	
-	public static ResultSet executeSelect(String command, Connection conn){
-		ResultSet rs = null;
-		Statement stmt = null;
-		try {
-			stmt = conn.createStatement();
-			stmt.setQueryTimeout(iTimeout);
-			rs = stmt.executeQuery(command);
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally {
-			// try { rs.close(); stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
-		}
-		
-		return rs;
-
 	}
 		
 	public static void executeUpdate(List<String> commands, Connection conn){

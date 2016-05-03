@@ -44,6 +44,8 @@ public class Scenario extends AbstractContext{
     
     private int currentTransmissionIndex = 0;
     
+    private transient String CxGFullName;
+    
     public Scenario(String name){
       setName(name);
     }
@@ -56,6 +58,8 @@ public class Scenario extends AbstractContext{
     		TimeSlot newTimeSlot = TimeSlot.newInstance((TimeSlot) context);
     		newInstance.addChildContext(newTimeSlot);
     	}
+    	newInstance.setCxGFullName(scenario.getCxGFullName());
+    	newInstance.setIdentity(scenario.getIdentity());
     	
     	return newInstance;
     }
@@ -112,7 +116,15 @@ public class Scenario extends AbstractContext{
         this.currentTransmissionIndex = currentTransmissionIndex;
     }
     
-    private transient Button addSituationBtn;
+    public void setCxGFullName(String cxGFullName) {
+		CxGFullName = cxGFullName;
+	}
+
+	public String getCxGFullName() {
+		return CxGFullName;
+	}
+
+	private transient Button addSituationBtn;
     private transient Button removeTimeSlotBtn;
     private transient Button moveUpTimeSlotBtn;
     private transient Button moveDownTimeSlotBtn;
@@ -526,6 +538,4 @@ public class Scenario extends AbstractContext{
         List timeSlotsList = createSelectedSensorDefectCompositeList(selectedSensorDefectComposite);
 		
 	}
-
-
 }

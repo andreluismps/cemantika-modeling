@@ -1,8 +1,10 @@
 package org.cemantika.testing.cktb.dao;
 
 import java.lang.reflect.Type;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,27 +33,65 @@ public class LogicalContextCKTBDAO {
 	}
 	
 	public Map<String, LogicalContext> getAll() {
-
+		Connection conn = DataBase.getConnection(CKTBPath);
+		Statement stmt = null;
+		
 		Map<String, LogicalContext> logicalCKTB = new HashMap<String, LogicalContext>();
 		
 		String logicalQuery = "SELECT * FROM logicalContext";
 		
 		LogicalContext logicalContext = null;
-		ResultSet logicalRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(CKTBPath));
+		
 		Type type = new TypeToken<LogicalContext>() {}.getType();
 		Gson gson = GsonUtils.getGson();
 		try {
-			while (logicalRs.next()) {
-				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				logicalContext.setIdentity(logicalRs.getInt("id"));
+			stmt = conn.createStatement();
+			ResultSet resultSet = stmt.executeQuery(logicalQuery);
+			
+			while (resultSet.next()) {
+				logicalContext = gson.fromJson(resultSet.getString("jsonValue"), type);
+				logicalContext.setIdentity(resultSet.getInt("id"));
 				logicalCKTB.put(logicalContext.getName(), logicalContext);
 				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally{
+			try { stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
 		}
 		
 		return logicalCKTB;
+	}
+	
+	public List<AbstractContext> getBySituation(Situation situation){
+		Connection conn = DataBase.getConnection(CKTBPath);
+		Statement stmt = null;
+		
+		List<AbstractContext> logicalContexts = new ArrayList<AbstractContext>();
+		
+		String logicalQuery = "SELECT l.* FROM logicalContext l INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical WHERE sl.idSituation = " + situation.getIdentity();
+		
+		LogicalContext logicalContext = null;
+		
+		Type type = new TypeToken<LogicalContext>() {}.getType();
+		Gson gson = GsonUtils.getGson();
+		try {
+			stmt = conn.createStatement();
+			ResultSet resultSet = stmt.executeQuery(logicalQuery);
+			
+			while (resultSet.next()) {
+				logicalContext = gson.fromJson(resultSet.getString("jsonValue"), type);
+				logicalContext.setIdentity(resultSet.getInt("id"));
+				logicalContexts.add(logicalContext);
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			try { stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
+		}
+		
+		return logicalContexts;
 	}
 	
 	public void Save(Map<String, LogicalContext> logicalContexts){
@@ -72,28 +112,4 @@ public class LogicalContextCKTBDAO {
 		
 		DataBase.executeUpdate(commands, DataBase.getConnection(CKTBPath));
 	}
-	
-	public List<AbstractContext> getBySituation(Situation situation){
-		List<AbstractContext> logicalContexts = new ArrayList<AbstractContext>();
-		
-		String logicalQuery = "SELECT l.* FROM logicalContext l INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical WHERE sl.idSituation = " + situation.getIdentity();
-		
-		LogicalContext logicalContext = null;
-		ResultSet logicalRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(CKTBPath));
-		Type type = new TypeToken<LogicalContext>() {}.getType();
-		Gson gson = GsonUtils.getGson();
-		try {
-			while (logicalRs.next()) {
-				logicalContext = gson.fromJson(logicalRs.getString("jsonValue"), type);
-				logicalContext.setIdentity(logicalRs.getInt("id"));
-				logicalContexts.add(logicalContext);
-				
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return logicalContexts;
-	}
-	
 }

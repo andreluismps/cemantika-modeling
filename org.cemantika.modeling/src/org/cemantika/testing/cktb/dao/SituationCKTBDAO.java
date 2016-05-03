@@ -1,7 +1,9 @@
 package org.cemantika.testing.cktb.dao;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,22 +28,61 @@ public class SituationCKTBDAO {
 		throw new IllegalArgumentException("Please use SituationCKTBDAO(String CKTBPath) constructor");
 	}
 	
+	public Situation getByIdentity(int identity){
+		Connection conn = DataBase.getConnection(CKTBPath);
+		Statement stmt = null;
+		
+		LogicalContextCKTBDAO logicalDAO = new LogicalContextCKTBDAO(CKTBPath);
+
+		String situationQuery = "SELECT * FROM situation WHERE id = " + identity;
+		
+		Situation situation = null;
+		
+		try {
+			stmt = conn.createStatement();
+			ResultSet resultSet = stmt.executeQuery(situationQuery);
+			
+			if (resultSet.next()) {
+				situation = new Situation(resultSet.getString("name"));
+
+				situation.setIdentity(resultSet.getInt("id"));
+				situation.setExpectedBehavior(resultSet.getString("expectedBehavior"));
+				
+				situation.setContextList(logicalDAO.getBySituation(situation));
+				
+				Collections.sort(situation.getContextList());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			try { stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
+		}
+		
+		return situation;
+	}
+	
 	public Map<String, Situation> getAll() {
+		
+		Connection conn = DataBase.getConnection(CKTBPath);
+		Statement stmt = null;
 		
 		LogicalContextCKTBDAO logicalDAO = new LogicalContextCKTBDAO(CKTBPath);
 
 		Map<String, Situation> situationCKTB = new HashMap<String, Situation>();
 		
-		String logicalQuery = "SELECT * FROM situation";
+		String situationQuery = "SELECT * FROM situation";
 		
 		Situation situation = null;
-		ResultSet situationRs = DataBase.executeSelect(logicalQuery, DataBase.getConnection(CKTBPath));
+		
 		try {
-			while (situationRs.next()) {
-				situation = new Situation(situationRs.getString("name"));
+			stmt = conn.createStatement();
+			ResultSet resultSet = stmt.executeQuery(situationQuery);
+			
+			while (resultSet.next()) {
+				situation = new Situation(resultSet.getString("name"));
 
-				situation.setIdentity(situationRs.getInt("id"));
-				situation.setExpectedBehavior(situationRs.getString("expectedBehavior"));
+				situation.setIdentity(resultSet.getInt("id"));
+				situation.setExpectedBehavior(resultSet.getString("expectedBehavior"));
 				
 				situation.setContextList(logicalDAO.getBySituation(situation));
 				
@@ -52,6 +93,8 @@ public class SituationCKTBDAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally{
+			try { stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
 		}
 		
 		return situationCKTB;

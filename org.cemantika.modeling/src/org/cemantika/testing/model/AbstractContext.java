@@ -100,6 +100,7 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
     {
     	AbstractContext clone = (AbstractContext) super.clone();
     	clone.setContextList(new ArrayList<AbstractContext>(this.getContextList()));
+    	clone.setIdentity(this.identity);
     	for (AbstractContext abstractContext : clone.getContextList()){
     		abstractContext = abstractContext.clone();
     	}
