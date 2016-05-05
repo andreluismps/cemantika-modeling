@@ -29,7 +29,7 @@ public class ScenarioCKTBDAO {
 		throw new IllegalArgumentException("Please use BaseScenarioCKTBDAO(String CKTBPath) constructor");
 	}
 	
-	public void Save(Map<String, Scenario> scenarios){
+	public void Save(Map<String, Scenario> scenarios, List<AbstractContext> deletedScenarios){
 		Integer id = null;
 		List<String> commands = new ArrayList<String>();
 		
@@ -47,6 +47,14 @@ public class ScenarioCKTBDAO {
 				commands.add("UPDATE scenario SET name = '"  + name + "', CxGFullName = '" + CxGFullName + "' WHERE id = " + id);
 				commands.add("DELETE FROM timeSlot WHERE idScenario = " + id);
 				generateTimeSlotInserts(""+id, commands, scenario);
+			}
+		}
+		
+		for (AbstractContext scenario : deletedScenarios) {
+			id = scenario.getIdentity();
+			if (id != null || id != 0){
+				commands.add("DELETE FROM timeSlot WHERE idScenario = " + id);
+				commands.add("DELETE FROM scenario WHERE id = " + id);
 			}
 		}
 		

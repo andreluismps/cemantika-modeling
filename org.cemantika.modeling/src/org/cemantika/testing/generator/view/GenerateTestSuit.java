@@ -314,7 +314,7 @@ public class GenerateTestSuit extends Dialog {
 	}
 
 	private void persistCKTB() {
-		new ScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
+		//new ScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
 	}
 	
 	private Map<String, Scenario> loadCKTB(IFile contextualGraph, IFile conceptualModel){

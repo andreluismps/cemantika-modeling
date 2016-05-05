@@ -64,7 +64,10 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	private Composite buttonsComposite;
 	private ScrolledComposite scrolledComposite;
 	private final String NEW_SCENARIO_NAME = "New Scenario #";
-	private int newScenarioCount = 1; 
+	private int newScenarioCount = 1;
+	private final String MODEL_EXTRACTED_SCENARIO = "**** CxG generated Scenario - Rename to save me ****";
+	private java.util.List<AbstractContext> deletedScenarios = new ArrayList<AbstractContext>();
+	
 	
 
     public ManageBaseScenarioCKTB(final Shell parent, PluginManager manager, Map<String, Scenario> scenarios, IFile contextualGraph, IFile file) 
@@ -202,6 +205,8 @@ public class ManageBaseScenarioCKTB extends Dialog {
 					scenarioDetailComposite.setEnabled(true);
 					
 					scenarios.remove(selectedScenarioKey);
+					
+					deletedScenarios.add(selectedScenario);
 					
 					disposeChildrenControls(scenariosComposite);
 
@@ -407,7 +412,8 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-		new ScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios);
+		scenarios.remove(MODEL_EXTRACTED_SCENARIO);
+		new ScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios, deletedScenarios);
 	}
 	
 	private Map<String, Scenario> loadCKTB(IFile contextualGraph, IFile conceptualModel){
@@ -440,7 +446,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 		//Read situations from CxG
 		java.util.List<Situation> situationCxG = getSituationsFromModel(contextualGraph);
 		
-		Scenario baseScenario = new Scenario("CxG generated Scenario");
+		Scenario baseScenario = new Scenario(MODEL_EXTRACTED_SCENARIO);
 		
 		Process cxg = CxGUtils.extractProcessFromCxG(contextualGraph);
 		
