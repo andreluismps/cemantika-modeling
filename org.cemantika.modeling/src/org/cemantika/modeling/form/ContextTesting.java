@@ -1,7 +1,5 @@
 package org.cemantika.modeling.form;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -14,17 +12,13 @@ import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.modeling.listener.overview.CreateContextKnowledgeTestBase;
 import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
-import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
 import org.cemantika.testing.cktb.view.ManageBaseScenarioCKTB;
+import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
 import org.cemantika.testing.cktb.view.ManageSituationCKTB;
-import org.cemantika.testing.generator.TestCaseGenerator;
 import org.cemantika.testing.generator.view.GenerateTestSuit;
-import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
-import org.cemantika.testing.model.TestSuite;
-import org.cemantika.testing.util.GsonUtils;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
 import org.eclipse.core.resources.IFile;
@@ -39,7 +33,6 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbench;
@@ -54,8 +47,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-
-import com.google.gson.Gson;
 
 
 public class ContextTesting extends FormPage {
@@ -497,9 +488,9 @@ public class ContextTesting extends FormPage {
 		public void linkActivated(HyperlinkEvent e) {
 			String label = (String) e.getHref();
 			if (label.equals("Create Context Knowledge Test Base")) {
-				new CreateContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Create Context Knowledge Test Base", "cktb").handleEvent(null);
+				new CreateContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Create Context Knowledge Test Base", "db").handleEvent(null);
 			} else if (label.equals("Open Context Knowledge Test Base")) {
-				new ImportContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Import Context Knowledge Test Base", "cktb").handleEvent(null);
+				new ImportContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Import Context Knowledge Test Base", "db").handleEvent(null);
 			}
 			
 		}

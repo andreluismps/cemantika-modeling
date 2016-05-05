@@ -53,6 +53,13 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Stereotype;
 
 public class CxGUtils {
+	
+	public static String getCxGFullName(IFile contextualGraph){
+		Process cxg = CxGUtils.extractProcessFromCxG(contextualGraph);
+		
+		return cxg.getPackageName() + "." + cxg.getId();
+	}
+	
 	public static Map<String, LogicalContext> getLogicalContexts(IFile contextualGraph, IFile conceptualModel) {
 		
 		Process extractedCxG = extractProcessFromCxG(contextualGraph);

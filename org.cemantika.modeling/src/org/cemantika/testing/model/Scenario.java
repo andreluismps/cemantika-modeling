@@ -160,6 +160,7 @@ public class Scenario extends AbstractContext{
         timeSlotsComposite = createCompositeToList(composite);
         
         fillTimeSlotsComposite();
+        group.layout();
 		
 	}
 
@@ -489,45 +490,27 @@ public class Scenario extends AbstractContext{
 		return list;
 	}
 	
-	private List createSensorList(Composite situationsComposite, Map<String, Situation> eligibleSituations) {
-		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(330, 130);
-		list.setLayoutData(myGrid);
-		
-		SortedSet<String> orderedSituations = new TreeSet<String>(eligibleSituations.keySet());
-
-		for (String situationName : orderedSituations) {
-			list.add(situationName);
-		}
-		return list;
-	}
-	
-	private List createDefectList(Composite situationsComposite, Map<String, Situation> eligibleSituations) {
-		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(330, 130);
-		list.setLayoutData(myGrid);
-		
-		SortedSet<String> orderedSituations = new TreeSet<String>(eligibleSituations.keySet());
-
-		for (String situationName : orderedSituations) {
-			list.add(situationName);
-		}
-		return list;
-	}
+	private transient Map<String, PhysicalContext> sensors; 
+	private transient List defectsList;
+	private transient Composite selectionComposite;
 
 	public void createTestCaseDetails(Group group) throws SecurityException, NoSuchFieldException{
 		        
         Composite composite = createSplittedComposite(group);
         
-        Composite selectionComposite = createCompositeToList(composite);
+        selectionComposite = createCompositeToList(composite);
         
         createDetailLabel(selectionComposite, "Identified Sensors in Scenario");
         
-        List sensorsList = createSensorList(selectionComposite, new HashMap<String, Situation>());
         
-        createDetailLabel(selectionComposite, "Sensor related defects"); 
+        sensors = discoverSensors();
+        List sensorsList = createSensorList(selectionComposite, sensors);
         
-        List defectsList = createDefectList(selectionComposite, new HashMap<String, Situation>());
+        addListenersToSensorsList(sensorsList);
+        
+        createDetailLabel(selectionComposite, "Sensor related defects");
+        
+        defectsList = createDefectList(selectionComposite, new HashMap<String, ContextDefectPattern>());
         
         Composite actionButtonsComposite = createDefectButtonsComposite(composite);
         
@@ -538,4 +521,71 @@ public class Scenario extends AbstractContext{
         List timeSlotsList = createSelectedSensorDefectCompositeList(selectedSensorDefectComposite);
 		
 	}
+	
+	private void addListenersToSensorsList(final List sensorsList) {
+		sensorsList.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int index = sensorsList.getSelectionIndex();
+				String item = sensorsList.getItem(index);
+				Map<String, ContextDefectPattern> defectPatterns = discoverSensorDefectPatterns((PhysicalContext)sensors.get(item));
+				defectsList.dispose();
+				defectsList = createDefectList(selectionComposite, defectPatterns);
+				selectionComposite.layout();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+	}
+
+	private List createSensorList(Composite situationsComposite, Map<String, PhysicalContext> scenarioSensors) {
+		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(330, 130);
+		list.setLayoutData(myGrid);
+		
+		SortedSet<String> orderedSensors = new TreeSet<String>(scenarioSensors.keySet());
+
+		for (String situationName : orderedSensors) {
+			list.add(situationName);
+		}
+		return list;
+	}
+	
+	private List createDefectList(Composite situationsComposite, Map<String, ContextDefectPattern> eligibleDefects) {
+		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData myGrid = new GridData(330, 130);
+		list.setLayoutData(myGrid);
+		
+		SortedSet<String> orderedDefects = new TreeSet<String>(eligibleDefects.keySet());
+
+		for (String defectName : orderedDefects) {
+			list.add(defectName);
+		}
+		return list;
+	}
+	
+	private Map<String, PhysicalContext> discoverSensors(){
+		Map<String, PhysicalContext> sensors = new HashMap<String, PhysicalContext>();
+
+		for(AbstractContext timeSlot : this.getContextList())
+			for(AbstractContext situation : timeSlot.getContextList())
+				for(AbstractContext logicalContext : situation.getContextList())
+					for(AbstractContext physicalContext : logicalContext.getContextList())
+						if (physicalContext instanceof PhysicalContext)
+							sensors.put(physicalContext.getName(), (PhysicalContext) physicalContext);	
+			return sensors;			
+		
+	}
+	
+	private Map<String, ContextDefectPattern> discoverSensorDefectPatterns(PhysicalContext sensor){
+		Map<String, ContextDefectPattern> defectPatterns = new HashMap<String, ContextDefectPattern>();
+		
+		for (ContextDefectPattern contextDefectPattern :sensor.getContextDefectPatterns())
+			defectPatterns.put(contextDefectPattern.toString(), contextDefectPattern);
+		return defectPatterns;
+	}
+	
 }

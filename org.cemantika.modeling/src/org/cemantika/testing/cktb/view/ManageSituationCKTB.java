@@ -291,13 +291,13 @@ public class ManageSituationCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-		new SituationCKTBDAO(getCKTBPath()+".db").Save(situations);
+		new SituationCKTBDAO(getCKTBPath()).Save(situations);
 	}
 	
 	private Map<String, Situation> loadCKTB(IFile contextualGraph, IFile conceptualModel){
     	
     	//read from CxG
-    	Map<String, Situation> situationCxG = CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db");
+    	Map<String, Situation> situationCxG = CxGUtils.getSituations(contextualGraph, getCKTBPath());
     	
     	Map<String, Situation> allSituationsCKTB = readCKTBFromFile();
     	
@@ -319,6 +319,6 @@ public class ManageSituationCKTB extends Dialog {
     }
 	
 	public Map<String, Situation> readCKTBFromFile() {
-		return new SituationCKTBDAO(getCKTBPath()+".db").getAll();
+		return new SituationCKTBDAO(getCKTBPath()).getAll();
 	}
 }

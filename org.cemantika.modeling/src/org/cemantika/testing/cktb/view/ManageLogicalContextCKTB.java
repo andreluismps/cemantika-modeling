@@ -204,7 +204,7 @@ public class ManageLogicalContextCKTB extends Dialog {
 	}
 
 	private void persistCKTB() {
-		new LogicalContextCKTBDAO(getCKTBPath()+".db").Save(logicalContexts);
+		new LogicalContextCKTBDAO(getCKTBPath()).Save(logicalContexts);
 	}
 	
 	private Map<String, LogicalContext> loadCKTB(IFile contextualGraph, IFile conceptualModel){
@@ -227,7 +227,7 @@ public class ManageLogicalContextCKTB extends Dialog {
     }
 	
 	public Map<String, LogicalContext> readCKTBFromFile() {
-		return new LogicalContextCKTBDAO(getCKTBPath()+".db").getAll();
+		return new LogicalContextCKTBDAO(getCKTBPath()).getAll();
 	}
 	
 	private void copyFile(File source, File dest) {

@@ -14,7 +14,6 @@ import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TimeSlot;
 import org.cemantika.testing.util.CxGUtils;
-import org.cemantika.testing.cxg.xsd.Process;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -260,7 +259,6 @@ public class ManageBaseScenarioCKTB extends Dialog {
 			public void handleEvent(Event e) {
 				switch (e.type) {
 				case SWT.Selection:
-					//TODO solve the disapear bug.
 					
 					scenarioDetailComposite.setEnabled(false);
 					scenarioDetailComposite.setEnabled(true);
@@ -270,7 +268,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 					
 					resetScenarioDetailComposite();
 					scenarioDetailComposite.layout();
-					composite.layout();
+
 					addListenersToScenariosCompositeList(scrolledComposite, composite, list, scenarioDetailComposite);
 					break;
 				}
@@ -413,7 +411,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 
 	private void persistCKTB() {
 		scenarios.remove(MODEL_EXTRACTED_SCENARIO);
-		new ScenarioCKTBDAO(getCKTBPath()+".db").Save(scenarios, deletedScenarios);
+		new ScenarioCKTBDAO(getCKTBPath()).Save(scenarios, deletedScenarios);
 	}
 	
 	private Map<String, Scenario> loadCKTB(IFile contextualGraph, IFile conceptualModel){
@@ -424,7 +422,6 @@ public class ManageBaseScenarioCKTB extends Dialog {
     	Map<String, Scenario> scenariosCxG = new HashMap<String, Scenario>();
     	scenariosCxG.put(baseScenario.getName(), baseScenario);
     	
-    	
     	Map<String, Scenario> scenariosResult = readCKTBFromFile(baseScenario.getCxGFullName());
     	
     	if (!scenariosResult.containsKey(baseScenario.getName()))
@@ -434,8 +431,8 @@ public class ManageBaseScenarioCKTB extends Dialog {
     }
 	
 	private java.util.List<Situation> getSituationsFromModel(IFile contextualGraph) {
-		java.util.List<Situation> situationCxG = new ArrayList<Situation>(CxGUtils.getSituations(contextualGraph, getCKTBPath()+".db").values());
-		java.util.List<Situation> situationBase = new ArrayList<Situation>(new SituationCKTBDAO(getCKTBPath()+".db").getAll().values());
+		java.util.List<Situation> situationCxG = new ArrayList<Situation>(CxGUtils.getSituations(contextualGraph, getCKTBPath()).values());
+		java.util.List<Situation> situationBase = new ArrayList<Situation>(new SituationCKTBDAO(getCKTBPath()).getAll().values());
 		
 		situationBase.retainAll(situationCxG);
 		
@@ -448,9 +445,7 @@ public class ManageBaseScenarioCKTB extends Dialog {
 		
 		Scenario baseScenario = new Scenario(MODEL_EXTRACTED_SCENARIO);
 		
-		Process cxg = CxGUtils.extractProcessFromCxG(contextualGraph);
-		
-		CxGFullName = cxg.getPackageName() + "." + cxg.getId();
+		CxGFullName = CxGUtils.getCxGFullName(contextualGraph);
 		
 		baseScenario.setCxGFullName(CxGFullName);
 		
@@ -467,6 +462,6 @@ public class ManageBaseScenarioCKTB extends Dialog {
 	}
 	
 	public Map<String, Scenario> readCKTBFromFile(String CxGFullName) {
-		return new ScenarioCKTBDAO(getCKTBPath()+".db").getByCxG(CxGFullName);
+		return new ScenarioCKTBDAO(getCKTBPath()).getByCxG(CxGFullName);
 	}
 }
