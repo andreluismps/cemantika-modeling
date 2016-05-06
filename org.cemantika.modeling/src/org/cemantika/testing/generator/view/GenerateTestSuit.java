@@ -15,20 +15,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 public class GenerateTestSuit extends Dialog {
@@ -36,17 +31,11 @@ public class GenerateTestSuit extends Dialog {
 	private PluginManager manager;
 	private Map<String, Scenario> scenarios;
 	
-	private Button apply;
-	private Button revert;
-	
 	private Scenario selectedScenario;
-	private String selectedScenarioKey;
-	private String selectedScenarioName;
-	
+	private String selectedScenarioKey;	
 	
 	private Combo scenarioCombo;
 	private Composite composite;
-	private Composite scenariosComposite;
 	private Composite scenarioTestCaseDetailComposite;
 	private ScrolledComposite scrolledComposite;
 	
@@ -74,7 +63,7 @@ public class GenerateTestSuit extends Dialog {
         
         composite = createSplittedComposite(scrolledComposite);
         
-        createLabel(composite, "Scenario:");
+        createLabel(composite, "Base Scenario:");
         
         scenarioCombo = createScenariosCombo(composite);
         
@@ -99,8 +88,6 @@ public class GenerateTestSuit extends Dialog {
 				selectedScenarioKey = combo.getItem(combo.getSelectionIndex());
 				
 				selectedScenario = scenarios.get(selectedScenarioKey);
-
-				selectedScenarioName = selectedScenario.getName();
 				
 				resetScenarioDetailComposite(scenarioDetailComposite);
 				
@@ -116,63 +103,11 @@ public class GenerateTestSuit extends Dialog {
 		
 		createScenarioDetailGroup(situationDetailComposite, selectedScenario);
 		
-		Composite btnSituationComposite = createBtnSituationComposite(situationDetailComposite);
+		createBtnSituationComposite(situationDetailComposite);
 		
 	}
 	
-	private Button createButton(Composite composite, String label) {
-		Button btn = new Button(composite, SWT.PUSH);
-		btn.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		btn.setText(label);
-		return btn;
-	}
 	
-	private Combo createCombo(Composite composite) {
-		Combo cmb = new Combo(composite, SWT.PUSH);
-		cmb.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		//cmb.setText(label);
-		return cmb;
-	}
-	
-	private void addApplyListener() {
-		apply.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				switch (e.type) {
-				case SWT.Selection:
-					//Needed because last text field don not lose focus				
-					scenarioTestCaseDetailComposite.setEnabled(false);
-					scenarioTestCaseDetailComposite.setEnabled(true);
-					
-					scenarios.remove(selectedScenarioKey);
-					scenarios.put(selectedScenario.getName(), selectedScenario);
-					
-					disposeChildrenControls(scenariosComposite);
-					createLabel(scenariosComposite, "Scenarios:");
-					//list = createScenariosList(scenariosComposite);
-					scenariosComposite.layout();
-					addListenersToScenariosCompositeList(scrolledComposite, composite, scenarioCombo, scenarioTestCaseDetailComposite);
-					break;
-				}
-			}
-		});
-	}
-	
-	private void addRevertListener() {
-		revert.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				switch (e.type) {
-				case SWT.Selection:
-					
-					selectedScenario.setName(selectedScenarioName);
-					//selectedScenario.setExpectedBehavior(selectedSituationExpectedBehavior);
-					
-					resetScenarioDetailComposite(scenarioTestCaseDetailComposite);
-					scenarioTestCaseDetailComposite.layout();
-					break;
-				}
-			}
-		});
-	}
 
 	private Composite createScenarioDetailComposite(Composite composite) {
 		Composite situationDetailComposite = new Composite(composite, SWT.NONE);
@@ -180,27 +115,12 @@ public class GenerateTestSuit extends Dialog {
         situationDetailComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true));
 		return situationDetailComposite;
 	}
-	
-	private Composite createTwoColumnsComposite(Composite composite) {
-		Composite twoColumnsComposite = new Composite(composite, SWT.NONE);
-        twoColumnsComposite.setLayout(new GridLayout(2, true));
-        twoColumnsComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		return twoColumnsComposite;
-	}
-	
+		
 	private Composite createBtnSituationComposite(Composite composite) {
 		Composite btnSaveComposite = new Composite(composite, SWT.NONE);
 		btnSaveComposite.setLayout(new GridLayout(2, true));
 		btnSaveComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 2));
 		return btnSaveComposite;
-	}
-
-	private Composite createScenariosCompositeList(Composite composite) {
-		Composite scenariossComposite = new Composite(composite, SWT.NONE);
-        scenariossComposite.setLayout(new GridLayout(1, false));
-        scenariossComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-
-        return scenariossComposite;
 	}
 
 	private void createLabel(Composite composite, String textLabel) {
@@ -274,6 +194,7 @@ public class GenerateTestSuit extends Dialog {
     
 	@Override
 	protected void okPressed() {
+		//TODO test case generation
 		super.okPressed();
 	}
 

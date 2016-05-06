@@ -30,9 +30,9 @@ public class GPS extends PhysicalContext{
 		getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_INCORRECTNESS);
 		getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_FALSE_READING);
 
-		getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_UNRELIABILITY);
-		getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
-		getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_WRONG_INTERPRETATION);
+		//getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_UNRELIABILITY);
+		//getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
+		//getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_WRONG_INTERPRETATION);
 		getContextDefectPatterns().add(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION);
 
 	}
