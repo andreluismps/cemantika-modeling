@@ -14,11 +14,14 @@ import java.util.TreeSet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -502,15 +505,15 @@ public class Scenario extends AbstractContext{
         
         createDetailLabel(selectionComposite, "Identified Sensors in Scenario");
         
-        
         sensors = discoverSensors();
-        List sensorsList = createSensorList(selectionComposite, sensors);
-        
-        addListenersToSensorsList(sensorsList);
+        Combo sensorsCombo = createSensorCombo(selectionComposite, sensors);
+        addListenersToSensorsCombo(sensorsCombo);
         
         createDetailLabel(selectionComposite, "Sensor related defects");
+        sensorsCombo.select(0);
         
-        defectsList = createDefectList(selectionComposite, new HashMap<String, ContextDefectPattern>());
+        
+        
         
         Composite actionButtonsComposite = createDefectButtonsComposite(composite);
         
@@ -522,41 +525,54 @@ public class Scenario extends AbstractContext{
 		
 	}
 	
-	private void addListenersToSensorsList(final List sensorsList) {
-		sensorsList.addSelectionListener(new SelectionListener() {
+	private void addListenersToSensorsCombo(final Combo sensorsCombo) {
+		sensorsCombo.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				int index = sensorsCombo.getSelectionIndex();
+				String item = sensorsCombo.getItem(index);
+				Map<String, ContextDefectPattern> defectPatterns = discoverSensorDefectPatterns((PhysicalContext)sensors.get(item));
+				if (defectsList != null){
+					defectsList.dispose();
+					
+				}				
+				defectsList = createDefectList(selectionComposite, defectPatterns);
+				selectionComposite.layout();
+				
+			}
+		});
+		/*
+		sensorsCombo.addSelectionListener(new ModifyListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int index = sensorsList.getSelectionIndex();
-				String item = sensorsList.getItem(index);
-				Map<String, ContextDefectPattern> defectPatterns = discoverSensorDefectPatterns((PhysicalContext)sensors.get(item));
-				defectsList.dispose();
-				defectsList = createDefectList(selectionComposite, defectPatterns);
-				selectionComposite.layout();
+				
 			}
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
+		*/
 		
 	}
 
-	private List createSensorList(Composite situationsComposite, Map<String, PhysicalContext> scenarioSensors) {
-		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(330, 130);
-		list.setLayoutData(myGrid);
+	private Combo createSensorCombo(Composite situationsComposite, Map<String, PhysicalContext> scenarioSensors) {
+		Combo combo = new Combo(situationsComposite, SWT.READ_ONLY | SWT.SIMPLE | SWT.DROP_DOWN);
+		GridData myGrid = new GridData(330, 30);
+		combo.setLayoutData(myGrid);
 		
 		SortedSet<String> orderedSensors = new TreeSet<String>(scenarioSensors.keySet());
 
 		for (String situationName : orderedSensors) {
-			list.add(situationName);
+			combo.add(situationName);
 		}
-		return list;
+		return combo;
 	}
 	
 	private List createDefectList(Composite situationsComposite, Map<String, ContextDefectPattern> eligibleDefects) {
 		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(330, 130);
+		GridData myGrid = new GridData(330, 232);
 		list.setLayoutData(myGrid);
 		
 		SortedSet<String> orderedDefects = new TreeSet<String>(eligibleDefects.keySet());
@@ -576,7 +592,7 @@ public class Scenario extends AbstractContext{
 					for(AbstractContext physicalContext : logicalContext.getContextList())
 						if (physicalContext instanceof PhysicalContext)
 							sensors.put(physicalContext.getName(), (PhysicalContext) physicalContext);	
-			return sensors;			
+		return sensors;			
 		
 	}
 	

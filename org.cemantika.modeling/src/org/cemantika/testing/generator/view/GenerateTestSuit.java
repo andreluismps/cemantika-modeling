@@ -13,6 +13,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -75,27 +77,13 @@ public class GenerateTestSuit extends Dialog {
         createLabel(composite, "Scenario:");
         
         scenarioCombo = createScenariosCombo(composite);
-
-        /*
         
-        composite = createSplittedComposite(scrolledComposite);
-        
-        scenariosComposite = createScenariosCompositeList(composite);
-        
-        createLabel(scenariosComposite, "Scenarios:");
-
-        list = createScenariosList(scenariosComposite);
-        
-        Composite buttonsComposite = createTwoColumnsComposite(scenariosComposite);
-        
-        createButton(buttonsComposite, "New");
-        
-        createButton(buttonsComposite, "Delete");
-		*/
         scenarioTestCaseDetailComposite = createScenarioDetailComposite(composite);
         
         addListenersToScenariosCompositeList(scrolledComposite, composite, scenarioCombo, scenarioTestCaseDetailComposite);
 
+        scenarioCombo.select(0);
+        
         return container;
     }
 
@@ -103,10 +91,11 @@ public class GenerateTestSuit extends Dialog {
 			final ScrolledComposite scrolledComposite,
 			final Composite composite, final Combo combo,
 			final Composite scenarioDetailComposite) {
-		combo.addSelectionListener(new SelectionListener() {
-
-			public void widgetSelected(SelectionEvent event) {
-
+		
+		combo.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
 				selectedScenarioKey = combo.getItem(combo.getSelectionIndex());
 				
 				selectedScenario = scenarios.get(selectedScenarioKey);
@@ -119,8 +108,6 @@ public class GenerateTestSuit extends Dialog {
                 scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				
 			}
-
-			public void widgetDefaultSelected(SelectionEvent event) {}
 		});
 	}
 	
@@ -223,7 +210,7 @@ public class GenerateTestSuit extends Dialog {
 	}
 
 	private Combo createScenariosCombo(Composite scenarioComposite) {
-		Combo combo = new Combo(scenarioComposite, SWT.READ_ONLY | SWT.SIMPLE | SWT.DROP_DOWN);
+		Combo combo = new Combo(scenarioComposite, SWT.READ_ONLY );
 		GridData myGrid = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 		combo.setLayoutData(myGrid);
 		
