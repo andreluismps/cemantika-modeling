@@ -6,6 +6,9 @@ import java.util.TreeSet;
 
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.cktb.dao.ScenarioCKTBDAO;
+import org.cemantika.testing.generator.heuristics.GranularityMismatchImprecisionHeuristic;
+import org.cemantika.testing.model.ContextDefectPattern;
+import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.util.CxGUtils;
 import org.eclipse.core.resources.IFile;
@@ -26,7 +29,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-public class GenerateTestSuit extends Dialog {
+public class GenerateTestSuite extends Dialog {
 	
 	private PluginManager manager;
 	private Map<String, Scenario> scenarios;
@@ -40,7 +43,7 @@ public class GenerateTestSuit extends Dialog {
 	private ScrolledComposite scrolledComposite;
 	
 
-    public GenerateTestSuit(final Shell parent, PluginManager manager, Map<String, Scenario> scenarios, IFile contextualGraph, IFile file) 
+    public GenerateTestSuite(final Shell parent, PluginManager manager, Map<String, Scenario> scenarios, IFile contextualGraph, IFile file) 
     {
     	
         super(parent);
@@ -100,15 +103,10 @@ public class GenerateTestSuit extends Dialog {
 	
 	private void resetScenarioDetailComposite(final Composite situationDetailComposite) {
 		disposeChildrenControls(situationDetailComposite);
-		
 		createScenarioDetailGroup(situationDetailComposite, selectedScenario);
-		
 		createBtnSituationComposite(situationDetailComposite);
-		
 	}
 	
-	
-
 	private Composite createScenarioDetailComposite(Composite composite) {
 		Composite situationDetailComposite = new Composite(composite, SWT.NONE);
         situationDetailComposite.setLayout(new GridLayout(1, true));
@@ -167,7 +165,6 @@ public class GenerateTestSuit extends Dialog {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private void disposeChildrenControls(final Composite composite_2) {
@@ -194,7 +191,7 @@ public class GenerateTestSuit extends Dialog {
     
 	@Override
 	protected void okPressed() {
-		//TODO test case generation
+		generateTestCases();
 		super.okPressed();
 	}
 
@@ -218,5 +215,27 @@ public class GenerateTestSuit extends Dialog {
 	
 	public Map<String, Scenario> readCKTBFromFile(String CxGFullName) {
 		return new ScenarioCKTBDAO(getCKTBPath()).getByCxG(CxGFullName);
+	}
+	
+	private void generateTestCases(){
+		if (selectedScenario == null) return;
+		
+		String sensor = null;
+		String defectPattern = null;
+		ContextDefectPattern contextDefectPattern = null;
+		for(String selectedSensorDefectPattern : selectedScenario.getSelectedSensorDefectListData()){
+			sensor = selectedSensorDefectPattern.split(" | ")[0];
+			defectPattern = selectedSensorDefectPattern.split(" | ")[1];
+			contextDefectPattern = ContextDefectPattern.fromString(defectPattern);
+			switch (contextDefectPattern) {
+			case GLANULARITY_MISMATCH_IMPRECISION:
+				new GranularityMismatchImprecisionHeuristic(selectedScenario).deriveTestCases(selectedScenario, new PhysicalContext());
+				break;
+
+			default:
+				break;
+			}
+		}
+		
 	}
 }

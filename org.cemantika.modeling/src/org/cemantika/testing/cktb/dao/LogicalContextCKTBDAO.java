@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import org.cemantika.testing.cktb.db.DataBase;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.LogicalContext;
-import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.util.GsonUtils;
 
 import com.google.gson.Gson;
@@ -63,14 +62,31 @@ public class LogicalContextCKTBDAO {
 		return logicalCKTB;
 	}
 	
-	public List<AbstractContext> getBySituation(Situation situation){
+	public List<AbstractContext> getBySituation(AbstractContext situation){
+		
+		String logicalQuery = "SELECT l.* "
+							+ "  FROM logicalContext l " 
+							+ " INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical "
+							+ " WHERE sl.idSituation = " + situation.getIdentity();
+		
+		return getByLogicalQuery(logicalQuery);
+	}
+	
+	public List<AbstractContext> getByScenario(AbstractContext scenario){
+		
+		String logicalQuery = "SELECT distinct l.*" 
+							+ "  FROM logicalContext l"
+							+ " INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical" 
+							+ " INNER JOIN timeSlot ts ON sl.idSituation = ts.idSituation"
+							+ " WHERE ts.idScenario = " + scenario.getIdentity();
+		
+		return getByLogicalQuery(logicalQuery);
+	}
+
+	private List<AbstractContext> getByLogicalQuery(String logicalQuery) {
+		List<AbstractContext> logicalContexts = new ArrayList<AbstractContext>();
 		Connection conn = DataBase.getConnection(CKTBPath);
 		Statement stmt = null;
-		
-		List<AbstractContext> logicalContexts = new ArrayList<AbstractContext>();
-		
-		String logicalQuery = "SELECT l.* FROM logicalContext l INNER JOIN situationLogicalContext sl ON l.id = sl.idLogical WHERE sl.idSituation = " + situation.getIdentity();
-		
 		LogicalContext logicalContext = null;
 		
 		Type type = new TypeToken<LogicalContext>() {}.getType();
@@ -90,7 +106,6 @@ public class LogicalContextCKTBDAO {
 		}finally{
 			try { stmt.close(); conn.close();} catch (Exception e) {e.printStackTrace();}
 		}
-		
 		return logicalContexts;
 	}
 	

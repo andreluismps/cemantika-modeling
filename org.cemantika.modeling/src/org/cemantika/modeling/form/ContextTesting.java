@@ -15,7 +15,7 @@ import org.cemantika.modeling.listener.overview.ImportContextKnowledgeTestBase;
 import org.cemantika.testing.cktb.view.ManageBaseScenarioCKTB;
 import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
 import org.cemantika.testing.cktb.view.ManageSituationCKTB;
-import org.cemantika.testing.generator.view.GenerateTestSuit;
+import org.cemantika.testing.generator.view.GenerateTestSuite;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
@@ -418,7 +418,7 @@ public class ContextTesting extends FormPage {
 			//TODO Show predef options (can be CKTB items in absence within CxG)
 			
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
-			Dialog dialog = new GenerateTestSuit(shell, manager, scenarios, contextualGraph, file);
+			Dialog dialog = new GenerateTestSuite(shell, manager, scenarios, contextualGraph, file);
 			dialog.open();
 			/*
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();

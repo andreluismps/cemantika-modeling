@@ -34,4 +34,14 @@ public enum ContextDefectPattern {
 		return text;
 	}
 	
+	public static ContextDefectPattern fromString(String text) {
+		if (text == null) return null; 
+		
+		for (ContextDefectPattern cdp : ContextDefectPattern.values()) {
+			if (text.equalsIgnoreCase(cdp.text)) {
+				return cdp;
+			}
+		}
+		return null;
+	}
 }

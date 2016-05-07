@@ -676,4 +676,8 @@ public class Scenario extends AbstractContext{
 		return defectPatterns;
 	}
 	
+	public SortedSet<String> getSelectedSensorDefectListData(){
+		return selectedSensorDefectListData;
+	}
+	
 }
