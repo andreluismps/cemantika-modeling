@@ -10,6 +10,7 @@ import org.cemantika.testing.generator.heuristics.GranularityMismatchImprecision
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Scenario;
+import org.cemantika.testing.model.TestSuite;
 import org.cemantika.testing.util.CxGUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
@@ -41,6 +42,7 @@ public class GenerateTestSuite extends Dialog {
 	private Composite composite;
 	private Composite scenarioTestCaseDetailComposite;
 	private ScrolledComposite scrolledComposite;
+	private TestSuite testSuite = new TestSuite();
 	
 
     public GenerateTestSuite(final Shell parent, PluginManager manager, Map<String, Scenario> scenarios, IFile contextualGraph, IFile file) 
@@ -219,23 +221,31 @@ public class GenerateTestSuite extends Dialog {
 	
 	private void generateTestCases(){
 		if (selectedScenario == null) return;
+		testSuite.getTestCases().add(selectedScenario);
 		
-		String sensor = null;
-		String defectPattern = null;
+		PhysicalContext physicalContext = null;
 		ContextDefectPattern contextDefectPattern = null;
+		String [] parts = null;
 		for(String selectedSensorDefectPattern : selectedScenario.getSelectedSensorDefectListData()){
-			sensor = selectedSensorDefectPattern.split(" | ")[0];
-			defectPattern = selectedSensorDefectPattern.split(" | ")[1];
-			contextDefectPattern = ContextDefectPattern.fromString(defectPattern);
+			parts = selectedSensorDefectPattern.split("\\|");
+			physicalContext = PhysicalContext.getBySensorName(parts[0].trim());
+			contextDefectPattern = ContextDefectPattern.fromString(parts[1].trim());
 			switch (contextDefectPattern) {
 			case GLANULARITY_MISMATCH_IMPRECISION:
-				new GranularityMismatchImprecisionHeuristic(selectedScenario).deriveTestCases(selectedScenario, new PhysicalContext());
+				testSuite.getTestCases().addAll(new GranularityMismatchImprecisionHeuristic(getCKTBPath()).deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
 				break;
 
 			default:
 				break;
 			}
 		}
-		
+	}
+
+	public void setTestSuite(TestSuite testSuite) {
+		this.testSuite = testSuite;
+	}
+
+	public TestSuite getTestSuite() {
+		return testSuite;
 	}
 }

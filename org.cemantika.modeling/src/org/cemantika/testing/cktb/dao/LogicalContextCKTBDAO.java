@@ -82,6 +82,15 @@ public class LogicalContextCKTBDAO {
 		
 		return getByLogicalQuery(logicalQuery);
 	}
+	
+	public LogicalContext getByName(String name){
+		
+		String logicalQuery = "SELECT distinct l.*" 
+							+ "  FROM logicalContext l"
+							+ " WHERE l.name = '" + name + "'";
+		
+		return (LogicalContext) getByLogicalQuery(logicalQuery).get(0);
+	}
 
 	private List<AbstractContext> getByLogicalQuery(String logicalQuery) {
 		List<AbstractContext> logicalContexts = new ArrayList<AbstractContext>();

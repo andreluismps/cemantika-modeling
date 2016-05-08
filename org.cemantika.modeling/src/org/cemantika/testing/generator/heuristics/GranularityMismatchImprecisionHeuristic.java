@@ -2,9 +2,8 @@ package org.cemantika.testing.generator.heuristics;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
+import org.cemantika.testing.cktb.dao.LogicalContextCKTBDAO;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.ContextSourceDefectPattern;
@@ -12,17 +11,18 @@ import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
+import org.cemantika.testing.model.TimeSlot;
 
 public class GranularityMismatchImprecisionHeuristic implements SensorDefectPatternHeuristic {
 
-	private Map<String, LogicalContext> logicalContexts;
+	LogicalContextCKTBDAO logicalContextCKTBDAO;
 	
-	public GranularityMismatchImprecisionHeuristic(Scenario baseScenario){
-		
+	public GranularityMismatchImprecisionHeuristic (String CKTBPath){
+		this.logicalContextCKTBDAO = new LogicalContextCKTBDAO(CKTBPath);
 	}
 	
 	@Override
-	public List<Scenario> deriveTestCases(Scenario baseScenario, PhysicalContext sensor) {
+	public List<Scenario> deriveTestCases(Scenario baseScenario, PhysicalContext sensor, ContextDefectPattern contextDefectPattern) {
 		List<Scenario> scenarios = new ArrayList<Scenario>();
 		
 		//for each situation/sensor, generate a new scenario
@@ -32,7 +32,7 @@ public class GranularityMismatchImprecisionHeuristic implements SensorDefectPatt
 				LogicalContext logicalContext= (LogicalContext) logicalContextAbs;
 				for (AbstractContext physicalContextAbs : logicalContextAbs.getContextList()){
 					PhysicalContext physicalContext = (PhysicalContext) physicalContextAbs;
-					if (physicalContext.getContextDefectPatterns().contains(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION))
+					if (sensor.getName().equals(physicalContext.getName()) && physicalContext.getContextDefectPatterns().contains(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION))
 						scenarios.add(deriveGranularityMismatchImprecisionScenario(baseScenario, timeslot, situation, logicalContext, physicalContext));
 				}
 			}
@@ -50,7 +50,7 @@ public class GranularityMismatchImprecisionHeuristic implements SensorDefectPatt
 		ContextSourceDefectPattern contextSourceDefectPattern = new ContextSourceDefectPattern(physicalContext.getName(), ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION);
 		
 		Scenario derivedScenario = Scenario.newInstance(baseScenario);
-		derivedScenario.setName(contextSourceDefectPattern + " on " + situation.getName());
+		derivedScenario.setName(baseScenario.getName() + ": Defect at Time " +((TimeSlot)timeslot).getId() + " - " + contextSourceDefectPattern);//+ " on " + situation.getName());
 		
 		LogicalContext logicalContextToAdd = findLogicalContextWithDefectInCKTB(logicalContext, contextSourceDefectPattern);
 		
@@ -68,13 +68,8 @@ public class GranularityMismatchImprecisionHeuristic implements SensorDefectPatt
 	}
 	
 	private LogicalContext findLogicalContextWithDefectInCKTB(AbstractContext originalLogicalContext, ContextSourceDefectPattern contextSourceDefectPattern){
-		for (Entry<String, LogicalContext> logicalContextEntry : logicalContexts.entrySet()){
-			LogicalContext logicalContext = logicalContextEntry.getValue();
-			if (logicalContext.getContextSourceDefectPatterns().contains(contextSourceDefectPattern)
-			&& logicalContext.getName().equals(originalLogicalContext.getName()  + " - " + contextSourceDefectPattern.getContextSourceName() + " - " + contextSourceDefectPattern.getContextDefectPattern()))
-				return logicalContext;
-		}
-		return null;
+		String name = originalLogicalContext.getName()  + " - " + contextSourceDefectPattern.getContextSourceName() + " - " + contextSourceDefectPattern.getContextDefectPattern();
+		return logicalContextCKTBDAO.getByName(name);
 	}
 
 }

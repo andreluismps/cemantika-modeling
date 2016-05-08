@@ -1,5 +1,7 @@
 package org.cemantika.modeling.form;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -19,6 +21,8 @@ import org.cemantika.testing.generator.view.GenerateTestSuite;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
+import org.cemantika.testing.model.TestSuite;
+import org.cemantika.testing.util.GsonUtils;
 import org.cemantika.uml.model.Focus;
 import org.cemantika.uml.util.UmlUtils;
 import org.eclipse.core.resources.IFile;
@@ -33,6 +37,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbench;
@@ -47,6 +52,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+
+import com.google.gson.Gson;
 
 
 public class ContextTesting extends FormPage {
@@ -432,18 +439,14 @@ public class ContextTesting extends FormPage {
 			//TODO Derive cases
 			//TODO Include deffect patterns into context sources and scenarios
 			List<Scenario> testCases = new TestCaseGenerator(logicalContexts).testCaseGeneration(contextualGraph, file);
+			*/
+			TestSuite testSuite = ((GenerateTestSuite) dialog).getTestSuite();
 			
-			TestSuite testSuite = new TestSuite();
-			testSuite.setTestCases(new ArrayList<AbstractContext>());
-			for (AbstractContext scenario : testCases)
-				testSuite.getTestCases().add(scenario);
-			
-			
-			FileDialog dialog = new FileDialog( shell, SWT.SAVE);
-	        dialog.setText("Save Test Case as");
-	        dialog.setFileName(".json");
+			FileDialog fileDialog = new FileDialog( shell, SWT.SAVE);
+			fileDialog.setText("Save Test Case as");
+			fileDialog.setFileName(".json");
 	        String[] filterExt = { "*.json"};
-	        dialog.setFilterExtensions(filterExt);
+	        fileDialog.setFilterExtensions(filterExt);
 	        
 	        //TODO refactor gson use
 	        Gson gson = GsonUtils.getGson();
@@ -453,7 +456,7 @@ public class ContextTesting extends FormPage {
 			
 			try {
 				
-				jsonFile = dialog.open();
+				jsonFile = fileDialog.open();
 				
 				FileWriter writer = new FileWriter(jsonFile);
 				writer.write(json);
@@ -461,7 +464,6 @@ public class ContextTesting extends FormPage {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			*/
 	    }
 	}
 	

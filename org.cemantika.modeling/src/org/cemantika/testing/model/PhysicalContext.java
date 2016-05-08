@@ -4,15 +4,13 @@
  */
 package org.cemantika.testing.model;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.cemantika.testing.contextSource.GPS;
+import org.cemantika.testing.contextSource.WiFi;
+import org.cemantika.testing.util.Constants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Group;
@@ -83,5 +81,15 @@ public class PhysicalContext extends AbstractContext{
 		return context;
 	}
     
+	public static PhysicalContext getBySensorName(String sensor){
+		PhysicalContext physicalContext = null;
+		
+		if (sensor.equals(Constants.WIFI))
+			physicalContext = new WiFi();
+		else if (sensor.equals(Constants.GPS))
+			physicalContext = new GPS();
+		
+		return physicalContext;
+	}
     
 }
