@@ -85,5 +85,6 @@ public class TimeSlot extends AbstractContext{
     
 	public void setId(int id) {
 		this.id = id;
+		setName("Time: "+id);
 	}
 }

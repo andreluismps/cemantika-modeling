@@ -50,19 +50,39 @@ public class GranularityMismatchImprecisionHeuristic implements SensorDefectPatt
 		ContextSourceDefectPattern contextSourceDefectPattern = new ContextSourceDefectPattern(physicalContext.getName(), ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION);
 		
 		Scenario derivedScenario = Scenario.newInstance(baseScenario);
-		derivedScenario.setName(baseScenario.getName() + ": Defect at Time " +((TimeSlot)timeslot).getId() + " - " + contextSourceDefectPattern);//+ " on " + situation.getName());
+		derivedScenario.setName(baseScenario.getName() + ": Defect at Time " +(((TimeSlot)timeslot).getId() +1) + " - " + contextSourceDefectPattern);//+ " on " + situation.getName());
 		
 		LogicalContext logicalContextToAdd = findLogicalContextWithDefectInCKTB(logicalContext, contextSourceDefectPattern);
-		
+		TimeSlot newTimeSlot = new TimeSlot(-1);
+		int i = 0;
 		for (AbstractContext timeslotAbs : derivedScenario.getContextList()){
-			if (!timeslotAbs.equals(timeslot)) continue;
-			Situation timeSlotSituation = (Situation)timeslotAbs.getContextList().get(0);
+			
+			if (!timeslotAbs.equals(timeslot)) {
+				i++;
+				continue;
+			}
+			newTimeSlot = TimeSlot.newInstance((TimeSlot)timeslotAbs);
+			newTimeSlot.setId(newTimeSlot.getId()+1);
+			
+			Situation timeSlotSituation = (Situation)newTimeSlot.getContextList().get(0);
 			timeSlotSituation.setName(situation.getName() + " with " + contextSourceDefectPattern);
 			timeSlotSituation.getContextList().remove(logicalContext);
 			timeSlotSituation.getContextList().add(logicalContextToAdd);
-			return derivedScenario;
-			
+			break;
 		}
+		
+		int listLastPos = derivedScenario.getContextList().size() - 1;
+		List<AbstractContext> removedList = new ArrayList<AbstractContext>();
+		
+		removedList.addAll(derivedScenario.getContextList().subList(i, listLastPos));
+		derivedScenario.getContextList().removeAll(removedList);
+		
+		for (AbstractContext timeslotAbs : removedList){
+			TimeSlot ts = (TimeSlot) timeslotAbs;
+			ts.setId(ts.getId()+1);
+		}
+		derivedScenario.getContextList().add(newTimeSlot);
+		derivedScenario.getContextList().addAll(removedList);
 		
 		return derivedScenario;
 	}
