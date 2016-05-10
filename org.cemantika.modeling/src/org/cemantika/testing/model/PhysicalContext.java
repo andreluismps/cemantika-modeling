@@ -7,6 +7,7 @@ package org.cemantika.testing.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.cemantika.testing.contextSource.Calendar;
 import org.cemantika.testing.contextSource.GPS;
 import org.cemantika.testing.contextSource.WiFi;
 import org.cemantika.testing.util.Constants;
@@ -88,7 +89,8 @@ public class PhysicalContext extends AbstractContext{
 			physicalContext = new WiFi();
 		else if (sensor.equals(Constants.GPS))
 			physicalContext = new GPS();
-		
+		else if (sensor.equals(Constants.CALENDAR))
+			physicalContext = new Calendar();
 		return physicalContext;
 	}
     

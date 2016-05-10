@@ -50,26 +50,22 @@ public class GranularityMismatchImprecisionHeuristic implements SensorDefectPatt
 		ContextSourceDefectPattern contextSourceDefectPattern = new ContextSourceDefectPattern(physicalContext.getName(), ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION);
 		
 		Scenario derivedScenario = Scenario.newInstance(baseScenario);
-		derivedScenario.setName(baseScenario.getName() + ": Defect at Time " +(((TimeSlot)timeslot).getId() +1) + " - " + contextSourceDefectPattern);//+ " on " + situation.getName());
+		derivedScenario.setName(baseScenario.getName() + ": Defect at Time " +(((TimeSlot)timeslot).getId() +1) + " - " + contextSourceDefectPattern);
 		
 		TimeSlot newTimeSlot = null;
-		int index = 0;
+
 		for (AbstractContext timeslotAbs : derivedScenario.getContextList()){
 			TimeSlot ts = (TimeSlot)timeslotAbs;
 			if (!ts.equals(timeslot)) {
-				if (newTimeSlot != null){
+				if (newTimeSlot != null)
 					ts.setId(ts.getId() + 1);
-				}else{
-					index++;
-				}
 				continue;
 			}
 			
 			newTimeSlot = getModifiedTimeSlot(ts, situation, logicalContext, contextSourceDefectPattern);
-			index++;
 		}
 		
-		derivedScenario.getContextList().add(index, newTimeSlot);
+		derivedScenario.getContextList().add(newTimeSlot.getId(), newTimeSlot);
 		
 		return derivedScenario;
 	}

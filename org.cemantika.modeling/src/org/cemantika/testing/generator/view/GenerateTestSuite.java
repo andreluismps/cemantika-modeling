@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.cktb.dao.ScenarioCKTBDAO;
 import org.cemantika.testing.generator.heuristics.GranularityMismatchImprecisionHeuristic;
+import org.cemantika.testing.generator.heuristics.SlowSensingOutOfDatenessHeuristic;
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Scenario;
@@ -234,7 +235,9 @@ public class GenerateTestSuite extends Dialog {
 			case GLANULARITY_MISMATCH_IMPRECISION:
 				testSuite.getTestCases().addAll(new GranularityMismatchImprecisionHeuristic(getCKTBPath()).deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
 				break;
-
+			case SLOW_SENSING_OUT_OF_DATENESS:
+				testSuite.getTestCases().addAll(new SlowSensingOutOfDatenessHeuristic().deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
+				break;
 			default:
 				break;
 			}

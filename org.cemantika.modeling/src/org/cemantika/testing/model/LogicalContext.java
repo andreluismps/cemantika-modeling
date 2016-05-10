@@ -48,8 +48,12 @@ public class LogicalContext extends AbstractContext{
 	}
 
 	public static LogicalContext newInstance(LogicalContext context) {
-		// TODO Auto-generated method stub
-		return context;
+		LogicalContext newInstance = new LogicalContext(context.getName());
+		
+		for (AbstractContext abstractContext : context.getContextList())
+			newInstance.getContextList().add(abstractContext);
+		newInstance.setIdentity(context.getIdentity());
+		return newInstance;
 	}
 
 }

@@ -48,7 +48,18 @@ public class Situation extends AbstractContext{
 
 	public static Situation newInstance(Situation context) {
 		Situation newInstance = new Situation(context.getName());
-		newInstance.setContextList(new ArrayList<AbstractContext>(context.getContextList()));
+		
+		for (AbstractContext abstractContext : context.getContextList()){
+			if (abstractContext instanceof LogicalContext) {
+				LogicalContext logicalContext = LogicalContext.newInstance((LogicalContext)abstractContext);
+				newInstance.addChildContext(logicalContext);
+			}else if (abstractContext instanceof PhysicalContext) {
+				PhysicalContext physicalContext = PhysicalContext.newInstance((PhysicalContext)abstractContext);
+				newInstance.addChildContext(physicalContext);
+			}
+		}
+		
+		newInstance.setExpectedBehavior(context.getExpectedBehavior());
 		newInstance.setIdentity(context.getIdentity());
 		return newInstance;
 	}

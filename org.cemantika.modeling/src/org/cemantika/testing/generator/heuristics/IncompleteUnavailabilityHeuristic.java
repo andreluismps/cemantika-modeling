@@ -1,5 +1,6 @@
 package org.cemantika.testing.generator.heuristics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cemantika.testing.model.ContextDefectPattern;
@@ -11,7 +12,11 @@ public class IncompleteUnavailabilityHeuristic implements SensorDefectPatternHeu
 	@Override
 	public List<Scenario> deriveTestCases(Scenario baseScenario, PhysicalContext sensor, ContextDefectPattern contextDefectPattern) {
 		
-		return null;
+		List<Scenario> scenarios = new ArrayList<Scenario>();
+		
+		return scenarios;
 	}
+
+	
 
 }

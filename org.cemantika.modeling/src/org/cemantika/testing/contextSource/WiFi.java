@@ -31,7 +31,7 @@ public class WiFi extends PhysicalContext{
         super(Constants.WIFI);
         
         //getContextDefectPatterns().add(ContextDefectPattern.SENSOR_NOISE_UNRELIABILITY);
-        //getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
+        getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
         //getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_WRONG_INTERPRETATION);
         getContextDefectPatterns().add(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION);
         //getContextDefectPatterns().add(ContextDefectPattern.OVERLAPPING_SENSORS_UNPREDICTABLE);
