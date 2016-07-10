@@ -7,6 +7,8 @@ import java.util.TreeSet;
 import org.cemantika.modeling.internal.manager.PluginManager;
 import org.cemantika.testing.cktb.dao.ScenarioCKTBDAO;
 import org.cemantika.testing.generator.heuristics.GranularityMismatchImprecisionHeuristic;
+import org.cemantika.testing.generator.heuristics.IncompleteUnavailabilityHeuristic;
+import org.cemantika.testing.generator.heuristics.ProblematicRuleLogicWrongBehaviorHeuristic;
 import org.cemantika.testing.generator.heuristics.SlowSensingOutOfDatenessHeuristic;
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.PhysicalContext;
@@ -200,12 +202,7 @@ public class GenerateTestSuite extends Dialog {
 
 	@Override
 	protected void cancelPressed() {
-		cancelModificationsOnCKTB();
 		super.cancelPressed();
-	}
-
-	private void cancelModificationsOnCKTB() {
-		
 	}
 
 	private String getCKTBPath() {
@@ -238,6 +235,19 @@ public class GenerateTestSuite extends Dialog {
 			case SLOW_SENSING_OUT_OF_DATENESS:
 				testSuite.getTestCases().addAll(new SlowSensingOutOfDatenessHeuristic().deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
 				break;
+			case INCOMPLETE_UNAIVALABALITY:
+				testSuite.getTestCases().addAll(new IncompleteUnavailabilityHeuristic().deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
+				break;
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_LOW_RAM:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_LOW_DISK:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_100_PERCENT_CPU:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_PLUGGED_SDCARD:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_SDCARD:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_PLUGGED_USB_CABLE:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_USB_CABLE:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_15_PERCENT_BATTERY:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_5_PERCENT_BATTERY:
+				testSuite.getTestCases().addAll(new ProblematicRuleLogicWrongBehaviorHeuristic().deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
 			default:
 				break;
 			}

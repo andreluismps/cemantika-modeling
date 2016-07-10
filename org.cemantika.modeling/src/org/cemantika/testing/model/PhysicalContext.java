@@ -34,9 +34,21 @@ public class PhysicalContext extends AbstractContext{
 
 	public PhysicalContext(){
 		contextDefectPatterns.add(ContextDefectPattern.INCOMPLETE_UNAIVALABALITY);
+		
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_LOW_RAM);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_LOW_DISK);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_100_PERCENT_CPU);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_PLUGGED_SDCARD);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_SDCARD);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_PLUGGED_USB_CABLE);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_USB_CABLE);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_15_PERCENT_BATTERY);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_5_PERCENT_BATTERY);
+		
     }
 	
 	public PhysicalContext(String name) {
+		this();
 		setName(name);
 	}
     

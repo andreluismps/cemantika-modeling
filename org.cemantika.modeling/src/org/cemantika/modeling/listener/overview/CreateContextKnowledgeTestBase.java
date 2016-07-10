@@ -33,8 +33,10 @@ public class CreateContextKnowledgeTestBase implements Listener {
 		dialog.setText(title);
 		dialog.setFilterExtensions(new String [] {"*."+ extension});
 		dialog.setFilterNames(new String[] { "Context Knowledge Test Base File" });
-		dialog.setFileName("cktb");
+		dialog.setFileName("TestCases.cktb");
 		String fileName = dialog.open();
+		String endFileName = "." + extension;
+		if (!fileName.endsWith(endFileName)) fileName+= endFileName;
 		
 		File file = new File(fileName);
 		try {
@@ -43,7 +45,7 @@ public class CreateContextKnowledgeTestBase implements Listener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		DataBase.createDb(DataBase.getConnection(fileName + extension));
+		DataBase.createDb(DataBase.getConnection(fileName));
 		
 	}
 

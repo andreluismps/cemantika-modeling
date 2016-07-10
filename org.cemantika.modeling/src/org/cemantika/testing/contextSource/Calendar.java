@@ -31,8 +31,6 @@ public class Calendar extends PhysicalContext{
 		
 		getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
 		//getContextDefectPatterns().add(ContextDefectPattern.SLOW_SENSING_WRONG_INTERPRETATION);
-		
-		//getContextDefectPatterns().add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR);
 	}
     
     public void createPhysicalContextDetails(Group group) throws SecurityException, NoSuchFieldException {

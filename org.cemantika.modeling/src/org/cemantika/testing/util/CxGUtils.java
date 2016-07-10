@@ -544,6 +544,9 @@ public class CxGUtils {
 		for (AbstractContext physicalContextAbs : logicalContext.getContextList()) {
 			
 			for(ContextDefectPattern contextDefectPattern : ((PhysicalContext)physicalContextAbs).getContextDefectPatterns()){
+				
+				if (!ContextDefectPattern.deriveLogicalContext(contextDefectPattern)) continue;
+				
 				LogicalContext createdLogicalContext = (LogicalContext) logicalContext.clone();
 				createdLogicalContext.setContextList(new ArrayList<AbstractContext>());
 				createdLogicalContext.setContextSourceDefectPatterns(new ArrayList<ContextSourceDefectPattern>());

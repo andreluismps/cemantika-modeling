@@ -234,8 +234,8 @@ public class Scenario extends AbstractContext{
 		});
 	}
 
-	private final int LIST_WIDTH = 220;
-	private final int LIST_HEIGHT = 220;
+	private transient final int LIST_WIDTH = 220;
+	private transient final int LIST_HEIGHT = 220;
 
 	private List createTimeSlotsCompositeList(Composite composite) {
 		

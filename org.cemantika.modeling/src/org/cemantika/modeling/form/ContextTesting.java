@@ -422,26 +422,18 @@ public class ContextTesting extends FormPage {
 		//Use compiled CxG from drools requires created java classes - Direct parse of XML is used instead.
 		private void generateTestSuit(IFile contextualGraph) {
 			
-			//TODO Show predef options (can be CKTB items in absence within CxG)
-			
 			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			Dialog dialog = new GenerateTestSuite(shell, manager, scenarios, contextualGraph, file);
 			dialog.open();
-			/*
-			Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 			
-			//TODO refactor readCKTB to read file through "util"
-			logicalContexts  = new ManageLogicalContextCKTB(shell, manager, logicalContexts, contextualGraph, file).readCKTBFromFile();
-			
-			//Scenario = all graph's paths (scenarios list).
-		    //Situation = all logical contexts in a path (name: )
-		    //Logical context = set of sensors in a contextual node (name: tem perigo)
-			//TODO Derive cases
-			//TODO Include deffect patterns into context sources and scenarios
-			List<Scenario> testCases = new TestCaseGenerator(logicalContexts).testCaseGeneration(contextualGraph, file);
-			*/
 			TestSuite testSuite = ((GenerateTestSuite) dialog).getTestSuite();
 			
+			if (testSuite.getTestCases().isEmpty()) return;
+			
+			exportTestSuiteAsJSON(shell, testSuite);
+	    }
+
+		private void exportTestSuiteAsJSON(Shell shell, TestSuite testSuite) {
 			FileDialog fileDialog = new FileDialog( shell, SWT.SAVE);
 			fileDialog.setText("Save Test Case as");
 			fileDialog.setFileName(".json");
@@ -464,7 +456,7 @@ public class ContextTesting extends FormPage {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	    }
+		}
 	}
 	
 	private class GotoPage extends HyperlinkAdapter {
@@ -490,9 +482,9 @@ public class ContextTesting extends FormPage {
 		public void linkActivated(HyperlinkEvent e) {
 			String label = (String) e.getHref();
 			if (label.equals("Create Context Knowledge Test Base")) {
-				new CreateContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Create Context Knowledge Test Base", "db").handleEvent(null);
+				new CreateContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Create Context Knowledge Test Base", "cktb").handleEvent(null);
 			} else if (label.equals("Open Context Knowledge Test Base")) {
-				new ImportContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Import Context Knowledge Test Base", "db").handleEvent(null);
+				new ImportContextKnowledgeTestBase(shell, manager, PluginManager.CONTEXT_KNOWLEDGE_TEST_BASE, "Import Context Knowledge Test Base", "cktb").handleEvent(null);
 			}
 			
 		}
