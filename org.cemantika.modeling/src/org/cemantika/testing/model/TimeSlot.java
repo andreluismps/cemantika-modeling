@@ -78,6 +78,14 @@ public class TimeSlot extends AbstractContext{
           getContextList().add(context);  
         }    
     }
+    
+    public static TimeSlot getById(List<TimeSlot> timeSlots, int idSearch){
+    	for (TimeSlot timeSlot : timeSlots) {
+			if(timeSlot.getId() == idSearch)
+				return timeSlot;
+		}
+    	return null;
+    }
 
 	public int getId() {
 		return id;

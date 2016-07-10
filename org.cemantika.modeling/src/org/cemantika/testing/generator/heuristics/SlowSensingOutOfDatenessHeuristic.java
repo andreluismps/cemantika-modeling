@@ -3,23 +3,80 @@ package org.cemantika.testing.generator.heuristics;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.cemantika.testing.cktb.dao.LogicalContextCKTBDAO;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
-import org.cemantika.testing.model.ContextSourceDefectPattern;
 import org.cemantika.testing.model.LogicalContext;
 import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TimeSlot;
+import org.cemantika.testing.util.CxGUtils;
+
+import com.google.common.collect.Lists;
 
 public class SlowSensingOutOfDatenessHeuristic implements SensorDefectPatternHeuristic {
+
+	
+	LogicalContextCKTBDAO logicalContextCKTBDAO;
+	
+	public SlowSensingOutOfDatenessHeuristic(String CKTBPath) {
+		this.logicalContextCKTBDAO = new LogicalContextCKTBDAO(CKTBPath);
+	}
 
 	@Override
 	public List<Scenario> deriveTestCases(Scenario baseScenario, PhysicalContext sensor, ContextDefectPattern contextDefectPattern) {
 		
 		List<Scenario> scenarios = new ArrayList<Scenario>();
 		
-		//for each situation/sensor, generate a new scenario
+		//generate all timeslots
+		//derive using all outdated timeslots until use only first timeslot with outdated data
+		List<TimeSlot> timeSlotsWithOutDateness = getTimesLotsWithOutDateness(baseScenario, sensor, contextDefectPattern);
+		
+		scenarios.addAll(deriveScenariosWithOutdatedData(baseScenario, timeSlotsWithOutDateness, sensor));
+		
+		return scenarios;
+	}
+	
+	private List<Scenario> deriveScenariosWithOutdatedData(Scenario baseScenario, List<TimeSlot> timeSlotsWithOutDateness, PhysicalContext sensor) {
+		List<Scenario> derivedScenarios = new ArrayList<Scenario>();
+		List<AbstractContext> reverseBaseScenarioTimeSlots = Lists.reverse(baseScenario.getContextList());
+		Scenario derivedScenario = null;
+		
+		for (AbstractContext timeSlotAbs : reverseBaseScenarioTimeSlots){
+			if (!(timeSlotAbs instanceof TimeSlot)) continue;
+			
+			TimeSlot timeSlot = (TimeSlot)timeSlotAbs;
+			TimeSlot lastSlotWithOutDateness = TimeSlot.getById(timeSlotsWithOutDateness, timeSlot.getId());
+			
+			if (lastSlotWithOutDateness == null) continue;
+			int derivedScenarioIndex = 0;
+			derivedScenario = Scenario.newInstance(baseScenario);
+			derivedScenario.setName(baseScenario.getName() + " - " + sensor.getName() + " Outdated until time " + timeSlot.getId());
+			
+			for(AbstractContext baseTimeSlotAbs : baseScenario.getContextList()){
+				
+				if (!(baseTimeSlotAbs instanceof TimeSlot)) {derivedScenarioIndex++; continue;}
+				
+				TimeSlot baseTimeSlot = (TimeSlot)baseTimeSlotAbs;
+				if (baseTimeSlot.getId() <= lastSlotWithOutDateness.getId()){
+					derivedScenario.getContextList().set(derivedScenarioIndex, TimeSlot.getById(timeSlotsWithOutDateness, baseTimeSlot.getId()));
+				}
+				if (baseTimeSlot.getId() == lastSlotWithOutDateness.getId()){
+					derivedScenarios.add(derivedScenario);
+					break;
+				}
+				derivedScenarioIndex++;
+			}
+			
+		}
+		
+		return derivedScenarios;
+	}
+
+	private List<TimeSlot> getTimesLotsWithOutDateness(Scenario baseScenario, PhysicalContext sensor, ContextDefectPattern contextDefectPattern) {
+		
+		List<TimeSlot> timeSlotsWithOutDateness = new ArrayList<TimeSlot>();
 		for (AbstractContext timeslot : baseScenario.getContextList()){
 			Situation situation = (Situation) timeslot.getContextList().get(0);
 			for (AbstractContext logicalContextAbs : situation.getContextList()){
@@ -27,52 +84,24 @@ public class SlowSensingOutOfDatenessHeuristic implements SensorDefectPatternHeu
 				for (AbstractContext physicalContextAbs : logicalContextAbs.getContextList()){
 					PhysicalContext physicalContext = (PhysicalContext) physicalContextAbs;
 					if (sensor.getName().equals(physicalContext.getName()) && physicalContext.getContextDefectPatterns().contains(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION))
-						scenarios.add(deriveIncompleteUnavailabilityScenario(baseScenario, timeslot, situation, logicalContext, physicalContext));
+						timeSlotsWithOutDateness.add(createSlowSensingOutOfDatenessTimeSlot(baseScenario, timeslot, situation, logicalContext, physicalContext, contextDefectPattern));
 				}
 			}
+		
 		}
-		
-		return scenarios;
+		return timeSlotsWithOutDateness;
 	}
-	
-	private Scenario deriveIncompleteUnavailabilityScenario(
-			Scenario baseScenario, AbstractContext timeslot,
-			Situation situation, LogicalContext logicalContext,
-			PhysicalContext physicalContext) {
-		
-		ContextSourceDefectPattern contextSourceDefectPattern = new ContextSourceDefectPattern(physicalContext.getName(), ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS);
-		
-		Scenario derivedScenario = Scenario.newInstance(baseScenario);
-		derivedScenario.setName(baseScenario.getName() + ": Defect after Time " +(((TimeSlot)timeslot).getId() +1) + " - " + contextSourceDefectPattern);
-		
+
+	private TimeSlot createSlowSensingOutOfDatenessTimeSlot(Scenario baseScenario, AbstractContext timeslot, Situation situation, LogicalContext logicalContext, PhysicalContext physicalContext, ContextDefectPattern contextDefectPattern) {
 		TimeSlot outDatedTimeSlot = TimeSlot.newInstance((TimeSlot)timeslot);
-		outDatedTimeSlot.setId(derivedScenario.getContextList().size());
 		
 		Situation outDatedSituation = (Situation) outDatedTimeSlot.getContextList().get(0);
-		outDatedSituation.setName("Delayed " + physicalContext.getName() + " data of " + outDatedSituation.getName());
-		outDatedSituation.getContextList().clear();
+		outDatedSituation.setName(outDatedSituation.getName() + " with " + physicalContext.getName() + " Outdated data");
+		outDatedSituation.getContextList().remove(logicalContext);
 		
-		LogicalContext outDatedLogicalContext = LogicalContext.newInstance(logicalContext);
-		outDatedLogicalContext.setName("Delayed " + physicalContext.getName() + " data of " + outDatedLogicalContext.getName());
-		outDatedLogicalContext.getContextList().clear();
-		outDatedLogicalContext.getContextList().add(physicalContext);
+		LogicalContext outDatedLogicalContext = logicalContextCKTBDAO.getByName(CxGUtils.getNameOfLogicalContextWithDefectPattern(physicalContext, contextDefectPattern, logicalContext));
 		
 		outDatedSituation.getContextList().add(outDatedLogicalContext);
-		
-		for (AbstractContext timeSlotAbs : derivedScenario.getContextList()){
-
-			if (((TimeSlot)timeSlotAbs).getId() <= ((TimeSlot)timeslot).getId()) continue;
-
-			Situation situationAux = (Situation) timeSlotAbs.getContextList().get(0);
-			situationAux.setName(situationAux.getName() + " - No " + physicalContext.getName() + " data" );
-			for (AbstractContext logicalContextAbs : situationAux.getContextList()){
-				LogicalContext logicalContextAux = (LogicalContext) logicalContextAbs;
-				logicalContextAux.getContextList().remove(physicalContext);
-			}
-		}
-		derivedScenario.getContextList().add(outDatedTimeSlot);
-		
-		return derivedScenario;
+		return outDatedTimeSlot;
 	}
-	
 }

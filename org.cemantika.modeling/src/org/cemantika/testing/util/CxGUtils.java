@@ -554,13 +554,17 @@ public class CxGUtils {
 				for (AbstractContext physicalContext : logicalContext.getContextList()){
 					createdLogicalContext.addChildContext(physicalContext.clone());
 				}
-				createdLogicalContext.setName(createdLogicalContext.getName() + " - " + physicalContextAbs.getName() + " - " + contextDefectPattern.toString());
+				createdLogicalContext.setName(getNameOfLogicalContextWithDefectPattern(physicalContextAbs, contextDefectPattern, createdLogicalContext));
 				createdLogicalContexts.put(createdLogicalContext.getName(), createdLogicalContext);
 			}
 		}
 		return createdLogicalContexts;
 	}
 
+	public static String getNameOfLogicalContextWithDefectPattern(AbstractContext physicalContextAbs, ContextDefectPattern contextDefectPattern, LogicalContext createdLogicalContext) {
+		return createdLogicalContext.getName() + " - " + physicalContextAbs.getName() + " - " + contextDefectPattern.toString();
+	}
+	
 	public static Map<String, Situation> getSituations(IFile contextualGraph, String CKTBPath){
 		
 		Process extractedCxG = extractProcessFromCxG(contextualGraph);

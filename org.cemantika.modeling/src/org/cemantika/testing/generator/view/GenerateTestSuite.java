@@ -233,7 +233,7 @@ public class GenerateTestSuite extends Dialog {
 				testSuite.getTestCases().addAll(new GranularityMismatchImprecisionHeuristic(getCKTBPath()).deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
 				break;
 			case SLOW_SENSING_OUT_OF_DATENESS:
-				testSuite.getTestCases().addAll(new SlowSensingOutOfDatenessHeuristic().deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
+				testSuite.getTestCases().addAll(new SlowSensingOutOfDatenessHeuristic(getCKTBPath()).deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
 				break;
 			case INCOMPLETE_UNAIVALABALITY:
 				testSuite.getTestCases().addAll(new IncompleteUnavailabilityHeuristic().deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
