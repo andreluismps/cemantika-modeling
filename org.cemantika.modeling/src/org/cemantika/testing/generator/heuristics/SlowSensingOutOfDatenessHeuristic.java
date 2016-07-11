@@ -29,10 +29,10 @@ public class SlowSensingOutOfDatenessHeuristic implements SensorDefectPatternHeu
 		
 		List<Scenario> scenarios = new ArrayList<Scenario>();
 		
-		//generate all timeslots
-		//derive using all outdated timeslots until use only first timeslot with outdated data
+		//generate all timeslots with defect
 		List<TimeSlot> timeSlotsWithOutDateness = getTimesLotsWithOutDateness(baseScenario, sensor, contextDefectPattern);
 		
+		//derive using all outdated timeslots until use only first timeslot with outdated data
 		scenarios.addAll(deriveScenariosWithOutdatedData(baseScenario, timeSlotsWithOutDateness, sensor));
 		
 		return scenarios;
@@ -60,7 +60,10 @@ public class SlowSensingOutOfDatenessHeuristic implements SensorDefectPatternHeu
 				
 				TimeSlot baseTimeSlot = (TimeSlot)baseTimeSlotAbs;
 				if (baseTimeSlot.getId() <= lastSlotWithOutDateness.getId()){
-					derivedScenario.getContextList().set(derivedScenarioIndex, TimeSlot.getById(timeSlotsWithOutDateness, baseTimeSlot.getId()));
+					TimeSlot timeSlotToReplace = TimeSlot.getById(timeSlotsWithOutDateness, baseTimeSlot.getId());
+					if(timeSlotToReplace == null) continue;
+					
+					derivedScenario.getContextList().set(derivedScenarioIndex, timeSlotToReplace);
 				}
 				if (baseTimeSlot.getId() == lastSlotWithOutDateness.getId()){
 					derivedScenarios.add(derivedScenario);
@@ -83,7 +86,7 @@ public class SlowSensingOutOfDatenessHeuristic implements SensorDefectPatternHeu
 				LogicalContext logicalContext= (LogicalContext) logicalContextAbs;
 				for (AbstractContext physicalContextAbs : logicalContextAbs.getContextList()){
 					PhysicalContext physicalContext = (PhysicalContext) physicalContextAbs;
-					if (sensor.getName().equals(physicalContext.getName()) && physicalContext.getContextDefectPatterns().contains(ContextDefectPattern.GLANULARITY_MISMATCH_IMPRECISION))
+					if (sensor.getName().equals(physicalContext.getName()) && physicalContext.getContextDefectPatterns().contains(ContextDefectPattern.SLOW_SENSING_OUT_OF_DATENESS))
 						timeSlotsWithOutDateness.add(createSlowSensingOutOfDatenessTimeSlot(baseScenario, timeslot, situation, logicalContext, physicalContext, contextDefectPattern));
 				}
 			}

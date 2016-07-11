@@ -55,7 +55,7 @@ public class TimeSlot extends AbstractContext{
         
         findAllPhysicalContextRekursiv(getContextList());
         
-        List list = new ArrayList<PhysicalContext>(mapPhysicalContext.values());
+        List<PhysicalContext> list = new ArrayList<PhysicalContext>(mapPhysicalContext.values());
 
         return list;
     }
