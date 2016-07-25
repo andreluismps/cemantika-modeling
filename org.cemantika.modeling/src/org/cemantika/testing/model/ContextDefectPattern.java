@@ -28,6 +28,7 @@ public enum ContextDefectPattern {
 	PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_USB_CABLE("Problematic Rule Logic / Wrong Behavior - Unplugged USB Cable"),
 	PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_15_PERCENT_BATTERY("Problematic Rule Logic / Wrong Behavior - 15% Battery"),
 	PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_5_PERCENT_BATTERY("Problematic Rule Logic / Wrong Behavior - 5% Battery"),
+	PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_1_PERCENT_BATTERY("Problematic Rule Logic / Wrong Behavior - 1% Battery"),
 	
 	OVERLAPPING_SENSORS_CONCURRENT_VALUES("Overlapping Sensors / Concurrent Values"),
 	OVERLAPPING_SENSORS_UNPREDICTABLE("Overlapping Sensors / Unpredictable");

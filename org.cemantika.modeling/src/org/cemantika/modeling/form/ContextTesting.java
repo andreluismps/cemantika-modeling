@@ -8,6 +8,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.cemantika.modeling.Activator;
 import org.cemantika.modeling.generator.java.JetCemantikaGenerator;
@@ -19,6 +20,7 @@ import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
 import org.cemantika.testing.cktb.view.ManageSituationCKTB;
 import org.cemantika.testing.generator.view.GenerateTestSuite;
 import org.cemantika.testing.model.LogicalContext;
+import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TestSuite;
@@ -31,6 +33,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -118,7 +121,7 @@ public class ContextTesting extends FormPage {
         
         addGenerateBaseScenarioInBehaviorModel();
         
-        addTestCaseGeneration();		
+        addTestCaseGeneration();
 	}
 	
 	private void addImportCKTB() {
@@ -364,6 +367,7 @@ public class ContextTesting extends FormPage {
 			IFile contextualGraph = getContextualGraph(ref);
 			switch (tab) {
 			case IDENTIFY_LOGICAL_CONTEXTS_TAB:
+				registerPhysicalContexts();
 				identifyLogicalContexts(contextualGraph);
 				break;
 				
@@ -508,6 +512,22 @@ public class ContextTesting extends FormPage {
 		doneImportCKTB.setColor("done", ColorConstants.red);
 		doneImportCKTB.setText(html.toString(), true, true);
 		updateImportSection();
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static void registerPhysicalContexts() {
+		
+		java.lang.Class<? extends PhysicalContext> clz = null;
+		try {
+			clz = (java.lang.Class<? extends PhysicalContext>) java.lang.Class.forName("org.cemantika.testing.contextSource." + "CPU");
+			clz.newInstance();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
