@@ -48,9 +48,9 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 		GsonUtils.registerType(adapter);
 		Reflections reflections = new Reflections("org.cemantika.testing.contextSource");
 		
-		Set<Class<? extends AbstractContext>> allClasses = reflections.getSubTypesOf(AbstractContext.class);
+		Set<Class<? extends PhysicalContext>> allClasses = reflections.getSubTypesOf(PhysicalContext.class);
 		reflections = new Reflections("org.cemantika.testing.contextSource");
-		allClasses.addAll(reflections.getSubTypesOf(AbstractContext.class));
+		allClasses.addAll(reflections.getSubTypesOf(PhysicalContext.class));
 		for (Class<? extends AbstractContext> clazz : allClasses) {
 			adapter.registerSubtype(clazz);
 		}
