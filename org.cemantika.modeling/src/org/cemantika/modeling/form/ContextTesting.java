@@ -19,6 +19,7 @@ import org.cemantika.testing.cktb.view.ManageLogicalContextCKTB;
 import org.cemantika.testing.cktb.view.ManageSituationCKTB;
 import org.cemantika.testing.generator.view.GenerateTestSuite;
 import org.cemantika.testing.model.LogicalContext;
+import org.cemantika.testing.model.PhysicalContext;
 import org.cemantika.testing.model.Scenario;
 import org.cemantika.testing.model.Situation;
 import org.cemantika.testing.model.TestSuite;
@@ -513,16 +514,7 @@ public class ContextTesting extends FormPage {
 	}
 	
 	private static void registerPhysicalContexts() {
-		
-		try {
-			java.lang.Class.forName("org.cemantika.testing.contextSource.CPU").newInstance();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		new PhysicalContext();
 	}
 	
 }

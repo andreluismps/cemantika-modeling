@@ -45,6 +45,7 @@ public class PhysicalContext extends AbstractContext{
 		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_USB_CABLE);
 		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_15_PERCENT_BATTERY);
 		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_5_PERCENT_BATTERY);
+		contextDefectPatterns.add(ContextDefectPattern.PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_1_PERCENT_BATTERY);
 		
     }
 	
