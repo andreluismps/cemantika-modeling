@@ -247,6 +247,7 @@ public class GenerateTestSuite extends Dialog {
 			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_USB_CABLE:
 			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_15_PERCENT_BATTERY:
 			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_5_PERCENT_BATTERY:
+			case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_1_PERCENT_BATTERY:
 				testSuite.getTestCases().addAll(new ProblematicRuleLogicWrongBehaviorHeuristic().deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));
 			default:
 				break;
