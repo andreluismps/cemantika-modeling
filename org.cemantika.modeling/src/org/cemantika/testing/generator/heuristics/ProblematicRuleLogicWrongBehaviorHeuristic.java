@@ -10,6 +10,7 @@ import org.cemantika.testing.contextSource.HardDisk;
 import org.cemantika.testing.contextSource.RAM;
 import org.cemantika.testing.contextSource.SDCard;
 import org.cemantika.testing.contextSource.USBCable;
+import org.cemantika.testing.generator.TestSuiteReduction;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.LogicalContext;
@@ -35,7 +36,7 @@ public class ProblematicRuleLogicWrongBehaviorHeuristic implements SensorDefectP
 		if (timeSlotsWithProblematicRuleLogicWrongBehavior.size() > 0)
 			scenarios.addAll(deriveScenariosWithWrongBehavior(baseScenario, timeSlotsWithProblematicRuleLogicWrongBehavior, contextDefectPattern));
 
-		return scenarios;
+		return TestSuiteReduction.reducedTestSuite(scenarios);
 	}
 
 	private List<TimeSlot> getTimesLotsWithProblematicRuleLogicWrongBehavior(Scenario baseScenario, ContextDefectPattern contextDefectPattern) {

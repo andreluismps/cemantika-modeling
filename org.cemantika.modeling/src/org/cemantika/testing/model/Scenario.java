@@ -49,6 +49,8 @@ public class Scenario extends AbstractContext{
     
     private transient String CxGFullName;
     
+    private transient java.util.List<LogicalContext> transitions;
+    
     public Scenario(String name){
       setName(name);
     }
@@ -678,6 +680,26 @@ public class Scenario extends AbstractContext{
 	
 	public SortedSet<String> getSelectedSensorDefectListData(){
 		return selectedSensorDefectListData;
+	}
+
+	public java.util.List<LogicalContext> getTransitions() {
+		if (this.transitions == null){
+			java.util.List<LogicalContext> transitions = new ArrayList<LogicalContext>();
+	
+			for (AbstractContext timeSlotAbs : this.getContextList()) {
+				if (!(timeSlotAbs instanceof TimeSlot)) continue;
+				for (AbstractContext situationAbs : timeSlotAbs.getContextList()) {
+					if (!(situationAbs instanceof Situation)) continue;
+					for (AbstractContext logicalContextAbs : situationAbs.getContextList()) {
+						if (!(logicalContextAbs instanceof LogicalContext)) continue;
+						transitions.add((LogicalContext) logicalContextAbs);
+					}
+				}
+			}
+			this.transitions = transitions;
+		}
+		
+		return transitions;
 	}
 	
 }

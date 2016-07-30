@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cemantika.testing.cktb.dao.LogicalContextCKTBDAO;
+import org.cemantika.testing.generator.TestSuiteReduction;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.LogicalContext;
@@ -35,7 +36,7 @@ public class SlowSensingOutOfDatenessHeuristic implements SensorDefectPatternHeu
 		//derive using all outdated timeslots until use only first timeslot with outdated data
 		scenarios.addAll(deriveScenariosWithOutdatedData(baseScenario, timeSlotsWithOutDateness, sensor));
 		
-		return scenarios;
+		return TestSuiteReduction.reducedTestSuite(scenarios);
 	}
 	
 	private List<Scenario> deriveScenariosWithOutdatedData(Scenario baseScenario, List<TimeSlot> timeSlotsWithOutDateness, PhysicalContext sensor) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cemantika.testing.cktb.dao.LogicalContextCKTBDAO;
+import org.cemantika.testing.generator.TestSuiteReduction;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.ContextSourceDefectPattern;
@@ -38,7 +39,7 @@ public class GranularityMismatchImprecisionHeuristic implements SensorDefectPatt
 			}
 		}
 		
-		return scenarios;
+		return TestSuiteReduction.reducedTestSuite(scenarios);
 	}
 	
 	private Scenario deriveGranularityMismatchImprecisionScenario(

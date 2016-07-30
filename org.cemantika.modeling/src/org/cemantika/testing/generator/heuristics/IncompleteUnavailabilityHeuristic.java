@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.cemantika.testing.generator.TestSuiteReduction;
 import org.cemantika.testing.model.AbstractContext;
 import org.cemantika.testing.model.ContextDefectPattern;
 import org.cemantika.testing.model.LogicalContext;
@@ -27,7 +28,7 @@ public class IncompleteUnavailabilityHeuristic implements SensorDefectPatternHeu
 		if (timeSlotsWithIncompleteUnavailable.size() > 0)
 			scenarios.addAll(deriveScenariosWithtimeSlotsWithIncompleteUnavailable(baseScenario, timeSlotsWithIncompleteUnavailable, sensor));
 		
-		return scenarios;
+		return TestSuiteReduction.reducedTestSuite(scenarios);
 	}
 
 	private Collection<? extends Scenario> deriveScenariosWithtimeSlotsWithIncompleteUnavailable(Scenario baseScenario, List<TimeSlot> timeSlotsWithIncompleteUnavailable, PhysicalContext sensor) {
