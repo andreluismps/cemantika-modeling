@@ -48,6 +48,8 @@ public class TestSuiteReduction {
 			int[] pair = getMaxValue(similarityMatrix);
 			maxValue = similarityMatrix[pair[0]] [pair[1]];
 			
+			if (maxValue == 0) break;
+			
 			similarityMatrix[pair[0]] [pair[1]] = 0;
 			
 			Scenario scenario1 = scenarios.get(pair[0]);
@@ -79,7 +81,7 @@ public class TestSuiteReduction {
 				similarityMatrix[i][removedTestCaseIndex] = 0;
 			}
 			
-			reducedTestSuite.add(secondChoice);
+			reducedTestSuite.add(secondChoice); 
 		}
 		
 		return new ArrayList<Scenario>(reducedTestSuite);
