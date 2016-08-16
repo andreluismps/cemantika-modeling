@@ -453,6 +453,8 @@ public class ContextTesting extends FormPage {
 				
 				jsonFile = fileDialog.open();
 				
+				if (jsonFile == null) return;
+				
 				FileWriter writer = new FileWriter(jsonFile);
 				writer.write(json);
 				writer.close();
