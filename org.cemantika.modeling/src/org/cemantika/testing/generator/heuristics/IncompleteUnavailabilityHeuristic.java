@@ -23,7 +23,6 @@ public class IncompleteUnavailabilityHeuristic implements SensorDefectPatternHeu
 		//generate all timeslots with defect
 		List<TimeSlot> timeSlotsWithIncompleteUnavailable = getTimesLotsWithIncompleteUnavailable(baseScenario, sensor, contextDefectPattern);
 		
-		
 		//derive using always first available and others disabled for sensor
 		if (timeSlotsWithIncompleteUnavailable.size() > 0)
 			scenarios.addAll(deriveScenariosWithtimeSlotsWithIncompleteUnavailable(baseScenario, timeSlotsWithIncompleteUnavailable, sensor));
@@ -40,7 +39,7 @@ public class IncompleteUnavailabilityHeuristic implements SensorDefectPatternHeu
 			
 			TimeSlot timeSlot = (TimeSlot)timeSlotAbs;
 			
-			if(timeSlot.getId() == baseScenario.getContextList().size() - 1) break;
+			if(timeSlot.getId() == baseScenario.getContextList().size()) break;
 			
 			TimeSlot firstSlotWithIncompleteUnavailable = TimeSlot.getById(timeSlotsWithIncompleteUnavailable, timeSlot.getId());
 			if (firstSlotWithIncompleteUnavailable == null) continue;

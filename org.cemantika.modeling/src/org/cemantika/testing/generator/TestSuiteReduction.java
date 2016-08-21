@@ -40,6 +40,9 @@ public class TestSuiteReduction {
 	}
 	
 	public static List<Scenario> reducedTestSuite(List<Scenario> scenarios){
+		//If there are only 1 scenario on list, skip test suite reduction
+		if(scenarios.size() <= 1) return scenarios;
+		
 		Set<Scenario> reducedTestSuite = new HashSet<Scenario>();
 		double[][] similarityMatrix = getSimilarityMatrix(scenarios);
 		double maxValue = 1;

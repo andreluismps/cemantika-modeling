@@ -85,6 +85,12 @@ public class ManageLogicalContextCKTB extends Dialog {
 				
 				disposeChildrenControls(physicalContextsComposite);
 				
+				createEmptyLabel(physicalContextsComposite);
+				
+				Label lblDefect = new Label(physicalContextsComposite, SWT.WRAP);
+				lblDefect.setLayoutData(new GridData(420, SWT.DEFAULT));
+				lblDefect.setText(logicalContext.getDefectText());
+				
 				for (AbstractContext physicalContext : logicalContext.getContextList()) {
 					createPhysicalContextGroup(physicalContextsComposite, physicalContext);
 				}
@@ -101,8 +107,15 @@ public class ManageLogicalContextCKTB extends Dialog {
 	private Composite createPhysicalContextsComposite(Composite composite) {
 		Composite physicalContextsComposite = new Composite(composite, SWT.NONE);
         physicalContextsComposite.setLayout(new GridLayout(1, true));
-        physicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        physicalContextsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        createEmptyLabel(physicalContextsComposite);
 		return physicalContextsComposite;
+	}
+	
+	private Label createEmptyLabel(Composite composite){
+		Label lblEmpty = new Label(composite, SWT.NONE);
+        lblEmpty.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        return lblEmpty;
 	}
 
 	private List createLogicalContextsCompositeList(Composite composite) {
