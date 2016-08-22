@@ -425,6 +425,13 @@ public class Scenario extends AbstractContext{
 	    }
 	}
 	
+	private void setEnabledChildren(Composite composite, boolean enabled){
+		composite.setEnabled(enabled);
+		for (Control control : composite.getChildren()) {
+	        control.setEnabled(enabled);
+	    }
+	}
+	
 	private void createSeparatorLine(Group group) {
 		Label separator = new Label(group, SWT.HORIZONTAL | SWT.SEPARATOR);
 	    separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -454,7 +461,7 @@ public class Scenario extends AbstractContext{
 	private Composite createCompositeToList(Composite composite) {
 		Composite situationsComposite = new Composite(composite, SWT.NONE);
         situationsComposite.setLayout(new GridLayout(1, false));
-        situationsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        situationsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
         return situationsComposite;
 	}
 	
@@ -472,13 +479,17 @@ public class Scenario extends AbstractContext{
 	}
 	
 	private transient Map<String, PhysicalContext> sensors; 
-	private transient List defectsList;
+	private transient List sensorDefectsList;
+	private transient List independentDefectsList;
 	private transient Composite selectionComposite;
+	private transient Composite sensorRelatedDefectComposite;
+	private transient Composite sensorIndependentDefectComposite; 
 	private transient Button addDefectBtn;
     private transient Button removeDefectBtn;
     private transient List selectedSensorDefectList;
     private transient SortedSet<String> selectedSensorDefectListData;
     private transient Combo sensorsCombo;
+    private transient Button[] options;
 
 	public void createTestCaseDetails(Group group) throws SecurityException, NoSuchFieldException{
 		        
@@ -486,15 +497,36 @@ public class Scenario extends AbstractContext{
         
         selectionComposite = createCompositeToList(composite);
         
-        createDetailLabel(selectionComposite, "Identified Sensors in Scenario");
+        createDetailLabel(selectionComposite, "Ways to select defects:");
+        
+        options = new Button[2];
+
+        options[0] = new Button(selectionComposite, SWT.RADIO);
+        options[0].setSelection(true);
+        options[0].setText("1 - Pick a sensor and its related defect");
+        options[0].setBounds(10, 5, 75, 30);
+        addListenersToSensorRelatedDefectComposite(options[0]);
+        
+        sensorRelatedDefectComposite = createCompositeToList(selectionComposite);
+        
+        createDetailLabel(sensorRelatedDefectComposite, "Identified Sensors in Scenario");
         
         sensors = discoverSensors();
         
-        sensorsCombo = createSensorCombo(selectionComposite, sensors);
+        sensorsCombo = createSensorCombo(sensorRelatedDefectComposite, sensors);
         addListenersToSensorsCombo(sensorsCombo);
         
-        createDetailLabel(selectionComposite, "Sensor related defects");
+        createDetailLabel(sensorRelatedDefectComposite, "Sensor related defects");
         sensorsCombo.select(0);
+        
+        options[1] = new Button(selectionComposite, SWT.RADIO);
+        options[1].setText("2 - Pick a sensor independent defect");
+        options[1].setBounds(10, 30, 75, 30);
+        addListenersToSensorIndependentDefectComposite(options[1]);
+        
+        sensorIndependentDefectComposite = createCompositeToList(selectionComposite);
+        setEnabledChildren(sensorIndependentDefectComposite, false);
+        createIndependentList();
         
         createDefectButtonsComposite(composite);
         
@@ -511,6 +543,39 @@ public class Scenario extends AbstractContext{
         
 	}
 	
+	private void addListenersToSensorRelatedDefectComposite(final Button radio){
+		radio.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setEnabledChildren(sensorRelatedDefectComposite, true);
+				setEnabledChildren(sensorIndependentDefectComposite, false);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+		});
+	}
+	
+	private void addListenersToSensorIndependentDefectComposite(final Button radio){
+		radio.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setEnabledChildren(sensorRelatedDefectComposite, false);
+				sensorsCombo.select(sensorsCombo.getSelectionIndex());
+				setEnabledChildren(sensorIndependentDefectComposite, true);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+		});
+	}
+	
 	private void addListenersToSensorsCombo(final Combo sensorsCombo) {
 		sensorsCombo.addModifyListener(new ModifyListener() {
 			
@@ -519,24 +584,50 @@ public class Scenario extends AbstractContext{
 				int index = sensorsCombo.getSelectionIndex();
 				String item = sensorsCombo.getItem(index);
 				Map<String, ContextDefectPattern> defectPatterns = discoverSensorDefectPatterns((PhysicalContext)sensors.get(item));
-				if (defectsList != null){
-					defectsList.dispose();
+				if (sensorDefectsList != null){
+					sensorDefectsList.dispose();
 				}				
-				defectsList = createDefectList(selectionComposite, defectPatterns);
+				sensorDefectsList = createDefectList(sensorRelatedDefectComposite, defectPatterns, 48);
 				addListenersToDefectsList();
-				selectionComposite.layout();
+				sensorRelatedDefectComposite.layout();
+				if(addDefectBtn!= null && !addDefectBtn.isDisposed())
+					addDefectBtn.setEnabled(false);
 				
 			}
 		});
 		
 	}
 	
+	private void createIndependentList(){
+		
+		Map<String, ContextDefectPattern> defectPatterns = discoverIndependentDefectPatterns();
+		if (independentDefectsList != null){
+			independentDefectsList.dispose();
+		}				
+		independentDefectsList = createDefectList(sensorIndependentDefectComposite, defectPatterns, 97);
+		addListenersToIndependentDefectsList();
+		
+	}
+	
 	private void addListenersToDefectsList(){
-		defectsList.addSelectionListener(new SelectionListener() {
+		sensorDefectsList.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				addDefectBtn.setEnabled(defectsList.getSelectionIndex() != -1);
+				addDefectBtn.setEnabled(sensorDefectsList.getSelectionIndex() != -1);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+	}
+	
+	private void addListenersToIndependentDefectsList(){
+		independentDefectsList.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addDefectBtn.setEnabled(independentDefectsList.getSelectionIndex() != -1);
 			}
 			
 			@Override
@@ -577,9 +668,9 @@ public class Scenario extends AbstractContext{
 		return list;
 	}
 	
-	private List createDefectList(Composite situationsComposite, Map<String, ContextDefectPattern> eligibleDefects) {
+	private List createDefectList(Composite situationsComposite, Map<String, ContextDefectPattern> eligibleDefects, int height) {
 		List list = new List(situationsComposite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData myGrid = new GridData(330, 232);
+		GridData myGrid = new GridData(330, height);
 		list.setLayoutData(myGrid);
 		
 		SortedSet<String> orderedDefects = new TreeSet<String>(eligibleDefects.keySet());
@@ -614,12 +705,16 @@ public class Scenario extends AbstractContext{
 			public void handleEvent(Event event) {
 				switch (event.type) {
 				case SWT.Selection:
+					if(options[0].getSelection()){
 					String selectedSensor = sensorsCombo.getItem(sensorsCombo.getSelectionIndex());
-					String selectedDefect = defectsList.getItem(defectsList.getSelectionIndex());
+					String selectedDefect = sensorDefectsList.getItem(sensorDefectsList.getSelectionIndex());
 					String selectedSensorDefect = selectedSensor + " | " + selectedDefect;
 					
 					selectedSensorDefectListData.add(selectedSensorDefect);
-					
+					}else{
+						String selectedDefect = independentDefectsList.getItem(independentDefectsList.getSelectionIndex());
+						selectedSensorDefectListData.add(selectedDefect);
+					}
 					resetSensorDefectListWithData();
 					
 					break;
@@ -674,7 +769,18 @@ public class Scenario extends AbstractContext{
 		Map<String, ContextDefectPattern> defectPatterns = new HashMap<String, ContextDefectPattern>();
 		
 		for (ContextDefectPattern contextDefectPattern :sensor.getContextDefectPatterns())
-			defectPatterns.put(contextDefectPattern.toString(), contextDefectPattern);
+			if (!ContextDefectPattern.isSensorIndependent(contextDefectPattern))
+				defectPatterns.put(contextDefectPattern.toString(), contextDefectPattern);
+		return defectPatterns;
+	}
+	
+	private Map<String, ContextDefectPattern> discoverIndependentDefectPatterns(){
+		Map<String, ContextDefectPattern> defectPatterns = new HashMap<String, ContextDefectPattern>();
+		
+		PhysicalContext sensor = new PhysicalContext();
+		for (ContextDefectPattern contextDefectPattern :sensor.getContextDefectPatterns())
+			if (ContextDefectPattern.isSensorIndependent(contextDefectPattern))
+				defectPatterns.put(contextDefectPattern.toString(), contextDefectPattern);
 		return defectPatterns;
 	}
 	

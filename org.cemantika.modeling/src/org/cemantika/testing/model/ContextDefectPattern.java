@@ -64,6 +64,24 @@ public enum ContextDefectPattern {
 		return false;
 	}
 	
+	public static boolean isSensorIndependent(ContextDefectPattern contextDefectPattern){
+		switch (contextDefectPattern) {
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_LOW_RAM:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_LOW_DISK:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_100_PERCENT_CPU:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_PLUGGED_SDCARD:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_SDCARD:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_PLUGGED_USB_CABLE:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_UNPLUGGED_USB_CABLE:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_15_PERCENT_BATTERY:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_5_PERCENT_BATTERY:
+		case PROBLEMATIC_RULE_LOGIC_WRONG_BEHAVIOR_1_PERCENT_BATTERY:
+			return true;
+
+		}
+		return false;
+	}
+	
 	public static ContextDefectPattern fromString(String text) {
 		if (text == null) return null; 
 		

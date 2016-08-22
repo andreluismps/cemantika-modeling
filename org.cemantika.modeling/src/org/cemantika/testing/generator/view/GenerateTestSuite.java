@@ -226,8 +226,12 @@ public class GenerateTestSuite extends Dialog {
 		String [] parts = null;
 		for(String selectedSensorDefectPattern : selectedScenario.getSelectedSensorDefectListData()){
 			parts = selectedSensorDefectPattern.split("\\|");
-			physicalContext = PhysicalContext.getBySensorName(parts[0].trim());
-			contextDefectPattern = ContextDefectPattern.fromString(parts[1].trim());
+			if(parts.length > 1){
+				physicalContext = PhysicalContext.getBySensorName(parts[0].trim());
+				contextDefectPattern = ContextDefectPattern.fromString(parts[1].trim());
+			}else{
+				contextDefectPattern = ContextDefectPattern.fromString(parts[0].trim());
+			}
 			switch (contextDefectPattern) {
 			case GLANULARITY_MISMATCH_IMPRECISION:
 				testSuite.getTestCases().addAll(new GranularityMismatchImprecisionHeuristic(getCKTBPath()).deriveTestCases(selectedScenario, physicalContext, contextDefectPattern));

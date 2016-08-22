@@ -7,8 +7,6 @@ package org.cemantika.testing.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cemantika.testing.util.Constants;
-
 
 /**
  *
