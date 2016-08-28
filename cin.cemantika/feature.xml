@@ -2,7 +2,7 @@
 <feature
       id="org.cemantika.modeling"
       label="Cemantika CASE"
-      version="0.0.5"
+      version="0.0.8"
       provider-name="CIn"
       plugin="org.cemantika.modeling">
 
@@ -229,6 +229,6 @@ litigation.
          id="org.cemantika.modeling"
          download-size="0"
          install-size="0"
-         version="0.0.5"/>
+         version="0.0.8"/>
 
 </feature>

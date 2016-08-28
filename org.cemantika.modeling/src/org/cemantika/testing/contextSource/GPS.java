@@ -39,16 +39,19 @@ public class GPS extends PhysicalContext {
 		Text txtLatitude = createPhysicalContextDetailText(group);
 		addFocusListener(txtLatitude, GPS.class.getDeclaredField("latitude"), this);
 		txtLatitude.setText(String.valueOf(latitude));
+		addVerifyDoubleDigitListener(txtLatitude);
 
 		createPhysicalContextDetailLabel(group, "Longitude");
 		Text txtLongitude = createPhysicalContextDetailText(group);
 		addFocusListener(txtLongitude, GPS.class.getDeclaredField("longitude"), this);
 		txtLongitude.setText(String.valueOf(longitude));
+		addVerifyDoubleDigitListener(txtLongitude);
 
 		createPhysicalContextDetailLabel(group, "Altitude");
 		Text txtAltitude = createPhysicalContextDetailText(group);
 		addFocusListener(txtAltitude, GPS.class.getDeclaredField("altitude"), this);
 		txtAltitude.setText(String.valueOf(altitude));
+		addVerifyDoubleDigitListener(txtAltitude);
 
 	}
 
