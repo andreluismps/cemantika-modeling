@@ -310,23 +310,32 @@ public class PhysicalContext extends AbstractContext {
 
 	public void addVerifyDoubleDigitListener(final Text text) {
 		text.addListener(SWT.Verify, new Listener() {
-			boolean ignore;
-
+			
 			@Override
 			public void handleEvent(Event e) {
-				if (ignore || e.character == '\b' || (text.getText() + e.text).equals("-"))
-					return;
-				e.doit = false;
-				StringBuffer buffer = new StringBuffer(e.text);
-				String newText = buffer.toString();
-				int length = newText.length();
-				if (Doubles.tryParse(text.getText() + newText) == null)
-					return;
+				
+				String allowedCharacters = "0123456789.-";
+			    String buffer = e.text;
+			    int position = e.start;
+			    
+			    if (e.character == '-' && position != 0){
+			    	e.doit = false;
+			    	return;
+			    }
+			    
+			    buffer += text.getText();
+			    int decimalSeparatorCount = 0, minusCount = 0;
+			    for (int index = 0; index < buffer.length(); index++) {
+			        char character = buffer.charAt(index);
+			        if(character == '-') minusCount++;
+			        if(character == '.') decimalSeparatorCount++;
+			        boolean isAllowed = allowedCharacters.indexOf(character) > -1 && decimalSeparatorCount <= 1 && minusCount <= 1;
 
-				text.setSelection(e.start, e.start + length);
-				ignore = true;
-				text.insert(newText);
-				ignore = false;
+			        if (!isAllowed) {
+			            e.doit = false;
+			            return;
+			        }
+			    }
 			}
 		});
 	}
