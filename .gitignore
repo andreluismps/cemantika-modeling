@@ -5,3 +5,5 @@
 *.ear
 
 org.cemantika.modeling/@dot.log
+
+.DS_Store
