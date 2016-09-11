@@ -4,8 +4,6 @@
  */
 package org.cemantika.testing.model;
 
-import java.util.ArrayList;
-
 import org.cemantika.uml.model.HashCodeUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

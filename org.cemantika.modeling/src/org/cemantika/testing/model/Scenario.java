@@ -198,7 +198,7 @@ public class Scenario extends AbstractContext{
 			
 			@Override
 			public void focusLost(FocusEvent e) {
-				addSituationBtn.setEnabled(false);
+				//addSituationBtn.setEnabled(false);
 			}
 			
 			@Override
@@ -222,9 +222,9 @@ public class Scenario extends AbstractContext{
 			
 			@Override
 			public void focusLost(FocusEvent e) {
-				removeTimeSlotBtn.setEnabled(false);
-				moveUpTimeSlotBtn.setEnabled(false);
-				moveDownTimeSlotBtn.setEnabled(false);
+				//removeTimeSlotBtn.setEnabled(false);
+				//moveUpTimeSlotBtn.setEnabled(false);
+				//moveDownTimeSlotBtn.setEnabled(false);
 			}
 			
 			@Override
@@ -362,7 +362,7 @@ public class Scenario extends AbstractContext{
 					
 					int id = timeSlotsList.getSelectionIndex();
 					
-					if (id < 0 ) return;
+					if (id <= 0 ) return;
 					
 					Collections.swap(Scenario.this.getContextList(), id, id-1);
 					
@@ -394,7 +394,7 @@ public class Scenario extends AbstractContext{
 					
 					int id = timeSlotsList.getSelectionIndex();
 					
-					if (id < 0 ) return;
+					if (id >= timeSlotsList.getItemCount() -1 || id == -1) return;
 					
 					Collections.swap(Scenario.this.getContextList(), id, id+1);
 					

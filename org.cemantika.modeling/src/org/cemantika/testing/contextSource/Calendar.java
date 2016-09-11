@@ -39,19 +39,19 @@ public class Calendar extends PhysicalContext {
 		createPhysicalContextDetailLabel(group, "Start (hh:mm:ss)");
 		Text txtStartTime = createPhysicalContextDetailText(group);
 		addFocusListener(txtStartTime, Calendar.class.getDeclaredField("startTime"), this);
-		txtStartTime.setText((startTime != null) ? startTime : "");
+		txtStartTime.setText((startTime == null || startTime.isEmpty()) ? "00:00:00" : startTime);
 		addVerifyTimeListener(txtStartTime);
 
 		createPhysicalContextDetailLabel(group, "End (hh:mm:ss)");
 		Text txtEndTime = createPhysicalContextDetailText(group);
 		addFocusListener(txtEndTime, Calendar.class.getDeclaredField("endTime"), this);
-		txtEndTime.setText((endTime != null) ? endTime : "");
+		txtEndTime.setText((endTime == null || endTime.isEmpty()) ? "23:59:59" : endTime);
 		addVerifyTimeListener(txtEndTime);
 
 		createPhysicalContextDetailLabel(group, "Date (dd.mm.yyyy)");
 		Text txtDate = createPhysicalContextDetailText(group);
 		addFocusListener(txtDate, Calendar.class.getDeclaredField("date"), this);
-		txtDate.setText((date != null) ? date : "");
+		txtDate.setText((date == null || date.isEmpty()) ? "01.01.2016" : date);
 		addVerifyDateListener(txtDate);
 	}
 

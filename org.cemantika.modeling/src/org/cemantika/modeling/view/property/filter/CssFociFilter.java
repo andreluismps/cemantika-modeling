@@ -7,8 +7,6 @@ import org.eclipse.jface.viewers.IFilter;
 
 public class CssFociFilter implements IFilter {
 	
-	private org.eclipse.uml2.uml.Package package_;	
-
 	@Override
 	public boolean select(Object toTest) {
 		Object transformed = transformSelection(toTest);

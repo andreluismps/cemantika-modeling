@@ -51,13 +51,15 @@ public class ContextManagement extends FormPage {
 		scrolledForm = managedForm.getForm();
 		
         TableWrapLayout layout = new TableWrapLayout();
-        layout.numColumns = 2;
+        layout.numColumns = 1;
 
         scrolledForm.getBody().setLayout(layout);
         
         scrolledForm.setText(TITLE);
         
-        addSpecifyContextAcquisition();		
+        addSpecifyContextAcquisition();
+        
+        addDesignAcquisitionModule();
 	}
 	
 	private void addSpecifyContextAcquisition() {

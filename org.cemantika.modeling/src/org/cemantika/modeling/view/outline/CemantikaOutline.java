@@ -12,7 +12,7 @@ public class CemantikaOutline extends ContentOutlinePage {
 	private IEditorInput input;
 
 	public CemantikaOutline(IEditorInput iEditorInput) {
-		this.input = iEditorInput;
+		this.setInput(iEditorInput);
 	}
 
 	public void createControl(Composite parent) {
@@ -47,6 +47,14 @@ public class CemantikaOutline extends ContentOutlinePage {
 				identifyBehaviorVariations);
 
 		return process;
+	}
+
+	public void setInput(IEditorInput input) {
+		this.input = input;
+	}
+
+	public IEditorInput getInput() {
+		return input;
 	}
 
 }

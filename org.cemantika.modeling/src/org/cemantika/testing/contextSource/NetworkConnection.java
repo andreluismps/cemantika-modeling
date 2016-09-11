@@ -19,13 +19,14 @@ public class NetworkConnection extends PhysicalContext {
 	 */
 	private static final long serialVersionUID = -1593910932474472258L;
 	// Model
+	/*
 	private boolean value1;
 	private boolean value2;
 	private boolean value3;
 	private boolean value4;
 	private boolean value5;
 	private boolean value6;
-
+*/
 	//
 
 	/*
@@ -39,7 +40,7 @@ public class NetworkConnection extends PhysicalContext {
 	public NetworkConnection() {
 		super(Constants.NETWORK);
 	}
-
+/*
 	private String getNetworkSpeed() {
 		if (value1) {
 			return "0 0";
@@ -51,11 +52,12 @@ public class NetworkConnection extends PhysicalContext {
 			return "UMTS";
 		} else if (value5) {
 			return "HSDPA";
-		} else {
+		} else if (value6){
 			return "FULL";
 		}
+		return "0 0";
 	}
-
+*/
 	public void createPhysicalContextDetails(Group group) throws SecurityException, NoSuchFieldException {
 
 	}

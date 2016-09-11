@@ -21,8 +21,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-import com.google.common.primitives.Doubles;
-
 /**
  * 
  * @author MHL
