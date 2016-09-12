@@ -168,7 +168,16 @@ public abstract class AbstractContext implements Serializable, Cloneable, Compar
 			}
 			
 			@Override
-			public void focusGained(FocusEvent e) {}
+			public void focusGained(FocusEvent e) {
+				try {
+					classField.setAccessible(true);
+					if (classField.getType().equals(double.class))
+						if(classField.getDouble(instance) == 0)
+							textField.setText("");
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 		});
 	}
 	
