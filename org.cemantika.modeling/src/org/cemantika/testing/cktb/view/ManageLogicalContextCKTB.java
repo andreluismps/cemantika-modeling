@@ -81,7 +81,7 @@ public class ManageLogicalContextCKTB extends Dialog {
 
 			public void widgetSelected(SelectionEvent event) {
 
-				LogicalContext logicalContext = logicalContexts.get(list.getItem(list.getSelectionIndex()));
+				int index = list.getSelectionIndex();
 				
 				disposeChildrenControls(physicalContextsComposite);
 				
@@ -89,10 +89,14 @@ public class ManageLogicalContextCKTB extends Dialog {
 				
 				Label lblDefect = new Label(physicalContextsComposite, SWT.WRAP);
 				lblDefect.setLayoutData(new GridData(420, SWT.DEFAULT));
-				lblDefect.setText(logicalContext.getDefectText());
 				
-				for (AbstractContext physicalContext : logicalContext.getContextList()) {
-					createPhysicalContextGroup(physicalContextsComposite, physicalContext);
+				if (index >=  0){
+					LogicalContext logicalContext = logicalContexts.get(list.getItem(list.getSelectionIndex()));
+					lblDefect.setText(logicalContext.getDefectText());
+					
+					for (AbstractContext physicalContext : logicalContext.getContextList()) {
+						createPhysicalContextGroup(physicalContextsComposite, physicalContext);
+					}
 				}
 				
                 scrolledComposite.layout(true, true);

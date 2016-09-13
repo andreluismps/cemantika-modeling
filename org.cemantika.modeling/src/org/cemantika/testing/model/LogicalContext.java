@@ -75,15 +75,15 @@ public class LogicalContext extends AbstractContext{
 		originalName = originalName.substring(0, originalName.lastIndexOf(' '));
 		
 		String text = "'" + originalName + "'" + " with following defect: \n "
-					+ " - " + contextDefectPattern + "\n\n"					
+					+ " - " + contextDefectPattern.toString().toUpperCase() + "\n\n"					
 					+ "To generate defect data to this logical context, please fill these fields with ";
 		switch (contextDefectPattern) {
 		case GLANULARITY_MISMATCH_IMPRECISION:
 			
 			text += "slightly modified data. "
-				+ "Even with the modification, the actual context has not changed.\n"
+				+ "Even with the modification, the actual context has NOT changed.\n"
 				+ "To ease defect discovery, use values close to the limit imposed by the rule to be evaluated.\n\n"
-				+ "Example: If the logical context defines the user presence inside a room, send information indicating that it is in front of the room door, in room outside.";
+				+ "Example: If the logical context defines the user presence inside a building, send information indicating that it is in near building, but not inside it. Or otherwise.";
 			break;
 		case SLOW_SENSING_OUT_OF_DATENESS:
 			text += "old data.\n"
