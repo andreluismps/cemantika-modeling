@@ -437,9 +437,12 @@ public class ContextTesting extends FormPage {
 	    }
 
 		private void exportTestSuiteAsJSON(Shell shell, TestSuite testSuite) {
+			String dir = System.getenv("EXPORT_DIR");
+
 			FileDialog fileDialog = new FileDialog( shell, SWT.SAVE);
 			fileDialog.setText("Save Test Case as");
 			fileDialog.setFileName(".json");
+			fileDialog.setFilterPath(dir);
 	        String[] filterExt = { "*.json"};
 	        fileDialog.setFilterExtensions(filterExt);
 	        

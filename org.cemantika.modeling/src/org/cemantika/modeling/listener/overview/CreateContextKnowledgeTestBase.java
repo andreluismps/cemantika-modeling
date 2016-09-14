@@ -29,11 +29,13 @@ public class CreateContextKnowledgeTestBase implements Listener {
 
 	@Override
 	public void handleEvent(Event event) {
+		String dir = System.getenv("CKTB_DIR");
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setText(title);
 		dialog.setFilterExtensions(new String [] {"*."+ extension});
 		dialog.setFilterNames(new String[] { "Context Knowledge Test Base File" });
 		dialog.setFileName("TestCases.cktb");
+		dialog.setFilterPath(dir);
 		String fileName = dialog.open();
 		String endFileName = "." + extension;
 		if (!fileName.endsWith(endFileName)) fileName+= endFileName;

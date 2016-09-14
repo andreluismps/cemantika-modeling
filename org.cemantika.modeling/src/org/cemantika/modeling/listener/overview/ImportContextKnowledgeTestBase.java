@@ -25,10 +25,12 @@ public class ImportContextKnowledgeTestBase implements Listener {
 
 	@Override
 	public void handleEvent(Event event) {
+		String dir = System.getenv("CKTB_DIR");
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 		dialog.setText(title);
 		dialog.setFilterExtensions(new String [] {"*."+ extension});
 		dialog.setFilterNames(new String[] { "Context Knowledge Test Base File" });
+		dialog.setFilterPath(dir);
 		String result = dialog.open();
 		manager.save(cktb, result);
 		
