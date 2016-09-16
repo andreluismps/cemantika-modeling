@@ -95,4 +95,13 @@ public class TimeSlot extends AbstractContext{
 		this.id = id;
 		setName("Time: "+id);
 	}
+	
+	@Override
+	public int compareTo(AbstractContext abstractContext) {
+		if (!(abstractContext instanceof TimeSlot))
+			return super.compareTo(abstractContext);
+		TimeSlot timeSlot = (TimeSlot)abstractContext;
+		int cmp = Double.compare(this.id, timeSlot.getId());
+		return cmp;
+	}
 }
